@@ -1,4 +1,4 @@
-const BASE_URL = `http://localhost:15000`;
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export async function fetchProjects(jwt: string) {
     const response = await fetch(`${BASE_URL}/api/person/projects`, {
