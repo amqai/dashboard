@@ -10,7 +10,8 @@ function LoginPage() {
 
     const submit = async (values: { username: string; password: string }) => {
         const { username, password } = values;
-        const response = await fetch(`http://localhost:15000/authenticate`, {
+        const BASE_URL = process.env.REACT_APP_BASE_URL;
+        const response = await fetch(`${BASE_URL}/authenticate`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
