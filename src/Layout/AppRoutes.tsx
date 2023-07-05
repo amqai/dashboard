@@ -16,7 +16,7 @@ function AppRoutes() {
         const jwt = localStorage.getItem('jwt')
         if (jwt === "undefined" || jwt === null) {
             // If not set, redirect to /login
-            //navigate('/login');
+            navigate('/login');
         }
     }, []);
     return (
