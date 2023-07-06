@@ -1,7 +1,6 @@
-const BASE_URL = process.env.REACT_APP_API_URL;
 
 export async function fetchProjects(jwt: string) {
-    const response = await fetch(`${BASE_URL}/api/person/projects`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/person/projects`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`
