@@ -10,8 +10,8 @@ function LoginPage() {
 
     const submit = async (values: { username: string; password: string }) => {
         const { username, password } = values;
-	console.log(process.env);
-        console.log(process.env.REACT_APP_API_URL);
+	console.log("process env " + process.env);
+        console.log("react app api url " + process.env.REACT_APP_API_URL);
 
         const response = await fetch(`${process.env.REACT_APP_API_URL}/authenticate`, {
             method: 'POST',
