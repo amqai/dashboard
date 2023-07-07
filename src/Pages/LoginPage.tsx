@@ -10,10 +10,10 @@ function LoginPage() {
 
     const submit = async (values: { username: string; password: string }) => {
         const { username, password } = values;
-	console.log("process env " + process.env);
-        console.log("react app api url " + process.env.REACT_APP_API_URL);
+	console.log("process env " + import.meta.env);
+        console.log("react app api url " + import.meta.env.VITE_APP_API_URL);
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/authenticate`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/authenticate`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
