@@ -10,9 +10,6 @@ function LoginPage() {
 
     const submit = async (values: { username: string; password: string }) => {
         const { username, password } = values;
-	console.log("process env " + import.meta.env);
-        console.log("react app api url " + import.meta.env.VITE_APP_API_URL);
-
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/authenticate`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
