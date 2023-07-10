@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import HomePage from "../Pages/Home/HomePage";
 import InviteUsers from "../Pages/Admin/InviteUsers";
 import LoginPage from '../Pages/LoginPage'; // Update with your actual LoginPage path
+import RegisterPage from "../Pages/RegisterPage";
 import AppHeader from "../Layout/AppHeader";
 import SideMenu from "../Layout/SideMenu";
 import { Layout } from "antd";
@@ -23,6 +24,7 @@ function AppRoutes() {
     }, []);
     return (
         <Routes>
+            <Route path="/register" element={<RegisterPage /> } />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={
                     <Layout className="container">

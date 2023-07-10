@@ -1,4 +1,5 @@
 import "../styles/login.css";
+import "../styles/common.css";
 import { Alert, Button, Divider, Form, Input, Typography } from 'antd';
 import logo from '../assets/logo.png';
 import { useState, useEffect } from 'react';
@@ -39,10 +40,20 @@ function LoginPage() {
             localStorage.clear();
         }
     });
+
+    function Register() {
+      function handleRegister() {
+        navigate('/register')
+      }
+
+      return (
+        <Button type="primary" htmlType="button" onClick={handleRegister} block>Register</Button>
+      );
+    }
     
     return (
 
-        <div className="loginbackground">
+        <div className="background">
           <div className="logowrapper">
             <div className="logocontainer">
               <img src={logo} />
@@ -80,6 +91,7 @@ function LoginPage() {
                 </Form.Item>
                 <Button type="primary" htmlType="submit" block>Login</Button>
                 <Divider style={{ borderColor: "black" }}>Forgot your password?</Divider>
+                <Register />
               </div>
             </Form>
           </div>
