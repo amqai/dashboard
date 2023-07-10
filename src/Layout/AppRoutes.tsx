@@ -6,6 +6,7 @@ import AppHeader from "../Layout/AppHeader";
 import SideMenu from "../Layout/SideMenu";
 import { Layout } from "antd";
 import { useEffect } from "react";
+import Dashboard from "../Pages/Project/Dashboard";
 
 
 function AppRoutes() {
@@ -31,6 +32,12 @@ function AppRoutes() {
                                 <Routes>
                                     <Route path="/" element={<HomePage />} />
                                     <Route path="/invite" element={<InviteUsers />} />
+                                    <Route path="/project/:projectId/*" element={
+                                        <Routes>
+                                            <Route path="dashboard" element={<Dashboard /> } />
+                                            {/* Add your other project related routes here */}
+                                        </Routes>
+                                    } />
                                     {/* Add a redirect for unmatched routes */}
                                     <Route path="*" element={<Navigate to="/" replace />} />
                                 </Routes>
