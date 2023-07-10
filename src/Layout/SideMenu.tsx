@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { HiOutlineHome } from "react-icons/hi";
+import { FiSettings } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
 import { BsUpload, BsChatText, BsPeople } from "react-icons/bs";
@@ -63,6 +64,11 @@ function SideMenu() {
             label: "Prompt",
             key: `/project/${projectId}/prompt`,
             icon: <BsChatText />
+          },
+          {
+            label: "Settings",
+            key: `/project/${projectId}/settings`,
+            icon: <FiSettings />
           },
         ]
       };

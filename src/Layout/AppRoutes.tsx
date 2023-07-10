@@ -7,6 +7,7 @@ import SideMenu from "../Layout/SideMenu";
 import { Layout } from "antd";
 import { useEffect } from "react";
 import Dashboard from "../Pages/Project/Dashboard";
+import Settings from "../Pages/Project/Settings";
 
 
 function AppRoutes() {
@@ -35,6 +36,7 @@ function AppRoutes() {
                                     <Route path="/project/:projectId/*" element={
                                         <Routes>
                                             <Route path="dashboard" element={<Dashboard /> } />
+                                            <Route path="settings" element={<Settings /> } />
                                             {/* Add your other project related routes here */}
                                         </Routes>
                                     } />
