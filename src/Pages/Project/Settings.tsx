@@ -1,19 +1,19 @@
-import { Alert, Button, Card, Divider, Form, Input, Typography } from "antd";
+import { Alert, Button, Card, Form, Input, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-interface Project {
-    projectName: string,
-    members: Member[],
-}
+// interface Project {
+//     projectName: string,
+//     members: Member[],
+// }
 
-interface Member {
-    email: string
-}
+// interface Member {
+//     email: string
+// }
 
 function Settings() {
   const { projectId } = useParams();
-  const [project, setProject] = useState<Project | null>(null);
+  //const [project, setProject] = useState<Project | null>(null);
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -36,8 +36,9 @@ function Settings() {
               }
             });
   
-            const content = await response.json();
-            setProject(content)
+            //const content = 
+            await response.json();
+            //setProject(content)
           }
         }
         )();
