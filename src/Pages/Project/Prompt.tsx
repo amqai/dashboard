@@ -111,30 +111,29 @@ function Prompt() {
                 }}
               >
                 <div>
-                    {message.user === 'ai' && (
-                        <Tag icon={<GiBrain />} color="rgb(39,0,102)" />
-                    )}
-                    {message.user === 'user' && (
-                        <Tag icon={<BsFillPersonFill color="#55acee" />} />
-                    )}
-                    {message.response}
+                    <div style={{display: "flex", alignItems: "flex-start"}}>
+                      <div>
+                        {message.user === 'ai' && (
+                          <Tag icon={<GiBrain />} color="rgb(39,0,102)" />
+                        )}
+                        {message.user === 'user' && (
+                          <Tag icon={<BsFillPersonFill color="#55acee" />} />
+                        )}
+                      </div>
+                      <div style={{marginLeft: "10px", textAlign: "justify", flex: "1"}}>
+                        {message.response}
+                      </div>
+                    </div>
                     {message.user === 'ai' && message.contextList &&
                         <Collapse bordered={false} ghost>
                             <Panel header="Show context list" key={index}>
-                                <List
-                                dataSource={message.contextList}
-                                renderItem={context =>
-                                    <List.Item>
-                                    <Table
-                                        style={{width:"100%"}}
-                                        size="large"
-                                        tableLayout="auto"
-                                        pagination={false}
-                                        columns={contextColumns}
-                                        dataSource={[context]} // Wrap context object into an array
-                                    />
-                                    </List.Item>
-                                }
+                                <Table
+                                    style={{width:"100%"}}
+                                    size="large"
+                                    tableLayout="auto"
+                                    pagination={false}
+                                    columns={contextColumns}
+                                    dataSource={message.contextList}
                                 />
                             </Panel>
                         </Collapse>
