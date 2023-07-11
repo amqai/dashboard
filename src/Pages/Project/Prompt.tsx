@@ -103,7 +103,13 @@ function Prompt() {
           <List
             dataSource={messages.reverse()}
             renderItem={(message, index) => 
-              <List.Item>
+              <List.Item 
+                style={{
+                    paddingTop: "24px",
+                    paddingBottom: "24px",
+                    backgroundColor: message.user === 'ai' ? 'rgba(39,0,102,0.03)' : 'inherit'
+                }}
+              >
                 <div>
                     {message.user === 'ai' && (
                         <Tag icon={<GiBrain />} color="rgb(39,0,102)" />
@@ -114,7 +120,7 @@ function Prompt() {
                     {message.response}
                     {message.user === 'ai' && message.contextList &&
                         <Collapse bordered={false} ghost>
-                            <Panel header="Show context list" key={index} style={{color:"blue"}}>
+                            <Panel header="Show context list" key={index}>
                                 <List
                                 dataSource={message.contextList}
                                 renderItem={context =>
