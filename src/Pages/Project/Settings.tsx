@@ -1,5 +1,4 @@
 import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space } from "antd";
-import { resolve } from "path";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -82,47 +81,6 @@ function Settings() {
       key: 'action',
     },
   ];
-
-  const dataSourceProjectSettings = [
-    {
-      key: '1',
-      projectId: 'projectId',
-      apiKey: 'ApiKey',
-      model: 'Model',
-      prompt: 'Prompt'
-    },
-    {
-      key: '2',
-      projectId: 'projectId',
-      apiKey: 'ApiKey',
-      model: 'Model',
-      prompt: 'Prompt'
-    },
-  ]
-
-  const columnsProjectSettings = [
-    {
-      title: 'ProjectId',
-      dataIndex: 'projectId',
-      key: 'projectId',
-    },
-    {
-      title: 'ApiKey',
-      dataIndex: 'apiKey',
-      key: 'apiKey',
-    },
-    {
-      title: 'Model',
-      dataIndex: 'model',
-      key: 'model',
-    },
-    {
-      title: 'Prompt',
-      dataIndex: 'prompt',
-      key: 'prompt',
-    },
-  ]
-
 
   useEffect(() => {
     (
@@ -214,15 +172,6 @@ function Settings() {
             <Button type="primary" htmlType="submit">Save</Button>
           </div>
         </Form>
-      </Card>
-
-      <Card title="Project Settings" bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
-        <div className="settings-form-buttons" style={{borderTop: 0}}>
-          <Button type="primary">+ Add</Button>
-        </div>
-        <div className="settings-form-field-100">
-          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={dataSourceProjectSettings} columns={columnsProjectSettings} />
-        </div>
       </Card>
 
       <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
