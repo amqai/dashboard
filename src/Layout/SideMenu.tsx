@@ -30,6 +30,7 @@ function SideMenu() {
   ]);
 
   const location = useLocation();
+  const activeLink = location.pathname;
 
   const isProjectAddedRef = useRef(false);
   const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
@@ -146,6 +147,8 @@ function SideMenu() {
           }}
           mode="inline"
           items={items}
+          defaultOpenKeys={['/project']}
+          selectedKeys={[activeLink]}
         />
       </Sider>
   )

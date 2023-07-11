@@ -9,6 +9,7 @@ import { Layout } from "antd";
 import { useEffect } from "react";
 import Dashboard from "../Pages/Project/Dashboard";
 import Settings from "../Pages/Project/Settings";
+import Prompt from "../Pages/Project/Prompt";
 
 
 function AppRoutes() {
@@ -39,6 +40,7 @@ function AppRoutes() {
                                         <Routes>
                                             <Route path="dashboard" element={<Dashboard /> } />
                                             <Route path="settings" element={<Settings /> } />
+                                            <Route path="prompt" element={<Prompt /> } />
                                             {/* Add your other project related routes here */}
                                         </Routes>
                                     } />
