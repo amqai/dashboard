@@ -1,28 +1,61 @@
-import { Alert, Button, Card, Form, Input, Typography } from "antd";
+import { Alert, Button, Card, Form, Input, Select, Table, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-// interface Project {
-//     projectName: string,
-//     members: Member[],
-// }
+interface Project {
+    projectName: string,
+    members: Member[],
+}
 
-// interface Member {
-//     email: string
-// }
+interface Member {
+    email: string
+}
 
 function Settings() {
   const { projectId } = useParams();
-  //const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<Project | null>(null);
 
   const [errorMessage, setErrorMessage] = useState('');
 
-  const saveOpenAiApiKey = async () => { }
-  const saveModel = async () => { }
+  const saveSettings = async () => { }
 
   const dismissAlert = () => {
     setErrorMessage("");
   };
+
+  const dataSource = [
+    {
+      key: '1',
+      email: 'vectorl33t2@gmail.com',
+      roles: 'ADMIN,USER',
+      action: 'Remove'
+    },
+    {
+      key: '2',
+      email: 'tepayne97@gmail.com',
+      roles: 'ADMIN,USER',
+      action: 'Remove'
+    },
+  ];
+  
+  const columns = [
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'Roles',
+      dataIndex: 'roles',
+      key: 'roles',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      key: 'action',
+    },
+  ];
+
 
   useEffect(() => {
     (
@@ -36,9 +69,8 @@ function Settings() {
               }
             });
   
-            //const content = 
-            await response.json();
-            //setProject(content)
+            const content = await response.json();
+            setProject(content)
           }
         }
         )();
@@ -52,10 +84,11 @@ function Settings() {
         </div>
       )}
       <Typography.Title level={2}>Settings</Typography.Title>
-      <Card title="OpenAI API Key" bodyStyle={{padding: "0"}}>
-        <Form onFinish={saveOpenAiApiKey}>
+      <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
+        <Form onFinish={saveSettings} labelCol={{style: {minWidth: "130px"}}} labelAlign="left">
           <div className="settings-form-fields">
             <Form.Item
+              label="Open AI Api Key"
               style={{paddingLeft: "24px", paddingTop: "24px"}}
               name={"openaiapikey"}
               rules={[
@@ -68,16 +101,10 @@ function Settings() {
               <Input.Password placeholder="OpenAI API Key" />
             </Form.Item>
           </div>
-          <div className="settings-form-buttons">
-            <Button type="primary" htmlType="submit" style={{margin: "10px"}}>Save</Button>
-          </div>
-        </Form>
-      </Card>
 
-      <Card title="Model" bodyStyle={{padding: "0"}} style={{marginTop: "30px"}}>
-        <Form onFinish={saveModel}>
           <div className="settings-form-fields">
             <Form.Item
+              label="Model"
               style={{paddingLeft: "24px", paddingTop: "24px"}}
               name={"model"}
               rules={[
@@ -87,13 +114,42 @@ function Settings() {
                 }
               ]}
             >
-              <Input placeholder="Model" />
+              <Select defaultValue={"gpt-3.5"}>
+                <Select.Option value="gpt-3.5">GPT 3.5</Select.Option>
+                <Select.Option value="gpt-4">GPT 4</Select.Option>
+              </Select>
+            </Form.Item>
+          </div>
+
+          <div className="settings-form-field-100">
+            <Form.Item
+              label="Initial Prompt"
+              style={{paddingLeft: "24px", paddingTop: "24px"}}
+              name={"model"}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input prompt",
+                }
+              ]}
+            >
+              <Input.TextArea rows={8} placeholder="Input your prompt instructions" />
             </Form.Item>
           </div>
           <div className="settings-form-buttons">
-            <Button type="primary" htmlType="submit" style={{margin: "10px"}}>Save</Button>
+            <Button type="primary" htmlType="submit">Save</Button>
           </div>
         </Form>
+      </Card>
+
+      <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
+        <div className="settings-form-buttons" style={{borderTop: 0}}>
+          <Button type="primary">+ Add</Button>
+        </div>
+
+        <div className="settings-form-field-100">
+          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={dataSource} columns={columns} />
+        </div>
       </Card>
     </div>
   );

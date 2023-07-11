@@ -29,11 +29,20 @@
 }
 
 .settings-form-fields {
-    max-width: 400px;
+    max-width: 600px;
+}
+
+.settings-form-field-100 {
+    max-width: 100%;
+    margin-right: 24px;
 }
 
 .settings-form-buttons {
     display: flex;
     justify-content: flex-end;
     border-top: 1px solid #f0f0f0;
+}
+
+.settings-form-buttons button {
+    margin: 12px 24px 16px 12px;
 }
