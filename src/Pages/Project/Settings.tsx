@@ -1,6 +1,8 @@
-import { Alert, Button, Card, Form, Input, Select, Table, Typography } from "antd";
+import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space } from "antd";
+import { resolve } from "path";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import "../../styles/common.css";
 
 interface Project {
     projectName: string,
@@ -16,14 +18,39 @@ function Settings() {
   const [project, setProject] = useState<Project | null>(null);
 
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const saveSettings = async () => { }
+  const saveSettings = async (values: {openAiApiKey: string, model: string, prompt: string}) => {
+    setLoading(true)
+    const { openAiApiKey, model, prompt } = values;
+    if(projectId) {
+      const jwt = localStorage.getItem('jwt');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`,
+        },
+        body: JSON.stringify({
+          openAiApiKey,
+          model,
+          prompt
+        })
+      });
+      const data = await response.json();
+      if(response.ok) {
+        setLoading(false)
+      } else {
+        setErrorMessage(data.errorMessage)
+      }
+    }
+  }
 
   const dismissAlert = () => {
     setErrorMessage("");
   };
 
-  const dataSource = [
+  const dataSourceProjectMembers = [
     {
       key: '1',
       email: 'vectorl33t2@gmail.com',
@@ -38,7 +65,7 @@ function Settings() {
     },
   ];
   
-  const columns = [
+  const columnsProjectMembers = [
     {
       title: 'Email',
       dataIndex: 'email',
@@ -55,6 +82,46 @@ function Settings() {
       key: 'action',
     },
   ];
+
+  const dataSourceProjectSettings = [
+    {
+      key: '1',
+      projectId: 'projectId',
+      apiKey: 'ApiKey',
+      model: 'Model',
+      prompt: 'Prompt'
+    },
+    {
+      key: '2',
+      projectId: 'projectId',
+      apiKey: 'ApiKey',
+      model: 'Model',
+      prompt: 'Prompt'
+    },
+  ]
+
+  const columnsProjectSettings = [
+    {
+      title: 'ProjectId',
+      dataIndex: 'projectId',
+      key: 'projectId',
+    },
+    {
+      title: 'ApiKey',
+      dataIndex: 'apiKey',
+      key: 'apiKey',
+    },
+    {
+      title: 'Model',
+      dataIndex: 'model',
+      key: 'model',
+    },
+    {
+      title: 'Prompt',
+      dataIndex: 'prompt',
+      key: 'prompt',
+    },
+  ]
 
 
   useEffect(() => {
@@ -76,6 +143,12 @@ function Settings() {
         )();
   }, [projectId]);
 
+  function Loading() {
+    if(loading) {
+      return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
+    }
+  }
+
   return (
     <div className="center-wrapper">
       {errorMessage !== "" && (
@@ -85,12 +158,13 @@ function Settings() {
       )}
       <Typography.Title level={2}>Settings</Typography.Title>
       <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
+      <Loading/>
         <Form onFinish={saveSettings} labelCol={{style: {minWidth: "130px"}}} labelAlign="left">
           <div className="settings-form-fields">
             <Form.Item
               label="Open AI Api Key"
               style={{paddingLeft: "24px", paddingTop: "24px"}}
-              name={"openaiapikey"}
+              name={"openAiApiKey"}
               rules={[
                 {
                   required: true,
@@ -125,7 +199,7 @@ function Settings() {
             <Form.Item
               label="Initial Prompt"
               style={{paddingLeft: "24px", paddingTop: "24px"}}
-              name={"model"}
+              name={"prompt"}
               rules={[
                 {
                   required: true,
@@ -142,13 +216,21 @@ function Settings() {
         </Form>
       </Card>
 
+      <Card title="Project Settings" bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
+        <div className="settings-form-buttons" style={{borderTop: 0}}>
+          <Button type="primary">+ Add</Button>
+        </div>
+        <div className="settings-form-field-100">
+          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={dataSourceProjectSettings} columns={columnsProjectSettings} />
+        </div>
+      </Card>
+
       <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
         <div className="settings-form-buttons" style={{borderTop: 0}}>
           <Button type="primary">+ Add</Button>
         </div>
-
         <div className="settings-form-field-100">
-          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={dataSource} columns={columns} />
+          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={dataSourceProjectMembers} columns={columnsProjectMembers} />
         </div>
       </Card>
     </div>

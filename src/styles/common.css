@@ -7,3 +7,10 @@
     background: rgb(39,0,102);
     background: linear-gradient(90deg, rgba(39,0,102,1) 0%, rgba(137,33,181,1) 49%, rgba(231,0,255,1) 100%);
 }
+
+.spinner {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    z-index: 1; 
+}
