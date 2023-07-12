@@ -35,6 +35,8 @@ function HomePage() {
         setErrorMessage("");
     };
 
+    const handleGoToDashboard = (project: Project) => navigate(`/project/${project.projectId}/dashboard`)
+
     return (
         <>
             <div className="contentwrapper">
@@ -80,9 +82,9 @@ function HomePage() {
                 <Row gutter={[16, 16]}>
                     {message != null && message.map((project) => (
                         <Col xs={24} sm={12} md={8} lg={6} key={project.projectId} >
-                            <Card style={{height: "150px"}} title={project.projectName}>
+                            <Card className="projectCard" style={{height: "150px"}} title={project.projectName} onClick={() => handleGoToDashboard(project)}>
                                 {project.projectDescription}
-                                <Button type="default"  href={`/project/${project.projectId}/dashboard`}> go to Dashboard </Button>
+                                {/* <Button type="default"  href={`/project/${project.projectId}/dashboard`}> go to Dashboard </Button> */}
                             </Card>
                         </Col>
                     ))}

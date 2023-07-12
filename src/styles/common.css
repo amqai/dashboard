@@ -14,3 +14,17 @@
     right: 50%;
     z-index: 1; 
 }
+
+.projectCard {
+    cursor: pointer;
+}
+
+.projectCard:hover {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 5px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    box-shadow: inset 5px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    transform: scale(1.02); 
+    transition: all .1s ease-in-out; 
+}
+

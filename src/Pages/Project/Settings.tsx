@@ -8,6 +8,12 @@ interface Project {
     members: Member[],
 }
 
+interface ProjectSettings {
+    openAiApiKey: string,
+    model: string,
+    prompt: string
+}
+
 interface Member {
     email: string
 }
@@ -15,6 +21,7 @@ interface Member {
 function Settings() {
   const { projectId } = useParams();
   const [project, setProject] = useState<Project | null>(null);
+  const [settings, setSettings] = useState<ProjectSettings | null> (null)
 
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +31,7 @@ function Settings() {
     const { openAiApiKey, model, prompt } = values;
     if(projectId) {
       const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/update`, {
+      await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -36,12 +43,14 @@ function Settings() {
           prompt
         })
       });
-      const data = await response.json();
-      if(response.ok) {
-        setLoading(false)
-      } else {
-        setErrorMessage(data.errorMessage)
-      }
+      
+      
+      setLoading(false)
+      // check for errors here
+      // const data = await response.json();
+      // if (data.errorCode) {
+      //     setErrorMessage(data.errorMessage)
+      // }
     }
   }
 
@@ -101,6 +110,25 @@ function Settings() {
         )();
   }, [projectId]);
 
+  useEffect(() => {
+    (
+      async () => {
+        if(projectId) {
+          const jwt = localStorage.getItem('jwt');
+          const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/settings`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwt}`
+            }
+          });
+
+          const settings = await response.json()
+          setSettings(settings)
+        }
+      }
+    )();
+  }, [projectId])
+
   function Loading() {
     if(loading) {
       return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
@@ -130,7 +158,7 @@ function Settings() {
                 }
               ]}
             >
-              <Input.Password placeholder="OpenAI API Key" />
+              <Input.Password placeholder={settings?.openAiApiKey ?? ""} />
             </Form.Item>
           </div>
 
@@ -146,7 +174,7 @@ function Settings() {
                 }
               ]}
             >
-              <Select defaultValue={"gpt-3.5"}>
+              <Select defaultValue={settings?.model ?? "gpt-3.5"}>
                 <Select.Option value="gpt-3.5">GPT 3.5</Select.Option>
                 <Select.Option value="gpt-4">GPT 4</Select.Option>
               </Select>
@@ -165,11 +193,11 @@ function Settings() {
                 }
               ]}
             >
-              <Input.TextArea rows={8} placeholder="Input your prompt instructions" />
+              <Input.TextArea rows={8} placeholder={settings?.prompt ?? ""} />
             </Form.Item>
           </div>
           <div className="settings-form-buttons">
-            <Button type="primary" htmlType="submit">Save</Button>
+            <Button type="primary" disabled={loading} htmlType="submit">Save</Button>
           </div>
         </Form>
       </Card>
