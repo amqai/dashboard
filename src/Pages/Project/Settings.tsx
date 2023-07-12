@@ -2,6 +2,7 @@ import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Spac
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";
+import { Alert as AlertModel, AlertType } from "../../models/Alert";
 
 interface Project {
     projectName: string,
@@ -22,9 +23,9 @@ function Settings() {
   const [form] = Form.useForm();
   const { projectId } = useParams();
   const [project, setProject] = useState<Project | null>(null);
-  const [settings, setSettings] = useState<ProjectSettings | null> (null)
+  const [settings, setSettings] = useState<ProjectSettings | null>(null);
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
 
   const saveSettings = async (values: {openAiApiKey: string, model: string, prompt: string}) => {
@@ -32,7 +33,7 @@ function Settings() {
     const { openAiApiKey, model, prompt } = values;
     if(projectId) {
       const jwt = localStorage.getItem('jwt');
-      await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/settings`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -45,18 +46,23 @@ function Settings() {
         })
       });
       
-      
+      if (response.ok) {
+        setAlertMessage({
+          message: 'Your project settings were successfully updated',
+          type: AlertType.Success,
+        })
+      } else {
+        setAlertMessage({
+          message: 'There was an error updating your project settings',
+          type: AlertType.Error,
+        })
+      }
       setLoading(false)
-      // check for errors here
-      // const data = await response.json();
-      // if (data.errorCode) {
-      //     setErrorMessage(data.errorMessage)
-      // }
     }
   }
 
   const dismissAlert = () => {
-    setErrorMessage("");
+    setAlertMessage(null);
   };
 
   const dataSourceProjectMembers = [
@@ -143,14 +149,14 @@ function Settings() {
 
   return (
     <div className="center-wrapper">
-      {errorMessage !== "" && (
-        <div className="erroralert">
-          <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
+      {alertMessage !== null && alertMessage.message !== "" && (
+        <div>
+          <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
         </div>
       )}
       <Typography.Title level={2}>Settings</Typography.Title>
       <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
-      <Loading/>
+        <Loading/>
         <Form
             form={form}
             onFinish={saveSettings}
