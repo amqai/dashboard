@@ -19,6 +19,7 @@ interface Member {
 }
 
 function Settings() {
+  const [form] = Form.useForm();
   const { projectId } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   const [settings, setSettings] = useState<ProjectSettings | null> (null)
@@ -124,6 +125,11 @@ function Settings() {
 
           const settings = await response.json()
           setSettings(settings)
+          form.setFieldsValue({
+            openAiApiKey: settings?.openAiApiKey,
+            model: settings?.model,
+            prompt: settings?.prompt
+          });
         }
       }
     )();
@@ -145,7 +151,12 @@ function Settings() {
       <Typography.Title level={2}>Settings</Typography.Title>
       <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
       <Loading/>
-        <Form onFinish={saveSettings} labelCol={{style: {minWidth: "130px"}}} labelAlign="left">
+        <Form
+            form={form}
+            onFinish={saveSettings}
+            labelCol={{style: {minWidth: "130px"}}}
+            labelAlign="left"
+        >
           <div className="settings-form-fields">
             <Form.Item
               label="Open AI Api Key"
@@ -158,7 +169,7 @@ function Settings() {
                 }
               ]}
             >
-              <Input.Password placeholder={settings?.openAiApiKey ?? ""} />
+              <Input.Password placeholder="Enter OpenAI Api Key" />
             </Form.Item>
           </div>
 
@@ -174,8 +185,8 @@ function Settings() {
                 }
               ]}
             >
-              <Select defaultValue={settings?.model ?? "gpt-3.5"}>
-                <Select.Option value="gpt-3.5">GPT 3.5</Select.Option>
+              <Select placeholder="Select Model">
+                <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
                 <Select.Option value="gpt-4">GPT 4</Select.Option>
               </Select>
             </Form.Item>
@@ -183,17 +194,17 @@ function Settings() {
 
           <div className="settings-form-field-100">
             <Form.Item
-              label="Initial Prompt"
+              label="Base Prompt"
               style={{paddingLeft: "24px", paddingTop: "24px"}}
               name={"prompt"}
               rules={[
                 {
                   required: true,
-                  message: "Please input prompt",
+                  message: "Please input system prompt",
                 }
               ]}
             >
-              <Input.TextArea rows={8} placeholder={settings?.prompt ?? ""} />
+              <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
             </Form.Item>
           </div>
           <div className="settings-form-buttons">
