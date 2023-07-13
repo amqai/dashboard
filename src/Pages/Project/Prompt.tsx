@@ -20,7 +20,6 @@ function Prompt() {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [prompt, setPrompt] = useState('');
   const { Panel } = Collapse;
   const contextColumns = [
     {
@@ -88,7 +87,6 @@ function Prompt() {
 
       const content = await response.json();
       setMessages(prevMessages => [...prevMessages, {response: content.response, user: "ai", contextList: content.contextList}]);
-      setPrompt('');
   }
 
   return (
