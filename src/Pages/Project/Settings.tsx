@@ -9,12 +9,6 @@ interface Project {
     members: Member[],
 }
 
-interface ProjectSettings {
-    openAiApiKey: string,
-    model: string,
-    prompt: string
-}
-
 interface Member {
     email: string
 }
