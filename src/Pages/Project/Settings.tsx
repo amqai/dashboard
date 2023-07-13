@@ -129,8 +129,8 @@ function Settings() {
             }
           });
 
-          const settings = await response.json()
-          setSettings(settings)
+          const settingsResponse = await response.json()
+          setSettings(settingsResponse)
           form.setFieldsValue({
             openAiApiKey: settings?.openAiApiKey,
             model: settings?.model,
