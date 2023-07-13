@@ -23,7 +23,6 @@ function Settings() {
   const [form] = Form.useForm();
   const { projectId } = useParams();
   const [project, setProject] = useState<Project | null>(null);
-  const [settings, setSettings] = useState<ProjectSettings | null>(null);
 
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
@@ -129,8 +128,7 @@ function Settings() {
             }
           });
 
-          const settingsResponse = await response.json()
-          setSettings(settingsResponse)
+          const settings = await response.json()
           form.setFieldsValue({
             openAiApiKey: settings?.openAiApiKey,
             model: settings?.model,
