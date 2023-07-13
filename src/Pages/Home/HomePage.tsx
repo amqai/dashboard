@@ -64,13 +64,14 @@ function HomePage() {
               message: 'Your project was created successfully',
               type: AlertType.Success,
             })
+            setFormOpen(false)
+            loadProjects()
           } else {
             setAlertMessage({
               message: 'There was an error creating your project',
               type: AlertType.Error,
             })
           }
-        loadProjects()
       }
 
     const dismissAlert = () => {
