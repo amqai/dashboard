@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space } from "antd";
+import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal} from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -11,6 +11,8 @@ interface Project {
 
 interface Member {
     email: string
+    role: string
+    personId: string
 }
 
 function Settings() {
@@ -20,6 +22,7 @@ function Settings() {
 
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isMemberModal, setIsMemberModal] = useState(false)
 
   const saveSettings = async (values: {openAiApiKey: string, model: string, prompt: string}) => {
     setLoading(true)
@@ -58,39 +61,6 @@ function Settings() {
     setAlertMessage(null);
   };
 
-  const dataSourceProjectMembers = [
-    {
-      key: '1',
-      email: 'vectorl33t2@gmail.com',
-      roles: 'ADMIN,USER',
-      action: 'Remove'
-    },
-    {
-      key: '2',
-      email: 'tepayne97@gmail.com',
-      roles: 'ADMIN,USER',
-      action: 'Remove'
-    },
-  ];
-  
-  const columnsProjectMembers = [
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: 'Roles',
-      dataIndex: 'roles',
-      key: 'roles',
-    },
-    {
-      title: 'Action',
-      dataIndex: 'action',
-      key: 'action',
-    },
-  ];
-
   useEffect(() => {
     (
         async () => {
@@ -105,6 +75,8 @@ function Settings() {
   
             const content = await response.json();
             setProject(content)
+
+            // create hook for user and figure out how to add to it
           }
         }
         )();
@@ -138,6 +110,75 @@ function Settings() {
       return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
     }
   }
+
+  const userData = project?.members.map((member, index) => (
+    {
+      key: index,
+      email: member.email,
+      role: member.role,
+      personId: member.personId
+    }
+  ))
+
+  const handleDeleteMember = async (personId: string) => {
+    {
+      if(projectId) {
+        const jwt = localStorage.getItem('jwt');
+        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/project/${projectId}/person?personId=${personId}`, {
+          method: "DELETE",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+        });
+
+        // remove from data source
+      }
+    }
+  }
+
+  const handleAddMember = async (email: string) => {
+    {
+      if(projectId) {
+        const jwt = localStorage.getItem('jwt');
+        // todo: change this to email in gateway
+        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/project/${projectId}/person?personId=${email}`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+        });
+
+        // return the full user in response and add to datasource
+      }
+    }
+  }
+
+  const userColumns = [
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+      personId: 'id',
+    },
+    {
+      title: 'Roles',
+      dataIndex: 'role',
+      key: 'role',
+      personId: 'id',
+    },
+    {
+      title: 'Action',
+      key: 'id',
+      personId: 'id',
+      render: (_: any, record: { personId: any; }) => (
+        <Button onClick={() => handleDeleteMember(record.personId)}>
+          Delete
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div className="center-wrapper">
@@ -185,7 +226,9 @@ function Settings() {
             >
               <Select placeholder="Select Model">
                 <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                <Select.Option value="gpt-4">GPT 4</Select.Option>
+                <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
+                <Select.Option value="ada-embedded">Ada Embedded</Select.Option>
               </Select>
             </Form.Item>
           </div>
@@ -211,12 +254,27 @@ function Settings() {
         </Form>
       </Card>
 
+      <Modal
+        open={isMemberModal}
+        title="Add Member"
+        okText="Save"
+        onCancel={() => {
+          setIsMemberModal(false)
+        }}
+        onOk={() => {
+          handleAddMember("email")
+          setIsMemberModal(false)
+        }}
+        >
+          <Input placeholder="Enter member email"/>
+        </Modal>
+
       <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
         <div className="settings-form-buttons" style={{borderTop: 0}}>
-          <Button type="primary">+ Add</Button>
+          <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
         </div>
         <div className="settings-form-field-100">
-          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={dataSourceProjectMembers} columns={columnsProjectMembers} />
+          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={userData} columns={userColumns} />
         </div>
       </Card>
     </div>
