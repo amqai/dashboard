@@ -70,13 +70,32 @@ function Prompt() {
     })();
   }, [projectId]);
 
+  const submit = async (values: { prompt: string }) => {
+    const { prompt } = values;
+    setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: []}]);
+      const jwt = localStorage.getItem('jwt');        
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+          body: JSON.stringify({
+              prompt,
+          })
+      });
+
+      const content = await response.json();
+      setMessages(prevMessages => [...prevMessages, {response: content.response, user: "ai", contextList: content.contextList}]);
+  }
+
   return (
     <div className="wrapper-100vh">
       <div className="center-wrapper">
         <Typography.Title level={2}>Chat</Typography.Title>
         <Typography.Text italic={true}>Talk to the data in your project</Typography.Text>
-        <Card>
-          <Form>
+        <Card style={{ maxHeight: '80vh', overflow: 'auto' }}>
+          <Form onFinish={submit}>
             <Row 
               align="middle"
               style={{ marginBottom: '1rem' }}
@@ -94,14 +113,15 @@ function Prompt() {
               </Col>
               <Col>
                 <Button
+                  htmlType="submit"
                   type="primary"
                   style={{marginLeft:"1rem"}}
                 >Ask Question</Button>
               </Col>
             </Row>
           </Form>
-          <List
-            dataSource={messages.reverse()}
+          <List style={{maxHeight:"70vh", overflowY: "scroll"}}
+            dataSource={[...messages].reverse()}
             renderItem={(message, index) => 
               <List.Item 
                 style={{
