@@ -78,7 +78,7 @@ function HomePage() {
         setAlertMessage(null);
     };
 
-    const handleGoToDashboard = (project: Project) => navigate(`/project/${project.projectId}/dashboard`)
+    const handleGoToDashboard = (project: Project) => window.location.href = `/project/${project.projectId}/dashboard`
 
     return (
         <>
