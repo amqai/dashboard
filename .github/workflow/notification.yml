@@ -1,0 +1,26 @@
+name: Discord Notification
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Send Discord message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord Action
+        run: |
+          echo "Result=\"${COMMIT_AUTHOR} has pushed the commit ${COMMIT_MSG} to dev.\""
+        shell: bash
+        env:
+          COMMIT_AUTHOR: ${{ github.event.commits[0].author.name }}
+          COMMIT_MSG: ${{ github.event.commits[0].message }}
+
+      - name: Discord Notification
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: ${{ env.Result }}
+        env:
+          DISCORD_WEBHOOK: https://discord.com/api/webhooks/1128921696687104092/VZiM0hi7oX6QRTETa7sa78lPSNKkHvLPi1MqgOF7Au-JO9auq3328JBOYm3_z2uAwZXY

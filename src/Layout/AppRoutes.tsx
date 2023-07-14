@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Dashboard from "../Pages/Project/Dashboard";
 import Settings from "../Pages/Project/Settings";
 import Prompt from "../Pages/Project/Prompt";
+import Data from "../Pages/Project/Data";
 
 
 function AppRoutes() {
@@ -41,6 +42,7 @@ function AppRoutes() {
                                             <Route path="dashboard" element={<Dashboard /> } />
                                             <Route path="settings" element={<Settings /> } />
                                             <Route path="prompt" element={<Prompt /> } />
+                                            <Route path="data" element={<Data /> } />
                                             {/* Add your other project related routes here */}
                                         </Routes>
                                     } />
