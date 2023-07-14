@@ -139,7 +139,9 @@ function HomePage() {
                             >
                                  <Select placeholder="Select Model">
                                     <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
+                                    <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
                                     <Select.Option value="gpt-4">GPT 4</Select.Option>
+                                    <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
                                 </Select>
                             </Form.Item>
                             <Form.Item
