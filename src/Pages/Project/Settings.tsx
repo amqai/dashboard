@@ -10,6 +10,7 @@ interface Project {
 }
 
 interface Member {
+    key: string
     email: string
     role: string
     personId: string
@@ -23,6 +24,8 @@ function Settings() {
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
   const [isMemberModal, setIsMemberModal] = useState(false)
+  const [memberEmail, setMemberEmail] = useState("")
+  const [memberData, setMemberData] = useState<Member[]>()
 
   const saveSettings = async (values: {openAiApiKey: string, model: string, prompt: string}) => {
     setLoading(true)
@@ -61,27 +64,39 @@ function Settings() {
     setAlertMessage(null);
   };
 
+  // Get project
   useEffect(() => {
     (
-        async () => {
-          if (projectId) {
-            const jwt = localStorage.getItem('jwt');
-            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}`, {
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwt}`
-              }
-            });
-  
-            const content = await response.json();
-            setProject(content)
+      async () => {
+        if (projectId) {
+          const jwt = localStorage.getItem('jwt');
+          const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwt}`
+            }
+          });
 
-            // create hook for user and figure out how to add to it
+          const content = await response.json();
+          setProject(content)
+
+          const userData = content?.members.map((member: { personId: any; email: any; role: any; }) => (
+            {
+              key: member.personId,
+              email: member.email,
+              role: member.role,
+              personId: member.personId
+            }
+          ))
+          if(userData != null) {
+            setMemberData(...[userData])
           }
         }
-        )();
+      }
+      )();
   }, [projectId]);
 
+  // Get settings
   useEffect(() => {
     (
       async () => {
@@ -105,44 +120,40 @@ function Settings() {
     )();
   }, [projectId])
 
-  function Loading() {
-    if(loading) {
-      return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
-    }
-  }
-
-  const userData = project?.members.map((member, index) => (
-    {
-      key: index,
-      email: member.email,
-      role: member.role,
-      personId: member.personId
-    }
-  ))
-
+  // Delete member
   const handleDeleteMember = async (personId: string) => {
     {
       if(projectId) {
-        const jwt = localStorage.getItem('jwt');
-        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/project/${projectId}/person?personId=${personId}`, {
-          method: "DELETE",
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-          },
-        });
-
-        // remove from data source
+        if(memberData?.length == 1){
+          setAlertMessage({
+            message: 'There must be at least one member in the project',
+            type: AlertType.Error,
+          })
+        } else {
+          const jwt = localStorage.getItem('jwt');
+          await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/person?personId=${personId}`, {
+            method: "DELETE",
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwt}`
+            },
+          })
+          .then((response) => {
+            if(response.ok) {
+              setMemberData(memberData?.filter((member) => member.personId != personId))
+            }
+          })
+        }
       }
     }
   }
 
-  const handleAddMember = async (email: string) => {
+  // Add member
+  const handleAddMember = async () => {
     {
       if(projectId) {
         const jwt = localStorage.getItem('jwt');
-        // todo: change this to email in gateway
-        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/project/${projectId}/person?personId=${email}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/person?email=${memberEmail}`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -150,12 +161,25 @@ function Settings() {
           },
         });
 
-        // return the full user in response and add to datasource
+        setMemberEmail("")
+        const content = await response.json();
+        if(content) {
+          const member = [{
+            key: content?.personId,
+            email: content?.email,
+            role: content?.roles,
+            personId: content?.personId
+          }]
+
+          // Setting this wrong, how do i use the spread operator here?
+          // Why doesnt this work setMemberData([...memberData, ...member])
+          setMemberData(...[member])
+        }
       }
     }
   }
 
-  const userColumns = [
+  const memberColumns = [
     {
       title: 'Email',
       dataIndex: 'email',
@@ -179,6 +203,12 @@ function Settings() {
       ),
     },
   ];
+
+  function Loading() {
+    if(loading) {
+      return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
+    }
+  }
 
   return (
     <div className="center-wrapper">
@@ -262,11 +292,11 @@ function Settings() {
           setIsMemberModal(false)
         }}
         onOk={() => {
-          handleAddMember("email")
+          handleAddMember()
           setIsMemberModal(false)
         }}
         >
-          <Input placeholder="Enter member email"/>
+          <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
         </Modal>
 
       <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
@@ -274,7 +304,7 @@ function Settings() {
           <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
         </div>
         <div className="settings-form-field-100">
-          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={userData} columns={userColumns} />
+          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={memberData} columns={memberColumns} />
         </div>
       </Card>
     </div>
