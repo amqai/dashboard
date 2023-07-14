@@ -83,7 +83,10 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
             },
           ]}
         >
-          <Input.TextArea placeholder="Please enter data" />
+          <Input.TextArea 
+            placeholder="Please enter data"
+            rows={8}
+          />
         </Form.Item>
       </Form>
     </Modal>
