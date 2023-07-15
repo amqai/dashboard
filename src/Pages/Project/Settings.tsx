@@ -167,13 +167,13 @@ function Settings() {
           const member = [{
             key: content?.personId,
             email: content?.email,
-            role: content?.roles,
+            role: content?.role,
             personId: content?.personId
           }]
 
           // Setting this wrong, how do i use the spread operator here?
           // Why doesnt this work setMemberData([...memberData, ...member])
-          setMemberData(...[member])
+          setMemberData(memberData ? [...memberData, ...member] : [...member]);
         }
       }
     }
