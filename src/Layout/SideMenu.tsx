@@ -67,6 +67,11 @@ function SideMenu() {
             icon: <BsChatText />
           },
           {
+            label: "Chat",
+            key: `/project/${projectId}/chat`,
+            icon: <BsChatText />
+          },
+          {
             label: "Settings",
             key: `/project/${projectId}/settings`,
             icon: <FiSettings />

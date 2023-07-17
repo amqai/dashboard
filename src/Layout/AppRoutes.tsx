@@ -11,6 +11,7 @@ import Dashboard from "../Pages/Project/Dashboard";
 import Settings from "../Pages/Project/Settings";
 import Prompt from "../Pages/Project/Prompt";
 import Data from "../Pages/Project/Data";
+import Chat from "../Pages/Project/Chat";
 
 
 function AppRoutes() {
@@ -43,6 +44,7 @@ function AppRoutes() {
                                             <Route path="settings" element={<Settings /> } />
                                             <Route path="prompt" element={<Prompt /> } />
                                             <Route path="data" element={<Data /> } />
+                                            <Route path="chat" element={<Chat />} />
                                             {/* Add your other project related routes here */}
                                         </Routes>
                                     } />
