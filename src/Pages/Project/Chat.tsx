@@ -41,7 +41,7 @@ const ConversationItem = ({projectId, conversations}: {projectId: string, conver
 function Chat() {
     const params = useParams<{ projectId: string, conversationId: string }>();
     const projectId = params.projectId || 'default_value';
-    const conversationId = params.conversationId || 'default_value';
+    const conversationId = params.conversationId;
     const { Panel } = Collapse;
     const [form] = Form.useForm();
     const [loading, setLoading] = useState<boolean>(false);
@@ -128,25 +128,29 @@ function Chat() {
     }
 
     const loadConversation = async () => {
+      setLoading(true);
       const jwt = localStorage.getItem('jwt');
-              const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}/conversation/${conversationId}`, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${jwt}`
-                }
-              });
-      
-              const content = await response.json();
-      
-              const newMessages = content.conversation.chat.map((prompt: { response: any; user: any; contextList: any; }) => {
-                return {
-                  response: prompt.response,
-                  user: prompt.user,
-                  contextList: prompt.contextList,
-                }
-              });
-      
-              setMessages(prevMessages => [...prevMessages, ...newMessages]);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}/conversation/${conversationId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`
+        }
+      });
+
+      const content = await response.json();
+
+      if (content && content.conversation && content.conversation.chat && content.conversation.chat.length > 0){
+        const newMessages = content.conversation.chat.map((prompt: { response: any; user: any; contextList: any; }) => {
+          return {
+            response: prompt.response,
+            user: prompt.user,
+            contextList: prompt.contextList,
+          }
+        });
+
+        setMessages(prevMessages => [...prevMessages, ...newMessages]);
+      }
+      setLoading(false);
     }
 
     const onAddChat = () => {
@@ -191,7 +195,8 @@ function Chat() {
           handleCancel={closeAdding} 
           reloadChats={loadChats} 
         />
-        <Card style={{ maxHeight: '90vh', overflowY: 'scroll' }}>
+        {conversationId ? (
+          <Card style={{ maxHeight: '90vh', overflowY: 'scroll' }}>
           <Form onFinish={submit}>
             <Row 
               align="middle"
@@ -261,6 +266,9 @@ function Chat() {
           >
           </List>
         </Card>
+        ) : (
+          <div style={{minHeight: '92vh'}}>Please select a chat or <Button onClick={onAddChat}>Start a new chat</Button></div>
+        )}
       </div>
     </div>
   );
