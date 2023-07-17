@@ -1,4 +1,4 @@
-import { Table, Modal, Form, Button } from "antd";
+import { Table, Modal, Form, Button, Space, Spin } from "antd";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -10,6 +10,7 @@ function Data() {
   const projectId = params.projectId || 'default_value';
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
       (
@@ -22,6 +23,7 @@ function Data() {
     }, [projectId]);
 
   const loadEmbeddings = async () => {
+    setLoading(true);
     const jwt = localStorage.getItem('jwt');
     const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/data`, {
       headers: {
@@ -31,8 +33,8 @@ function Data() {
     });
 
     const content = await response.json();
-
     setEmbeddings(content.embeddings);
+    setLoading(false);
   }
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -107,8 +109,17 @@ function Data() {
     setIsEditing(false);
     setEditingEmbedding(null);
   };
+
+  const Loading = () => {
+    if(loading) {
+      return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
+    }
+  }
+
   return (
     <div className="center-wrapper">
+
+        <Loading />
         <Button 
           onClick={onAddEmbedding}
           type="primary"

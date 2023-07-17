@@ -1,5 +1,5 @@
 import  "../../styles/chat.css";
-import { Button, Divider, Form, Input, Typography } from "antd";
+import { Button, Divider, Form, Input, Space, Spin, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ConversationApiDto, GetProjectConversationsApiResponse } from "../../models/Conversation";
@@ -30,6 +30,7 @@ function Chat() {
     const params = useParams<{ projectId: string }>();
     const projectId = params.projectId || 'default_value';
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [conversations, setConversations] = useState<GetProjectConversationsApiResponse>();
     useEffect(() => {
@@ -47,6 +48,7 @@ function Chat() {
     };
 
     const loadChats = async () => {
+        setLoading(true);
         const jwt = localStorage.getItem('jwt');
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}/conversation`, {
           headers: {
@@ -57,11 +59,18 @@ function Chat() {
 
         const content = await response.json();
         setConversations(content);
+        setLoading(false);
     }
 
     const onAddChat = () => {
       form.resetFields();
       setIsAdding(true);
+    }
+
+    function Loading() {
+      if(loading) {
+        return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
+      }
     }
 
   return (
@@ -87,6 +96,7 @@ function Chat() {
         )}
       </div>
       <div className="prompt-section">
+        <Loading />
         <NewChatForm
           form={form} 
           visible={isAdding} 
