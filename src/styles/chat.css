@@ -6,7 +6,6 @@
 .chat-section {
     flex: 0 0 15%;
     border-right: 1px solid #e0e0e0; /* adjust color as needed */
-    height: 100vh;
     overflow-y: auto;
     padding: 16px;
 }

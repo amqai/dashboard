@@ -62,11 +62,6 @@ function SideMenu() {
             icon: <BsUpload />
           },
           {
-            label: "Prompt",
-            key: `/project/${projectId}/prompt`,
-            icon: <BsChatText />
-          },
-          {
             label: "Chat",
             key: `/project/${projectId}/chat`,
             icon: <BsChatText />

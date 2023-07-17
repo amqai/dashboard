@@ -3,23 +3,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { GiBrain } from "react-icons/gi";
 import { BsFillPersonFill } from "react-icons/bs";
-
-interface Message {
-    response: string,
-    user: string,
-    contextList: Context[],
-}
-  
-interface Context {
-    identifier: string,
-    data: string,
-    score: string,
-}
+import { PromptApiResponse } from "../../models/Conversation";
 
 function Prompt() {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<PromptApiResponse[]>([]);
   const { Panel } = Collapse;
   const contextColumns = [
     {

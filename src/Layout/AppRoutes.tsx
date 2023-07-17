@@ -45,6 +45,7 @@ function AppRoutes() {
                                             <Route path="prompt" element={<Prompt /> } />
                                             <Route path="data" element={<Data /> } />
                                             <Route path="chat" element={<Chat />} />
+                                            <Route path="chat/:conversationId" element={<Chat />} />
                                             {/* Add your other project related routes here */}
                                         </Routes>
                                     } />
