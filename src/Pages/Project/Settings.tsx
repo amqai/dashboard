@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal} from "antd";
+import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal, Checkbox} from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -26,10 +26,12 @@ function Settings() {
   const [isMemberModal, setIsMemberModal] = useState(false)
   const [memberEmail, setMemberEmail] = useState("")
   const [memberData, setMemberData] = useState<Member[]>()
+  const [defaultApiKey, setDefaultApiKey] = useState(false)
+  const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false)
 
-  const saveSettings = async (values: {openAiApiKey: string, model: string, prompt: string}) => {
+  const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; }) => {
     setLoading(true)
-    const { openAiApiKey, model, prompt } = values;
+    const { openAiApiKey, model, prompt, defaultKey } = values;
     if(projectId) {
       const jwt = localStorage.getItem('jwt');
       const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/settings`, {
@@ -41,7 +43,8 @@ function Settings() {
         body: JSON.stringify({
           openAiApiKey,
           model,
-          prompt
+          prompt,
+          defaultKey
         })
       });
       
@@ -171,8 +174,6 @@ function Settings() {
             personId: content?.personId
           }]
 
-          // Setting this wrong, how do i use the spread operator here?
-          // Why doesnt this work setMemberData([...memberData, ...member])
           setMemberData(memberData ? [...memberData, ...member] : [...member]);
         }
       }
@@ -210,15 +211,23 @@ function Settings() {
     }
   }
 
+  function handleDefaultKeyChange() {
+    setDefaultApiKey(!defaultApiKey)
+
+    if(!defaultApiKey) {
+      setDefaultApiKeyWarningModal(true)
+    }
+  }
+
   return (
     <div className="center-wrapper">
+      <Typography.Title level={2}>Settings</Typography.Title>
+      <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
       {alertMessage !== null && alertMessage.message !== "" && (
-        <div>
+        <div style={{margin: "24px"}}>
           <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
         </div>
       )}
-      <Typography.Title level={2}>Settings</Typography.Title>
-      <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
         <Loading/>
         <Form
             form={form}
@@ -233,12 +242,22 @@ function Settings() {
               name={"openAiApiKey"}
               rules={[
                 {
-                  required: true,
+                  required: !defaultApiKey,
                   message: "Please enter OpenAI Api Key",
                 }
               ]}
             >
-              <Input.Password placeholder="Enter OpenAI Api Key" />
+              <Input.Password disabled={defaultApiKey} placeholder="Enter OpenAI Api Key" />
+            </Form.Item>
+          </div>
+
+          <div className="settings-form-fields">
+            <Form.Item
+              name="defaultKey"
+              valuePropName="checked"
+              style={{paddingLeft: "24px"}}
+            >
+              <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
             </Form.Item>
           </div>
 
@@ -295,9 +314,21 @@ function Settings() {
           handleAddMember()
           setIsMemberModal(false)
         }}
-        >
-          <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
-        </Modal>
+      >
+        <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
+      </Modal>
+
+      <Modal
+        open={defaultApiKeyWarning}
+        title="Warning"
+        okText="Ok"
+        onOk={() => {
+          setDefaultApiKeyWarningModal(false)
+          setDefaultApiKey(true)
+        }}
+      >
+        <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
+      </Modal>
 
       <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
         <div className="settings-form-buttons" style={{borderTop: 0}}>
