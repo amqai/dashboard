@@ -1,12 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { HiOutlineHome } from "react-icons/hi";
 import { FiSettings } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
-import { BsUpload, BsChatText, BsPeople } from "react-icons/bs";
+import { BsChatText, BsPeople } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
+import { OrganizationContext } from './OrganizationProvider';
 
 interface CurrentPerson {
   personId: string,
@@ -32,52 +33,55 @@ function SideMenu() {
   const location = useLocation();
   const activeLink = location.pathname;
 
-  const isProjectAddedRef = useRef(false);
+  const isOrganizationAddedRef = useRef(false);
   const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
 
-  useEffect(() => {
-    if (location.pathname.startsWith("/project/") && !isProjectAddedRef.current) {
-      const parts = location.pathname.split('/');
-      const projectIdIndex = parts.indexOf('project') + 1;
-      const projectId = parts[projectIdIndex];
+  const orgContext = useContext(OrganizationContext);
+  if(!orgContext) {
+    throw new Error("SideMenu must be used within an OrganizationProvider");
+  }
+  const { orgs } = orgContext;
 
-      const projectMenuItem = {
-        label: "Project",
-        key: "/project",
+  useEffect(() => {
+    if (orgs && location.pathname.startsWith("/organization/") && !isOrganizationAddedRef.current) {
+      const parts = location.pathname.split('/');
+      const organizationIdIndex = parts.indexOf('organization') + 1;
+      const organizationId = parts[organizationIdIndex];
+
+      const organization = orgs?.filter(item => item.id === organizationId)[0];
+
+      const organizationMenuItem = {
+        label: organization.name,
+        key: "/organization",
         icon: <GrProjects />,
         children: [
           {
             label: "Dashboard",
-            key: `/project/${projectId}/dashboard`,
+            key: `/organization/${organizationId}/dashboard`,
             icon: <AiOutlineDashboard />
           },
           {
-            label: "Data",
-            key: `/project/${projectId}/data`,
+            label: "Topics",
+            key: `/organization/${organizationId}/topics`,
             icon: <GrDatabase />
           },
           {
-            label: "Upload",
-            key: `/project/${projectId}/upload`,
-            icon: <BsUpload />
-          },
-          {
             label: "Chat",
-            key: `/project/${projectId}/chat`,
+            key: `/organization/${organizationId}/chat`,
             icon: <BsChatText />
           },
           {
             label: "Settings",
-            key: `/project/${projectId}/settings`,
+            key: `/organization/${organizationId}/settings`,
             icon: <FiSettings />
           },
         ]
       };
 
-      setItems(prevItems => [...prevItems, projectMenuItem]);
-      isProjectAddedRef.current = true;
+      setItems(prevItems => [...prevItems, organizationMenuItem]);
+      isOrganizationAddedRef.current = true;
     }
-  }, [location]);
+  }, [location, orgs]);
 
   useEffect(() => {
     (
@@ -147,7 +151,7 @@ function SideMenu() {
           }}
           mode="inline"
           items={items}
-          defaultOpenKeys={['/project']}
+          defaultOpenKeys={['/organization']}
           selectedKeys={[activeLink]}
         />
       </Sider>

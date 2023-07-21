@@ -6,8 +6,9 @@ import { Embedding } from "../../models/Embedding";
 import EmbeddingForm from "../../Components/EmbeddingForm";
 
 function Data() {
-  const params = useParams<{ projectId: string }>();
-  const projectId = params.projectId || 'default_value';
+  const params = useParams<{ topicId: string, organizationId: string }>();
+  const topicId = params.topicId || 'default_value';
+  const organizationId = params.organizationId || 'default_value';
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
@@ -15,17 +16,19 @@ function Data() {
   useEffect(() => {
       (
       async () => {
-        if (projectId) {
-          loadEmbeddings();
-        }
+        loadEmbeddings(organizationId, topicId);
       }
       )();
-    }, [projectId]);
+    }, [organizationId, topicId]);
 
-  const loadEmbeddings = async () => {
+  const loadEmbeddingsHandler = async () => {
+    loadEmbeddings(organizationId, topicId);
+  }
+  
+  const loadEmbeddings = async (organizationId: string, topicId: string) => {
     setLoading(true);
     const jwt = localStorage.getItem('jwt');
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/data`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/data?organizationId=${organizationId}&projectId=${topicId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jwt}`
@@ -84,14 +87,14 @@ function Data() {
       title: "Are you sure you want to delete this data point?",
       onOk: async () => {
         const jwt = localStorage.getItem('jwt');      
-        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/data/${record.identifier}`, {
+        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/${topicId}/data/${record.identifier}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${jwt}`
             }
         });
-        loadEmbeddings();
+        loadEmbeddings(organizationId, topicId);
       }
     })
   };
@@ -130,9 +133,10 @@ function Data() {
           form={form} 
           visible={isEditing} 
           editingEmbedding={editingEmbedding} 
-          projectId={projectId} 
+          topicId={topicId}
+          organizationId={organizationId}
           handleCancel={resetEditing} 
-          reloadEmbeddings={loadEmbeddings} 
+          reloadEmbeddings={loadEmbeddingsHandler} 
         />
     </div>
   );

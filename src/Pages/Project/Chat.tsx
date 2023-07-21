@@ -39,8 +39,8 @@ const ConversationItem = ({projectId, conversations}: {projectId: string, conver
 };
 
 function Chat() {
-    const params = useParams<{ projectId: string, conversationId: string }>();
-    const projectId = params.projectId || 'default_value';
+    const params = useParams<{ topicId: string, conversationId: string }>();
+    const projectId = params.topicId || 'default_value';
     const conversationId = params.conversationId;
     const { Panel } = Collapse;
     const [form] = Form.useForm();
@@ -71,9 +71,7 @@ function Chat() {
     useEffect(() => {
         (
           async () => {
-            if (projectId) {
-              loadChats();
-            }
+            loadChats();
           }
           )();
       }, [projectId]);
@@ -81,9 +79,7 @@ function Chat() {
     useEffect(() => {
         (
           async () => {
-            if (conversationId) {
-              loadConversation();
-            }
+            loadConversation();
           }
           )();
       }, [conversationId]);

@@ -1,74 +1,76 @@
-import { Alert, Button, Card, Col, Divider, Form, Input, Row, Select, Typography } from "antd";
+import { Alert, Button, Card, Checkbox, Col, Divider, Form, Input, Modal, Row, Select, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { fetchProjects } from "../../Services/ApiService";
+import { fetchOrganizations } from "../../Services/ApiService";
 import { useNavigate } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
-
-interface Project {
-    projectName: string,
-    projectDescription: string,
-    projectId: string,
-  }
+import { OrganizationApiDto, OrganizationsApiDto } from "../../models/Organization";
 
 function HomePage() {
     const navigate = useNavigate();
-    const [projects, setProjects] = useState<Project[] | null>(null);
+    const [organizations, setOrganizations] = useState<OrganizationApiDto[] | null>(null);
     const [formOpen, setFormOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
+    const [defaultApiKey, setDefaultApiKey] = useState(false);
+    const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false);
 
-    const loadProjects = async () => {
+    const loadOrganizations = async () => {
         const jwt = localStorage.getItem('jwt');
-        const content = await fetchProjects(jwt!);
+        const content = await fetchOrganizations(jwt!);
         if (content.status === 403) {
             navigate("/login");
         } else if (content.data.errorCode) {
             setAlertMessage({
-                message: 'There was an error loading your projects',
+                message: 'There was an error loading your organizations',
                 type: AlertType.Error,
               })
         } else {
-            setProjects(content.data.projects);
+            setOrganizations(content.data.organizations);
         }
     }
 
     useEffect(() => {
         (
             async () => {
-                loadProjects();
+                setDefaultApiKey(true);
+                loadOrganizations();
             }
         )();
     },[]);
 
     const submit = async (
-        values: { projectName: string; projectDescription: string; openAiApiKey: string; model: string; prompt: string }
+        values: { name: string; projectDescription: string; openAiApiKey: string; model: string; prompt: string, temperature: number, searchSize: number, defaultKey: boolean }
         ) => {
-        const { projectName, projectDescription, openAiApiKey, model, prompt} = values;
+        const { name, openAiApiKey, model, prompt, temperature, searchSize, defaultKey } = values;
         const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${jwt}`
             },
             body: JSON.stringify({
-                name: projectName,
-                description: projectDescription,
-                openAiApiKey,
-                model,
-                systemPrompt: prompt
+                name,
+                settings: {
+                    openAiApiKey: openAiApiKey === undefined ? "" : openAiApiKey,
+                    defaultKey,
+                    model,
+                    prompt,
+                    temperature,
+                    searchSize,
+                }
             })
         });
   
         if (response.ok) {
             setAlertMessage({
-              message: 'Your project was created successfully',
+              message: 'Your organization was created successfully',
               type: AlertType.Success,
             })
             setFormOpen(false)
-            loadProjects()
+            loadOrganizations()
           } else {
             setAlertMessage({
-              message: 'There was an error creating your project',
+              message: 'There was an error creating your organization',
               type: AlertType.Error,
             })
           }
@@ -78,7 +80,15 @@ function HomePage() {
         setAlertMessage(null);
     };
 
-    const handleGoToDashboard = (project: Project) => window.location.href = `/project/${project.projectId}/dashboard`
+    const handleDefaultKeyChange = () => {
+        setDefaultApiKey(!defaultApiKey)
+    
+        if(!defaultApiKey) {
+          setDefaultApiKeyWarningModal(true)
+        }
+    }
+
+    const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/dashboard`
 
     return (
         <>
@@ -89,44 +99,40 @@ function HomePage() {
                     <Divider />
                     </div>
                 )}
-                <Button type="primary" onClick={() => setFormOpen(true)}>New Project</Button>
+                <Button type="primary" onClick={() => setFormOpen(true)}>New Organization</Button>
                 {formOpen && (
                     <>
                         <Divider></Divider>
                         <Form onFinish={submit}>
-                            <Typography.Title level={3}>Create new project</Typography.Title>
+                            <Typography.Title level={3}>Create new organization</Typography.Title>
                             <Form.Item
-                            name={"projectName"}
+                            name={"name"}
                             rules={[
                                 {
                                 required: true,
-                                message: "Please enter project name",
+                                message: "Please enter organization name",
                                 }
                             ]}
                             >
                                 <Input placeholder="Project Name" />
                             </Form.Item>
                             <Form.Item
-                            name={"projectDescription"}
-                            rules={[
-                                {
-                                required: true,
-                                message: "Please enter project description",
-                                }
-                            ]}
-                            >
-                                <Input.TextArea rows={5} placeholder="Project Description" />
-                            </Form.Item>
-                            <Form.Item
                             name={"openAiApiKey"}
                             rules={[
                                 {
-                                required: true,
                                 message: "Please enter OpenAI API Key",
                                 }
                             ]}
                             >
-                                <Input.Password placeholder="OpenAI Api Key" />
+                                <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
+                            </Form.Item>
+                            <Form.Item
+                            name="defaultKey"
+                            valuePropName="checked"
+                            initialValue={true}
+                            style={{paddingLeft: "24px"}}
+                            >
+                            <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
                             </Form.Item>
                             <Form.Item
                             name={"model"}
@@ -155,18 +161,50 @@ function HomePage() {
                             >
                                 <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
                             </Form.Item>
+                            <Form.Item
+                            name={"temperature"}
+                            rules={[
+                                {
+                                required: true,
+                                message: "Please input a temperature setting",
+                                }
+                            ]}
+                            >
+                                <Input placeholder="Please input temperature setting 0-200" />
+                            </Form.Item>
+                            <Form.Item
+                            name={"searchSize"}
+                            rules={[
+                                {
+                                required: true,
+                                message: "Please input maximum search relevancy results",
+                                }
+                            ]}
+                            >
+                                <Input placeholder="Please input maximum search relevancy results" />
+                            </Form.Item>
                             <Button type="primary" htmlType="submit">Save</Button>
                             <Button style={{marginLeft: "10px"}} danger onClick={() => setFormOpen(false)}>Cancel</Button>
+                            <Modal
+                                open={defaultApiKeyWarning}
+                                title="Warning"
+                                okText="Ok"
+                                onOk={() => {
+                                setDefaultApiKeyWarningModal(false)
+                                setDefaultApiKey(true)
+                                }}
+                            >
+                                <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
+                            </Modal>
                         </Form>
                     </>
                 )}
                 <Divider></Divider>
                 <Row gutter={[16, 16]}>
-                    {projects != null && projects.map((project) => (
-                        <Col xs={24} sm={12} md={8} lg={6} key={project.projectId} >
-                            <Card className="projectCard" style={{height: "150px"}} title={project.projectName} onClick={() => handleGoToDashboard(project)}>
-                                {project.projectDescription}
-                                {/* <Button type="default"  href={`/project/${project.projectId}/dashboard`}> go to Dashboard </Button> */}
+                    {organizations != null && organizations.map((organization) => (
+                        <Col xs={24} sm={12} md={8} lg={6} key={organization.id} >
+                            <Card className="projectCard" style={{height: "150px"}} title={organization.name} onClick={() => handleGoToDashboard(organization)} hoverable>
+                                Total Members: {organization.members.length}
                             </Card>
                         </Col>
                     ))}
