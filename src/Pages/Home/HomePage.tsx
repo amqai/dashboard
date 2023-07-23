@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { fetchOrganizations } from "../../Services/ApiService";
 import { useNavigate } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
-import { OrganizationApiDto, OrganizationsApiDto } from "../../models/Organization";
+import { OrganizationApiDto } from "../../models/Organization";
 
 function HomePage() {
     const navigate = useNavigate();

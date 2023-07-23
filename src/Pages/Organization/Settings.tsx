@@ -5,7 +5,7 @@ import "../../styles/common.css";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 
 interface Member {
     key: string
