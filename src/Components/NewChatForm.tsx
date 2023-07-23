@@ -5,7 +5,7 @@ import { CreateConversationApiRequest } from '../models/Conversation';
 interface NewChatFormProps {
   form: any; 
   visible: boolean; 
-  projectId: string;
+  organizationId: string;
   handleCancel: () => void;
   reloadChats: () => void;
 }
@@ -13,13 +13,13 @@ interface NewChatFormProps {
 const NewChatForm: React.FC<NewChatFormProps> = ({
   form,
   visible,
-  projectId,
+  organizationId,
   handleCancel,
   reloadChats,
 }) => {
   const handleSave = async (values: CreateConversationApiRequest) => {
     const jwt = localStorage.getItem('jwt');
-    const url = `${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}/conversation`;
+    const url = `${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation?organizationId=${organizationId}`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -65,22 +65,6 @@ const NewChatForm: React.FC<NewChatFormProps> = ({
           ]}
         >
           <Input placeholder="Please enter title" />
-        </Form.Item>
-        <Form.Item
-          name="model"
-          rules={[
-            {
-              required: true,
-              message: "Please select model",
-            },
-          ]}
-        >
-            <Select placeholder="Select Model">
-                <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
-                <Select.Option value="gpt-4">GPT 4</Select.Option>
-                <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
-            </Select>
         </Form.Item>
       </Form>
     </Modal>

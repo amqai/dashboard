@@ -33,12 +33,7 @@ function LoginPage() {
     };
 
     useEffect(() => {
-        const jwt = localStorage.getItem('jwt');
-        if (jwt !== "undefined" && jwt != null) {
-            navigate('/');
-        } else {
-            localStorage.clear();
-        }
+        localStorage.clear();
     });
 
     function Register() {

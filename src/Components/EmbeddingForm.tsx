@@ -6,7 +6,8 @@ interface EmbeddingFormProps {
   form: any; 
   visible: boolean; 
   editingEmbedding: Embedding | null; 
-  projectId: string;
+  topicId: string;
+  organizationId: string;
   handleCancel: () => void;
   reloadEmbeddings: () => void;
 }
@@ -15,7 +16,8 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
   form,
   visible,
   editingEmbedding,
-  projectId,
+  topicId,
+  organizationId,
   handleCancel,
   reloadEmbeddings,
 }) => {
@@ -23,12 +25,16 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
 
   const handleSave = async (values: Embedding) => {
     const jwt = localStorage.getItem('jwt');
-    const url = `${import.meta.env.VITE_APP_API_URL}/api/projects/${projectId}/data${isEditing ? '/' + editingEmbedding!.identifier : ''}`;
+    let url = new URL(`${import.meta.env.VITE_APP_API_URL}/api/projects/data${isEditing ? '/' + editingEmbedding!.identifier : ''}`);
+
+    // Add query parameters
+    url.searchParams.append("projectId", topicId);
+    url.searchParams.append("organizationId", organizationId);
     const method = isEditing ? "PUT" : "POST";
     const body = method === "PUT" ?
         { data: values.rawData } : { identifier: values.identifier, rawData: values.rawData }
 
-    const response = await fetch(url, {
+    const response = await fetch(url.toString(), {
       method: method,
       headers: {
         'Content-Type': 'application/json',

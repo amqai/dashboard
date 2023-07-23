@@ -7,12 +7,11 @@ import AppHeader from "../Layout/AppHeader";
 import SideMenu from "../Layout/SideMenu";
 import { Layout } from "antd";
 import { useEffect } from "react";
-import Dashboard from "../Pages/Project/Dashboard";
-import Settings from "../Pages/Project/Settings";
-import Prompt from "../Pages/Project/Prompt";
-import Data from "../Pages/Project/Data";
 import Chat from "../Pages/Project/Chat";
-
+import { OrganizationProvider } from "./OrganizationProvider";
+import ProjectDashboard from "../Pages/Project/Dashboard";
+import Data from "../Pages/Project/Data";
+import Settings from "../Pages/Organization/Settings";
 
 function AppRoutes() {
     const navigate = useNavigate();
@@ -30,6 +29,7 @@ function AppRoutes() {
             <Route path="/register" element={<RegisterPage /> } />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={
+                <OrganizationProvider>
                     <Layout className="container">
                         <AppHeader />
                         <Layout>
@@ -38,25 +38,29 @@ function AppRoutes() {
                                 <Routes>
                                     <Route path="/" element={<HomePage />} />
                                     <Route path="/invite" element={<InviteUsers />} />
-                                    <Route path="/project/:projectId/*" element={
+                                    <Route path="/organization/:organizationId/*" element={
                                         <Routes>
-                                            <Route path="dashboard" element={<Dashboard /> } />
                                             <Route path="settings" element={<Settings /> } />
-                                            <Route path="prompt" element={<Prompt /> } />
-                                            <Route path="data" element={<Data /> } />
+                                            <Route path="topics" element={<ProjectDashboard /> } />
+                                            <Route path="topics/:topicId/*" element={
+                                                <Routes>
+                                                    <Route path="data" element={<Data /> } />
+                                                </Routes>
+                                            } />
                                             <Route path="chat" element={<Chat />} />
                                             <Route path="chat/:conversationId" element={<Chat />} />
                                             {/* Add your other project related routes here */}
                                         </Routes>
                                     } />
-                                    {/* Add a redirect for unmatched routes */}
                                     <Route path="*" element={<Navigate to="/" replace />} />
                                 </Routes>
                             </Layout.Content>
                         </Layout>
                     </Layout>
+                </OrganizationProvider>
                 }
             />
+
         </Routes>
     );
 }

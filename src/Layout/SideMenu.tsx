@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { HiOutlineHome } from "react-icons/hi";
+import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
 import { FiSettings } from "react-icons/fi";
-import { AiOutlineDashboard } from "react-icons/ai";
 import { GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
-import { BsUpload, BsChatText, BsPeople } from "react-icons/bs";
+import { BsChatText, BsPeople } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
+import { OrganizationContext } from './OrganizationProvider';
 
 interface CurrentPerson {
   personId: string,
@@ -15,69 +15,78 @@ interface CurrentPerson {
   admin: boolean
 }
 
+type MenuItem = {
+  label: string,
+  key: string,
+  icon: JSX.Element,
+  children?: MenuItem[],
+};
+
+
 function SideMenu() {
 
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const [items, setItems] = useState([
-    {
-      label: "Home",
-      key: "/",
-      icon: <HiOutlineHome />
-    }
-  ]);
+  const [items, setItems] = useState<{ [key: string]: MenuItem | null }>({
+    "/": { label: "Organizations", key: "/", icon: <HiOutlineHome /> },
+    "/organization": null,  // placeholder items set to null
+    "/admin": null,  // placeholder items set to null
+    "/login": { label: "Logout", key: "/login", icon: <HiOutlineLogout /> },
+  });
+
+  const itemOrder = ["/", "/organization", "/admin", "/login"]; 
 
   const location = useLocation();
   const activeLink = location.pathname;
 
-  const isProjectAddedRef = useRef(false);
+  const isOrganizationAddedRef = useRef(false);
   const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
 
-  useEffect(() => {
-    if (location.pathname.startsWith("/project/") && !isProjectAddedRef.current) {
-      const parts = location.pathname.split('/');
-      const projectIdIndex = parts.indexOf('project') + 1;
-      const projectId = parts[projectIdIndex];
+  const orgContext = useContext(OrganizationContext);
+  if(!orgContext) {
+    throw new Error("SideMenu must be used within an OrganizationProvider");
+  }
+  const { orgs } = orgContext;
 
-      const projectMenuItem = {
-        label: "Project",
-        key: "/project",
+  useEffect(() => {
+    if (orgs && location.pathname.startsWith("/organization/") && !isOrganizationAddedRef.current) {
+      const parts = location.pathname.split('/');
+      const organizationIdIndex = parts.indexOf('organization') + 1;
+      const organizationId = parts[organizationIdIndex];
+
+      const organization = orgs?.filter(item => item.id === organizationId)[0];
+
+      const organizationMenuItem: MenuItem = {
+        label: organization.name,
+        key: "/organization",
         icon: <GrProjects />,
         children: [
           {
-            label: "Dashboard",
-            key: `/project/${projectId}/dashboard`,
-            icon: <AiOutlineDashboard />
-          },
-          {
-            label: "Data",
-            key: `/project/${projectId}/data`,
-            icon: <GrDatabase />
-          },
-          {
-            label: "Upload",
-            key: `/project/${projectId}/upload`,
-            icon: <BsUpload />
-          },
-          {
             label: "Chat",
-            key: `/project/${projectId}/chat`,
+            key: `/organization/${organizationId}/chat`,
             icon: <BsChatText />
           },
           {
+            label: "Topics",
+            key: `/organization/${organizationId}/topics`,
+            icon: <GrDatabase />,
+          },
+          {
             label: "Settings",
-            key: `/project/${projectId}/settings`,
+            key: `/organization/${organizationId}/settings`,
             icon: <FiSettings />
           },
         ]
       };
-
-      setItems(prevItems => [...prevItems, projectMenuItem]);
-      isProjectAddedRef.current = true;
+      setItems(prevItems => ({
+        ...prevItems,
+        "/organization": organizationMenuItem,
+      }));
+      isOrganizationAddedRef.current = true;
     }
-  }, [location]);
+  }, [location, orgs]);
 
   useEffect(() => {
     (
@@ -114,9 +123,9 @@ function SideMenu() {
   const isAdminAddedRef = useRef(false);
   useEffect(() => {
     if (currentPerson?.admin && !isAdminAddedRef.current) {
-      setItems(prevItems => [
+      setItems(prevItems => ({
         ...prevItems,
-        {
+        "/admin": {
           label: "Admin",
           key: "/admin",
           icon: <GrUserAdmin />,
@@ -126,9 +135,9 @@ function SideMenu() {
               key: "/invite",
               icon: <BsPeople />
             }
-          ]
-        }
-      ]);
+          ],
+        },  // fill in the placeholder item
+      }));
       isAdminAddedRef.current = true;
     }
   }, [currentPerson]);
@@ -140,17 +149,21 @@ function SideMenu() {
   };
 
   return (
-      <Sider theme="light" collapsible collapsed={isMobile ? true : collapsed} onCollapse={onCollapse}>
-        <Menu
-          onClick={(item) => {
+    <Sider theme="light" collapsible collapsed={isMobile ? true : collapsed} onCollapse={onCollapse}>
+      <Menu
+        onClick={(item) => {
+          if (item.key === "/") {
+            window.location.href = item.key;
+          } else {
             navigate(item.key)
-          }}
-          mode="inline"
-          items={items}
-          defaultOpenKeys={['/project']}
-          selectedKeys={[activeLink]}
-        />
-      </Sider>
+          }
+        }}
+        mode="inline"
+        items={itemOrder.map(key => items[key]).filter(Boolean)}
+        defaultOpenKeys={['/organization']}
+        selectedKeys={[activeLink]}
+      />
+    </Sider>
   )
 }
 
