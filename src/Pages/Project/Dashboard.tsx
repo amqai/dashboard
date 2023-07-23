@@ -24,7 +24,7 @@ function HomePage() {
             navigate("/login");
         } else if (content.data.errorCode) {
             setAlertMessage({
-                message: 'There was an error loading your projects',
+                message: 'There was an error loading your topics',
                 type: AlertType.Error,
               })
         } else {
@@ -57,14 +57,14 @@ function HomePage() {
 
       if (response.ok) {
         setAlertMessage({
-          message: 'Your project was created successfully',
+          message: 'Your topic was created successfully',
           type: AlertType.Success,
         })
         setFormOpen(false)
         loadProjects(organizationId!!)
       } else {
         setAlertMessage({
-          message: 'There was an error creating your project',
+          message: 'There was an error creating your topic',
           type: AlertType.Error,
         })
       }
