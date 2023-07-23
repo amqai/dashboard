@@ -7,12 +7,11 @@ import AppHeader from "../Layout/AppHeader";
 import SideMenu from "../Layout/SideMenu";
 import { Layout } from "antd";
 import { useEffect } from "react";
-import Settings from "../Pages/Project/Settings";
 import Chat from "../Pages/Project/Chat";
 import { OrganizationProvider } from "./OrganizationProvider";
-import Dashboard from "../Pages/Organization/Dashboard";
 import ProjectDashboard from "../Pages/Project/Dashboard";
 import Data from "../Pages/Project/Data";
+import Settings from "../Pages/Organization/Settings";
 
 function AppRoutes() {
     const navigate = useNavigate();
@@ -41,7 +40,6 @@ function AppRoutes() {
                                     <Route path="/invite" element={<InviteUsers />} />
                                     <Route path="/organization/:organizationId/*" element={
                                         <Routes>
-                                            <Route path="dashboard" element={<Dashboard /> } />
                                             <Route path="settings" element={<Settings /> } />
                                             <Route path="topics" element={<ProjectDashboard /> } />
                                             <Route path="topics/:topicId/*" element={

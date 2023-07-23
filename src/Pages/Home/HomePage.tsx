@@ -88,7 +88,7 @@ function HomePage() {
         }
     }
 
-    const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/dashboard`
+    const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/chat`
 
     return (
         <>
@@ -139,7 +139,7 @@ function HomePage() {
                             rules={[
                                 {
                                 required: true,
-                                message: "Please enter project description",
+                                message: "Please select model",
                                 }
                             ]}
                             >

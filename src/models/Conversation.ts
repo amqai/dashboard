@@ -8,7 +8,6 @@ export interface GetConversationApiResponse{
 
 export interface ConversationApiDto {
     conversationId: string,
-    model: string,
     title: string,
     chat: PromptApiResponse[],
 }
@@ -26,6 +25,5 @@ export interface PromptContextApiResponse{
 }
 
 export interface CreateConversationApiRequest {
-    model: string,
     title: string,
 }

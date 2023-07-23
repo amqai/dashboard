@@ -85,33 +85,33 @@ function HomePage() {
                     <Divider />
                     </div>
                 )}
-                <Button type="primary" onClick={() => setFormOpen(true)}>New Project</Button>
+                <Button type="primary" onClick={() => setFormOpen(true)}>New Topic</Button>
                 {formOpen && (
                     <>
                         <Divider></Divider>
                         <Form onFinish={submit}>
-                            <Typography.Title level={3}>Create new project</Typography.Title>
+                            <Typography.Title level={3}>Create new topic</Typography.Title>
                             <Form.Item
                             name={"projectName"}
                             rules={[
                                 {
                                 required: true,
-                                message: "Please enter project name",
+                                message: "Please enter topic name",
                                 }
                             ]}
                             >
-                                <Input placeholder="Project Name" />
+                                <Input placeholder="Topic Name" />
                             </Form.Item>
                             <Form.Item
                             name={"projectDescription"}
                             rules={[
                                 {
                                 required: true,
-                                message: "Please enter project description",
+                                message: "Please enter topic description",
                                 }
                             ]}
                             >
-                                <Input.TextArea rows={5} placeholder="Project Description" />
+                                <Input.TextArea rows={5} placeholder="Topic Description" />
                             </Form.Item>
                             <Button type="primary" htmlType="submit">Save</Button>
                             <Button style={{marginLeft: "10px"}} danger onClick={() => setFormOpen(false)}>Cancel</Button>

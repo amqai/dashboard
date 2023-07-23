@@ -1,5 +1,5 @@
 import  "../../styles/chat.css";
-import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography } from "antd";
+import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ConversationApiDto, GetProjectConversationsApiResponse, PromptApiResponse } from "../../models/Conversation";
@@ -7,14 +7,24 @@ import { useParams } from "react-router-dom";
 import NewChatForm from "../../Components/NewChatForm";
 import { GiBrain } from "react-icons/gi";
 import { BsFillPersonFill } from "react-icons/bs";
+import { GrSettingsOption } from "react-icons/gr";
+import { fetchProjects } from "../../Services/ApiService";
+import { Alert as AlertModel, AlertType } from "../../models/Alert";
 
 const { Text, Title } = Typography;
 
-const ConversationItem = ({projectId, conversations}: {projectId: string, conversations: ConversationApiDto[] | undefined}) => {
+interface Project {
+  projectName: string,
+  projectDescription: string,
+  projectId: string,
+}
+
+
+const ConversationItem = ({organizationId, conversations}: {organizationId: string, conversations: ConversationApiDto[] | undefined}) => {
 
     const selectConversation = (conversationId: string) => {
       return () => {
-        window.location.href = `/project/${projectId}/chat/${conversationId}`;
+        window.location.href = `/organization/${organizationId}/chat/${conversationId}`;
       };
     }
 
@@ -28,9 +38,6 @@ const ConversationItem = ({projectId, conversations}: {projectId: string, conver
               onClick={selectConversation(conversation.conversationId)}
             >
               <Text strong>{conversation.title}</Text>
-              <div>
-                <Text>{conversation.model}</Text>
-              </div>
             </Card>
           </div>
         ))}
@@ -39,15 +46,19 @@ const ConversationItem = ({projectId, conversations}: {projectId: string, conver
 };
 
 function Chat() {
-    const params = useParams<{ topicId: string, conversationId: string }>();
-    const projectId = params.topicId || 'default_value';
+    const params = useParams<{ organizationId: string, conversationId: string }>();
+    const organizationId = params.organizationId || "DEFAULT_VALUE"
     const conversationId = params.conversationId;
     const { Panel } = Collapse;
-    const [form] = Form.useForm();
+    const [newChatForm] = Form.useForm();
+    const [promptForm] = Form.useForm();
     const [loading, setLoading] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
     const [messages, setMessages] = useState<PromptApiResponse[]>([]);
     const [conversations, setConversations] = useState<GetProjectConversationsApiResponse>();
+    const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+    const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
+    const [projects, setProjects] = useState<Project[] | null>(null);
 
     const contextColumns = [
       {
@@ -71,15 +82,20 @@ function Chat() {
     useEffect(() => {
         (
           async () => {
-            loadChats();
+            if (organizationId) {
+              loadChats();
+              loadTopics();
+            }
           }
           )();
-      }, [projectId]);
+      }, [organizationId]);
 
     useEffect(() => {
         (
           async () => {
-            loadConversation();
+            if (conversationId) {
+              loadConversation();
+            }
           }
           )();
       }, [conversationId]);
@@ -88,11 +104,15 @@ function Chat() {
         setIsAdding(false);
     };
 
-    const submit = async (values: { prompt: string }) => {
-      const { prompt } = values;
+    const dismissAlert = () => {
+      setAlertMessage(null);
+    };
+
+    const submit = async (values: { prompt: string, projectIds: string[], model: string }) => {
+      const { prompt, projectIds, model } = values;
       setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: []}]);
         const jwt = localStorage.getItem('jwt');        
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -101,6 +121,8 @@ function Chat() {
             body: JSON.stringify({
                 prompt,
                 conversationId,
+                projectIds,
+                model,
             })
         });
   
@@ -111,7 +133,7 @@ function Chat() {
     const loadChats = async () => {
         setLoading(true);
         const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}/conversation`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation?organizationId=${organizationId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`
@@ -123,10 +145,30 @@ function Chat() {
         setLoading(false);
     }
 
+    const loadTopics = async () => {
+      const jwt = localStorage.getItem('jwt');
+      const content = await fetchProjects(jwt!, organizationId);
+      if (content.status === 403 || content.data.errorCode) {
+          setAlertMessage({
+              message: 'There was an error loading your topics',
+              type: AlertType.Error,
+            })
+      } else {
+          setProjects(content.data.projects);
+      }
+    }
+
+    useEffect(() => {
+      promptForm.setFieldsValue({
+        projectIds: projects ? projects.map((project: Project) => project.projectId) : [],
+        model: 'gpt-3.5-turbo',
+      });
+  }, [projects, promptForm]);
+
     const loadConversation = async () => {
       setLoading(true);
       const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/${projectId}/conversation/${conversationId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${jwt}`
@@ -150,7 +192,7 @@ function Chat() {
     }
 
     const onAddChat = () => {
-      form.resetFields();
+      newChatForm.resetFields();
       setIsAdding(true);
     }
 
@@ -178,22 +220,28 @@ function Chat() {
         <Divider />
         {conversations && (
             <div className="chat-list">
-                <ConversationItem projectId={projectId} conversations={conversations.conversations}/>
+                <ConversationItem organizationId={organizationId} conversations={conversations.conversations}/>
             </div>
         )}
       </div>
       <div className="prompt-section">
+        {alertMessage !== null && alertMessage.message !== "" && (
+            <div>
+            <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
+            <Divider />
+            </div>
+        )}
         <Loading />
         <NewChatForm
-          form={form} 
+          form={newChatForm} 
           visible={isAdding} 
-          projectId={projectId} 
+          organizationId={organizationId} 
           handleCancel={closeAdding} 
           reloadChats={loadChats} 
         />
         {conversationId ? (
-          <Card style={{ maxHeight: '90vh', overflowY: 'scroll' }}>
-          <Form onFinish={submit}>
+          <Card style={{ maxHeight: '90vh', overflowY: 'scroll' }}> 
+          <Form onFinish={submit} form={promptForm}>
             <Row 
               align="middle"
               style={{ marginBottom: '1rem' }}
@@ -211,10 +259,53 @@ function Chat() {
               </Col>
               <Col>
                 <Button
+                  style={{marginLeft:"1rem"}}
+                  onClick={() => setIsSettingsVisible(!isSettingsVisible)}
+                ><GrSettingsOption /></Button>
+                <Button
                   htmlType="submit"
                   type="primary"
                   style={{marginLeft:"1rem"}}
                 >Ask Question</Button>
+              </Col>
+            </Row>
+            <Row 
+              align="middle"
+              style={{ marginBottom: '1rem' }}
+              hidden={!isSettingsVisible}
+            >
+              <Col flex="auto">
+              <Form.Item 
+                name={"projectIds"}
+              >
+                <Select
+                  mode="multiple"
+                  placeholder="Select Topics"
+                  optionLabelProp="label"
+                >
+                  {projects && projects.map((project: Project) => (
+                    <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
+                      {project.projectName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name={"model"}
+                style={{ marginBottom: 0 }}
+                rules={[
+                    {
+                    message: "Please select model",
+                    }
+                ]}
+                >
+                <Select placeholder="Select Model">
+                  <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
+                  <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                  <Select.Option value="gpt-4">GPT 4</Select.Option>
+                  <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
+                </Select>
+              </Form.Item>
               </Col>
             </Row>
           </Form>

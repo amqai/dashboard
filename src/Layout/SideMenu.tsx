@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { HiOutlineHome } from "react-icons/hi";
+import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
 import { FiSettings } from "react-icons/fi";
-import { AiOutlineDashboard } from "react-icons/ai";
 import { GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
 import { BsChatText, BsPeople } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,19 +15,28 @@ interface CurrentPerson {
   admin: boolean
 }
 
+type MenuItem = {
+  label: string,
+  key: string,
+  icon: JSX.Element,
+  children?: MenuItem[],
+};
+
+
 function SideMenu() {
 
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const [items, setItems] = useState([
-    {
-      label: "Home",
-      key: "/",
-      icon: <HiOutlineHome />
-    }
-  ]);
+  const [items, setItems] = useState<{ [key: string]: MenuItem | null }>({
+    "/": { label: "Organizations", key: "/", icon: <HiOutlineHome /> },
+    "/organization": null,  // placeholder items set to null
+    "/admin": null,  // placeholder items set to null
+    "/login": { label: "Logout", key: "/login", icon: <HiOutlineLogout /> },
+  });
+
+  const itemOrder = ["/", "/organization", "/admin", "/login"]; 
 
   const location = useLocation();
   const activeLink = location.pathname;
@@ -50,25 +58,20 @@ function SideMenu() {
 
       const organization = orgs?.filter(item => item.id === organizationId)[0];
 
-      const organizationMenuItem = {
+      const organizationMenuItem: MenuItem = {
         label: organization.name,
         key: "/organization",
         icon: <GrProjects />,
         children: [
           {
-            label: "Dashboard",
-            key: `/organization/${organizationId}/dashboard`,
-            icon: <AiOutlineDashboard />
+            label: "Chat",
+            key: `/organization/${organizationId}/chat`,
+            icon: <BsChatText />
           },
           {
             label: "Topics",
             key: `/organization/${organizationId}/topics`,
-            icon: <GrDatabase />
-          },
-          {
-            label: "Chat",
-            key: `/organization/${organizationId}/chat`,
-            icon: <BsChatText />
+            icon: <GrDatabase />,
           },
           {
             label: "Settings",
@@ -77,8 +80,10 @@ function SideMenu() {
           },
         ]
       };
-
-      setItems(prevItems => [...prevItems, organizationMenuItem]);
+      setItems(prevItems => ({
+        ...prevItems,
+        "/organization": organizationMenuItem,
+      }));
       isOrganizationAddedRef.current = true;
     }
   }, [location, orgs]);
@@ -118,9 +123,9 @@ function SideMenu() {
   const isAdminAddedRef = useRef(false);
   useEffect(() => {
     if (currentPerson?.admin && !isAdminAddedRef.current) {
-      setItems(prevItems => [
+      setItems(prevItems => ({
         ...prevItems,
-        {
+        "/admin": {
           label: "Admin",
           key: "/admin",
           icon: <GrUserAdmin />,
@@ -130,9 +135,9 @@ function SideMenu() {
               key: "/invite",
               icon: <BsPeople />
             }
-          ]
-        }
-      ]);
+          ],
+        },  // fill in the placeholder item
+      }));
       isAdminAddedRef.current = true;
     }
   }, [currentPerson]);
@@ -144,17 +149,21 @@ function SideMenu() {
   };
 
   return (
-      <Sider theme="light" collapsible collapsed={isMobile ? true : collapsed} onCollapse={onCollapse}>
-        <Menu
-          onClick={(item) => {
+    <Sider theme="light" collapsible collapsed={isMobile ? true : collapsed} onCollapse={onCollapse}>
+      <Menu
+        onClick={(item) => {
+          if (item.key === "/") {
+            window.location.href = item.key;
+          } else {
             navigate(item.key)
-          }}
-          mode="inline"
-          items={items}
-          defaultOpenKeys={['/organization']}
-          selectedKeys={[activeLink]}
-        />
-      </Sider>
+          }
+        }}
+        mode="inline"
+        items={itemOrder.map(key => items[key]).filter(Boolean)}
+        defaultOpenKeys={['/organization']}
+        selectedKeys={[activeLink]}
+      />
+    </Sider>
   )
 }
 
