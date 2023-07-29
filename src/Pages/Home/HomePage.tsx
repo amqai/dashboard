@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Checkbox, Col, Divider, Form, Input, Modal, Row, Select, Typography } from "antd";
+import { Alert, Button, Card, Checkbox, Col, Divider, Form, Input, Modal, Row, Select, Slider, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { fetchOrganizations } from "../../Services/ApiService";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ function HomePage() {
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
     const [defaultApiKey, setDefaultApiKey] = useState(false);
     const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false);
+    const [form] = Form.useForm();
 
     const loadOrganizations = async () => {
         const jwt = localStorage.getItem('jwt');
@@ -38,9 +39,9 @@ function HomePage() {
     },[]);
 
     const submit = async (
-        values: { name: string; projectDescription: string; openAiApiKey: string; model: string; prompt: string, temperature: number, searchSize: number, defaultKey: boolean }
+        values: { name: string; projectDescription: string; openAiApiKey: string; model: string; prompt: string, temperature: number, searchSize: number, defaultKey: boolean, searchThreshold: number }
         ) => {
-        const { name, openAiApiKey, model, prompt, temperature, searchSize, defaultKey } = values;
+        const { name, openAiApiKey, model, prompt, temperature, searchSize, defaultKey, searchThreshold } = values;
         const jwt = localStorage.getItem('jwt');
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization`, {
             method: 'POST',
@@ -57,6 +58,7 @@ function HomePage() {
                     prompt,
                     temperature,
                     searchSize,
+                    searchThreshold,
                 }
             })
         });
@@ -88,6 +90,19 @@ function HomePage() {
         }
     }
 
+    const openForm = () => {
+        setFormOpen(true);
+        form.setFieldsValue({
+            openAiApiKey: "",
+            defaultKey: true,
+            model: "gpt-3.5-turbo",
+            prompt: "",
+            temperature: 50,
+            searchSize: 5,
+            searchThreshold: 80,
+        });
+    }
+
     const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/chat`
 
     return (
@@ -99,90 +114,136 @@ function HomePage() {
                     <Divider />
                     </div>
                 )}
-                <Button type="primary" onClick={() => setFormOpen(true)}>New Organization</Button>
+                <Button type="primary" onClick={() => openForm()}>New Organization</Button>
                 {formOpen && (
                     <>
                         <Divider></Divider>
-                        <Form onFinish={submit}>
+                        <Form 
+                            onFinish={submit}
+                            form={form}
+                            labelCol={{style: {minWidth: "150px"}}}
+                            labelAlign="left"
+                        >
                             <Typography.Title level={3}>Create new organization</Typography.Title>
-                            <Form.Item
-                            name={"name"}
-                            rules={[
-                                {
-                                required: true,
-                                message: "Please enter organization name",
-                                }
-                            ]}
-                            >
-                                <Input placeholder="Project Name" />
-                            </Form.Item>
-                            <Form.Item
-                            name={"openAiApiKey"}
-                            rules={[
-                                {
-                                message: "Please enter OpenAI API Key",
-                                }
-                            ]}
-                            >
-                                <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
-                            </Form.Item>
-                            <Form.Item
-                            name="defaultKey"
-                            valuePropName="checked"
-                            initialValue={true}
-                            style={{paddingLeft: "24px"}}
-                            >
-                            <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
-                            </Form.Item>
-                            <Form.Item
-                            name={"model"}
-                            rules={[
-                                {
-                                required: true,
-                                message: "Please select model",
-                                }
-                            ]}
-                            >
-                                 <Select placeholder="Select Model">
-                                    <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                                    <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
-                                    <Select.Option value="gpt-4">GPT 4</Select.Option>
-                                    <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
-                                </Select>
-                            </Form.Item>
-                            <Form.Item
-                            name={"prompt"}
-                            rules={[
-                                {
-                                required: true,
-                                message: "Please input system prompt",
-                                }
-                            ]}
-                            >
-                                <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
-                            </Form.Item>
-                            <Form.Item
-                            name={"temperature"}
-                            rules={[
-                                {
-                                required: true,
-                                message: "Please input a temperature setting",
-                                }
-                            ]}
-                            >
-                                <Input placeholder="Please input temperature setting 0-200" />
-                            </Form.Item>
-                            <Form.Item
-                            name={"searchSize"}
-                            rules={[
-                                {
-                                required: true,
-                                message: "Please input maximum search relevancy results",
-                                }
-                            ]}
-                            >
-                                <Input placeholder="Please input maximum search relevancy results" />
-                            </Form.Item>
+                            <div className="settings-form-fields">
+                                <Form.Item
+                                name={"name"}
+                                label="Name"
+                                rules={[
+                                    {
+                                    required: true,
+                                    message: "Please enter organization name",
+                                    }
+                                ]}
+                                >
+                                    <Input placeholder="Project Name" />
+                                </Form.Item>
+                            </div>
+                            <div className="settings-form-fields">
+                                <Form.Item
+                                name={"openAiApiKey"}
+                                label="OpenAI API Key"
+                                rules={[
+                                    {
+                                    message: "Please enter OpenAI API Key",
+                                    }
+                                ]}
+                                >
+                                    <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
+                                </Form.Item>
+                                <Form.Item
+                                name="defaultKey"
+                                valuePropName="checked"
+                                initialValue={true}
+                                style={{paddingLeft: "24px"}}
+                                >
+                                <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
+                                </Form.Item>
+                            </div>
+                            <div className="settings-form-fields">
+                                <Form.Item
+                                name={"model"}
+                                label="Default Model"
+                                rules={[
+                                    {
+                                    required: true,
+                                    message: "Please select model",
+                                    }
+                                ]}
+                                >
+                                    <Select placeholder="Select Model">
+                                        <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
+                                        <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                                        <Select.Option value="gpt-4">GPT 4</Select.Option>
+                                        <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div className="settings-form-fields-100">
+                                <Form.Item
+                                name={"prompt"}
+                                label="System Prompt"
+                                rules={[
+                                    {
+                                    required: true,
+                                    message: "Please input system prompt",
+                                    }
+                                ]}
+                                >
+                                    <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
+                                </Form.Item>
+                            </div>
+                            <div className="settings-form-fields-100">
+                                <Form.Item
+                                name={"searchSize"}
+                                label="Max Search Results"
+                                rules={[
+                                    {
+                                    required: true,
+                                    message: "Please input maximum search relevancy results",
+                                    }
+                                ]}
+                                >
+                                    <Slider
+                                        min={1}
+                                        max={20}
+                                    />
+                                </Form.Item>
+                            </div>
+                            <div className="settings-form-fields-100">
+                                <Form.Item
+                                    label="Search Threshold %"
+                                    name={"searchThreshold"}
+                                    rules={[
+                                        {
+                                        required: true,
+                                        message: "Please input minimum threshold percentage for search hits",
+                                        }
+                                    ]}
+                                    >
+                                        <Slider
+                                            min={1}
+                                            max={100}
+                                        />
+                                </Form.Item>
+                            </div>
+                            <div className="settings-form-fields-100">
+                                <Form.Item
+                                    label="Creativity"
+                                    name={"temperature"}
+                                    rules={[
+                                        {
+                                        required: true,
+                                        message: "Please input a creativity percentage",
+                                        }
+                                    ]}
+                                    >
+                                        <Slider
+                                            min={1}
+                                            max={200}
+                                        />
+                                </Form.Item>
+                            </div>
                             <Button type="primary" htmlType="submit">Save</Button>
                             <Button style={{marginLeft: "10px"}} danger onClick={() => setFormOpen(false)}>Cancel</Button>
                             <Modal

@@ -21,6 +21,7 @@ export interface OrganizationSettingsApiDto {
     prompt: string,
     temperature: number,
     searchSize: number,
+    searchThreshold: number,
     members: OrganizationMemberApiDto[],
 }
 

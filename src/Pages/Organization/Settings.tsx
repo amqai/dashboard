@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal, Checkbox, Row, Col} from "antd";
+import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal, Checkbox, Row, Col, Slider} from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -27,9 +27,9 @@ function Settings() {
   const [defaultApiKey, setDefaultApiKey] = useState(false)
   const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false)
 
-  const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; temperature: any, searchSize: any }) => {
+  const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; temperature: any, searchSize: any, searchThreshold: any }) => {
     setLoading(true)
-    const { openAiApiKey, model, prompt, defaultKey, temperature, searchSize } = values;
+    const { openAiApiKey, model, prompt, defaultKey, temperature, searchSize, searchThreshold } = values;
     if(organizationId) {
       const jwt = localStorage.getItem('jwt');
       const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
@@ -45,6 +45,7 @@ function Settings() {
           defaultKey,
           temperature,
           searchSize,
+          searchThreshold,
         })
       });
       
@@ -108,6 +109,7 @@ function Settings() {
             prompt: settings?.prompt,
             temperature: settings?.temperature,
             searchSize: settings?.searchSize,
+            searchThreshold: settings?.searchThreshold,
           });
           setDefaultApiKey(settings?.openAiApiKey === "" ? true : false);
           const userData = settings?.members.map((member: { personId: any; email: any; permissions: any }) => (
@@ -244,7 +246,7 @@ function Settings() {
         <Form
             form={form}
             onFinish={saveSettings}
-            labelCol={{style: {minWidth: "130px"}}}
+            labelCol={{style: {minWidth: "150px"}}}
             labelAlign="left"
         >
           <div className="settings-form-fields">
@@ -311,21 +313,6 @@ function Settings() {
           </div>
           <div className="settings-form-field-100">
           <Form.Item
-              label="Temperature"
-              name={"temperature"}
-              style={{paddingLeft: "24px", paddingTop: "24px"}}
-              rules={[
-                  {
-                  required: true,
-                  message: "Please input a temperature setting",
-                  }
-              ]}
-              >
-                  <Input placeholder="Please input temperature setting 0-200" />
-          </Form.Item>
-          </div>
-          <div className="settings-form-field-100">
-          <Form.Item
               label="Max Search Size"
               name={"searchSize"}
               style={{paddingLeft: "24px", paddingTop: "24px"}}
@@ -336,7 +323,46 @@ function Settings() {
                   }
               ]}
               >
-                  <Input placeholder="Please input maximum search relevancy results" />
+                  <Slider
+                      min={1}
+                      max={20}
+                  />
+          </Form.Item>
+          </div>
+          <div className="settings-form-field-100">
+          <Form.Item
+              label="Search Threshold %"
+              name={"searchThreshold"}
+              style={{paddingLeft: "24px", paddingTop: "24px"}}
+              rules={[
+                  {
+                  required: true,
+                  message: "Please input minimum threshold percentage for search hits",
+                  }
+              ]}
+              >
+                <Slider
+                  min={1}
+                  max={100}
+                />
+          </Form.Item>
+          </div>
+          <div className="settings-form-field-100">
+          <Form.Item
+              label="Creativity"
+              name={"temperature"}
+              style={{paddingLeft: "24px", paddingTop: "24px"}}
+              rules={[
+                  {
+                  required: true,
+                  message: "Please input a temperature setting",
+                  }
+              ]}
+              >
+                <Slider
+                  min={1}
+                  max={200}
+                />
           </Form.Item>
           </div>
           <div className="settings-form-buttons">
