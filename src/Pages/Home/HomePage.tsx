@@ -96,12 +96,20 @@ function HomePage() {
             openAiApiKey: "",
             defaultKey: true,
             model: "gpt-3.5-turbo",
-            prompt: "",
+            prompt: `You are a professional customer service agent whos purpose is to help and provide information based on the
+context given. You will obey the following rules to the best of your ability.
+1) Please answer the question at the very bottom only using the following context with as much relevant
+information as you have available in the context provided.
+2) If you are unable to answer because the context needed is missing, respond only with "Unable to determine output". 
+3) Format your response to be as human friendly as possible.
+4) Please provide any hyperlinks that you have available that are relevant to my question or to the answer you are providing. 
+5) Please keep your response short and as concise as possible with no more than a few sentences.`,
             temperature: 50,
             searchSize: 5,
             searchThreshold: 80,
         });
     }
+    
 
     const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/chat`
 
