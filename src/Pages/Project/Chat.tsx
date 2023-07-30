@@ -1,5 +1,5 @@
 import  "../../styles/chat.css";
-import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select } from "antd";
+import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select, Checkbox, Modal } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ConversationApiDto, GetProjectConversationsApiResponse, PromptApiResponse } from "../../models/Conversation";
@@ -18,7 +18,6 @@ interface Project {
   projectDescription: string,
   projectId: string,
 }
-
 
 const ConversationItem = ({organizationId, conversations}: {organizationId: string, conversations: ConversationApiDto[] | undefined}) => {
 
@@ -59,6 +58,8 @@ function Chat() {
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
     const [projects, setProjects] = useState<Project[] | null>(null);
+    const [externalSearch, setExternalSearch] = useState(false);
+    const [externalSearchWarning, setExternalSearchWarningModal] = useState(false);
 
     const contextColumns = [
       {
@@ -110,7 +111,7 @@ function Chat() {
 
     const submit = async (values: { prompt: string, projectIds: string[], model: string }) => {
       const { prompt, projectIds, model } = values;
-      setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: []}]);
+      setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: [], externalSearch: true}]);
         const jwt = localStorage.getItem('jwt');        
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
             method: 'POST',
@@ -127,7 +128,7 @@ function Chat() {
         });
   
         const content = await response.json();
-        setMessages(prevMessages => [...prevMessages, {response: content.response, user: "ai", contextList: content.contextList}]);
+        setMessages(prevMessages => [...prevMessages, {response: content.response, user: "ai", contextList: content.contextList, externalSearch: content.externalSearch}]);
     }
 
     const loadChats = async () => {
@@ -162,6 +163,7 @@ function Chat() {
       promptForm.setFieldsValue({
         projectIds: projects ? projects.map((project: Project) => project.projectId) : [],
         model: 'gpt-3.5-turbo',
+        externalSearch: false,
       });
   }, [projects, promptForm]);
 
@@ -178,11 +180,12 @@ function Chat() {
       const content = await response.json();
 
       if (content && content.conversation && content.conversation.chat && content.conversation.chat.length > 0){
-        const newMessages = content.conversation.chat.map((prompt: { response: any; user: any; contextList: any; }) => {
+        const newMessages = content.conversation.chat.map((prompt: { response: any; user: any; contextList: any; externalSearch: boolean; }) => {
           return {
             response: prompt.response,
             user: prompt.user,
             contextList: prompt.contextList,
+            externalSearch: prompt.externalSearch,
           }
         });
 
@@ -199,6 +202,21 @@ function Chat() {
     function Loading() {
       if(loading) {
         return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
+      }
+    }
+
+    const handleDefaultKeyChange = () => {
+      setExternalSearch(!externalSearch)
+
+      if(!externalSearch) {
+        promptForm.setFieldsValue({projectIds: []});
+        setExternalSearchWarningModal(true)
+      } else {
+        promptForm.setFieldsValue({
+          projectIds: projects ? projects.map((project: Project) => project.projectId) : [],
+          externalSearch: false,
+        })
+        setExternalSearchWarningModal(false)
       }
     }
 
@@ -282,6 +300,7 @@ function Chat() {
                   mode="multiple"
                   placeholder="Select Topics"
                   optionLabelProp="label"
+                  disabled={externalSearch}
                 >
                   {projects && projects.map((project: Project) => (
                     <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
@@ -289,6 +308,13 @@ function Chat() {
                     </Select.Option>
                   ))}
                 </Select>
+              </Form.Item>
+              <Form.Item
+                name="externalSearch"
+                valuePropName="checked"
+                initialValue={true}
+                >
+                <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Query base model knowledge only</Checkbox>
               </Form.Item>
               <Form.Item
                 name={"model"}
@@ -309,6 +335,7 @@ function Chat() {
               </Col>
             </Row>
           </Form>
+          <Divider />
           <List 
             dataSource={[...messages].reverse()}
             renderItem={(message, index) => 
@@ -333,7 +360,7 @@ function Chat() {
                         {message.response}
                       </div>
                     </div>
-                    {message.user === 'ai' && message.contextList &&
+                    {message.user === 'ai' && !message.externalSearch && message.contextList &&
                         <Collapse bordered={false} ghost>
                             <Panel header="Show context list" key={index}>
                                 <Table
@@ -352,6 +379,20 @@ function Chat() {
             }
           >
           </List>
+          <Modal
+              open={externalSearchWarning}
+              title="Warning"
+              okText="Ok"
+              onCancel={() => {
+                handleDefaultKeyChange()
+              }}
+              onOk={() => {
+                setExternalSearchWarningModal(false)
+                setExternalSearch(true)
+              }}
+          >
+              <p>Selecting this option can have unpredictable answers.</p>
+          </Modal>
         </Card>
         ) : (
           <div style={{minHeight: '92vh'}}>Please select a chat or <Button onClick={onAddChat}>Start a new chat</Button></div>
