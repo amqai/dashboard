@@ -39,7 +39,13 @@ function SideMenu() {
   const itemOrder = ["/", "/organization", "/admin", "/login"]; 
 
   const location = useLocation();
-  const activeLink = location.pathname;
+
+  let activeLinkParts = location.pathname.split('/');
+  // Ensure to only take the first three parts of the URL
+  if (activeLinkParts.length > 3) {
+    activeLinkParts = activeLinkParts.slice(0, 4);
+  }
+  const activeLink = activeLinkParts.join('/');
 
   const isOrganizationAddedRef = useRef(false);
   const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);

@@ -1,16 +1,13 @@
-import { Table, Modal, Form, Button, Space, Spin, Card, Alert, Input } from "antd";
+import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs } from "antd";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Embedding } from "../../models/Embedding";
 import EmbeddingForm from "../../Components/EmbeddingForm";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
+import PdfTable from "../../Components/PdfTable";
+import TabPane from "antd/es/tabs/TabPane";
 
-
-interface Project {
-  projectName: string,
-  members: Member[],
-}
 
 interface Member {
   key: string
@@ -25,7 +22,6 @@ function Data() {
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
-  const [project, setProject] = useState<Project | null>(null);
   const [memberData, setMemberData] = useState<Member[]>();
   const [isMemberModal, setIsMemberModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
@@ -54,7 +50,6 @@ function Data() {
     });
 
     const content = await response.json();
-    setProject(content)
 
     const userData = content?.members.map((member: { personId: any; email: any; role: any; }) => (
       {
@@ -247,50 +242,71 @@ function Data() {
   ];
 
   return (
-    <div className="center-wrapper">
+    <div className="wrapper-100vh wrapper-content">
         {alertMessage !== null && alertMessage.message !== "" && (
         <div style={{margin: "24px"}}>
             <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
           </div>
         )}
         <Loading />
-        <Button 
-          onClick={onAddEmbedding}
-          type="primary"
-          style={{marginBottom: "16px"}}
-        >Add data</Button>
-        <Table columns={columns} dataSource={embeddings}></Table>
-        <EmbeddingForm
-          form={form} 
-          visible={isEditing} 
-          editingEmbedding={editingEmbedding} 
-          topicId={topicId}
-          organizationId={organizationId}
-          handleCancel={resetEditing} 
-          reloadEmbeddings={loadEmbeddingsHandler} 
-        />
         <Modal
-          open={isMemberModal}
-          title="Add Member"
-          okText="Save"
-          onCancel={() => {
-            setIsMemberModal(false)
-          }}
-          onOk={() => {
-            handleAddMember()
-            setIsMemberModal(false)
+            open={isMemberModal}
+            title="Add Member"
+            okText="Save"
+            onCancel={() => {
+              setIsMemberModal(false)
+            }}
+            onOk={() => {
+              handleAddMember()
+              setIsMemberModal(false)
+            }}
+          >
+            <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
+        </Modal>
+        <Tabs
+          defaultActiveKey="1"
+          onChange={(activeKey) => {
+            if (activeKey === '1') {
+              loadEmbeddingsHandler();
+            }
           }}
         >
-          <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
-        </Modal>
-        <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
-          <div className="settings-form-buttons" style={{borderTop: 0}}>
-            <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
-          </div>
-          <div className="settings-form-field-100">
-            <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={memberData} columns={memberColumns} />
-          </div>
-        </Card>
+
+          <TabPane tab="Data" key="1">
+            <div className="settings-form-buttons" style={{borderTop: 0}}>
+                <Button onClick={onAddEmbedding} type="primary">Add data</Button>
+            </div>
+            <div className="settings-form-field-100">
+              <Table columns={columns} dataSource={embeddings}></Table>
+              <EmbeddingForm
+                form={form} 
+                visible={isEditing} 
+                editingEmbedding={editingEmbedding} 
+                topicId={topicId}
+                organizationId={organizationId}
+                handleCancel={resetEditing} 
+                reloadEmbeddings={loadEmbeddingsHandler} 
+              />
+            </div>
+          </TabPane>
+
+          <TabPane tab="Upload" key="2">
+            <PdfTable 
+              organizationId={organizationId}
+              topicId={topicId}
+            />
+          </TabPane>
+
+          <TabPane tab="Members" key="3">
+              <div className="settings-form-buttons" style={{borderTop: 0}}>
+                <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
+              </div>
+              <div className="settings-form-field-100">
+                <Table dataSource={memberData} columns={memberColumns} />
+              </div>
+          </TabPane>
+  
+        </Tabs>
     </div>
   );
 }

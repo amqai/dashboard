@@ -29,6 +29,10 @@
     overflow-y: scroll
 }
 
+.wrapper-content {
+    margin: 24px;
+}
+
 .center-wrapper {
     max-width: 1200px;
     min-height: 100%;
