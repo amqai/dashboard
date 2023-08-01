@@ -1,15 +1,16 @@
 import  "../../styles/chat.css";
 import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select, Checkbox, Modal } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ConversationApiDto, GetProjectConversationsApiResponse, PromptApiResponse } from "../../models/Conversation";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NewChatForm from "../../Components/NewChatForm";
 import { GiBrain } from "react-icons/gi";
 import { BsFillPersonFill } from "react-icons/bs";
 import { GrSettingsOption } from "react-icons/gr";
 import { fetchProjects } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
+
 
 const { Text, Title } = Typography;
 
@@ -19,7 +20,10 @@ interface Project {
   projectId: string,
 }
 
-const ConversationItem = ({organizationId, conversations}: {organizationId: string, conversations: ConversationApiDto[] | undefined}) => {
+const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, setAlertMessage}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>}) => {
+
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const navigate = useNavigate();
 
     const selectConversation = (conversationId: string) => {
       return () => {
@@ -27,16 +31,62 @@ const ConversationItem = ({organizationId, conversations}: {organizationId: stri
       };
     }
 
+    const deleteConversation = async (conversationId: string) => {
+      const jwt = localStorage.getItem('jwt');        
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`
+        },
+      });
+      if (!response.ok) {
+        setAlertMessage({
+          message: 'Unable to delete your conversation',
+          type: AlertType.Error,
+        })
+      } else {
+        if (conversationId == currentConversationId) {
+          navigate(`/organization/${organizationId}/chat`);
+        }
+        loadChats();
+        setAlertMessage({
+          message: 'Your conversation was deleted',
+          type: AlertType.Success,
+        })
+      }
+    }
+
+    const handleClick = (conversationId: string) => (e?: React.MouseEvent<HTMLElement>) => {
+      e?.stopPropagation();
+      Modal.confirm({
+        title: 'Are you sure to delete this conversation?',
+        okText: 'Yes',
+        cancelText: 'No',
+        onOk: () => deleteConversation(conversationId),
+      });
+    }
+
     return (
       <div>
         {conversations && conversations.map((conversation: ConversationApiDto, index: number) => (
-          <div key={index}>
+          <div 
+            key={index} 
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <Card 
               hoverable
               style={{marginBottom: "16px"}}
               onClick={selectConversation(conversation.conversationId)}
             >
               <Text strong>{conversation.title}</Text>
+              {hoveredIndex === index && (
+                <DeleteOutlined 
+                  style={{ float: 'right', marginTop: '5px', color: 'red' }} 
+                  onClick={handleClick(conversation.conversationId)}
+                />
+              )}
             </Card>
           </div>
         ))}
@@ -238,7 +288,7 @@ function Chat() {
         <Divider />
         {conversations && (
             <div className="chat-list">
-                <ConversationItem organizationId={organizationId} conversations={conversations.conversations}/>
+                <ConversationItem organizationId={organizationId} currentConversationId={conversationId} conversations={conversations.conversations} loadChats={loadChats} setAlertMessage={setAlertMessage}/>
             </div>
         )}
       </div>
