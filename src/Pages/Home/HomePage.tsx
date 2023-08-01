@@ -12,6 +12,7 @@ function HomePage() {
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
     const [defaultApiKey, setDefaultApiKey] = useState(false);
     const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false);
+    const [toggleSettings, setToggleSettings] = useState(false);
     const [form] = Form.useForm();
 
     const loadOrganizations = async () => {
@@ -111,6 +112,13 @@ information as you have available in the context provided.
 
     const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/chat`
 
+    let settingsVerb = ""
+    if(toggleSettings) {
+        settingsVerb = "Hide"
+    } else {
+        settingsVerb = "Show"
+    }
+
     return (
         <>
             <div className="center-wrapper">
@@ -130,7 +138,7 @@ information as you have available in the context provided.
                             labelCol={{style: {minWidth: "150px"}}}
                             labelAlign="left"
                         >
-                            <Typography.Title level={3}>Create new organization</Typography.Title>
+                            <Typography.Title level={3} style={{ marginBottom: '24px' }}>Create new organization</Typography.Title>
                             <div className="settings-form-fields">
                                 <Form.Item
                                 name={"name"}
@@ -145,6 +153,7 @@ information as you have available in the context provided.
                                     <Input placeholder="Project Name" />
                                 </Form.Item>
                             </div>
+                            <Button type="primary" onClick={() => setToggleSettings(!toggleSettings)} style={{marginBottom: '24px'}}>{settingsVerb} Advanced Settings</Button>
                             <div className="settings-form-fields">
                                 <Form.Item
                                 name={"openAiApiKey"}
@@ -154,14 +163,15 @@ information as you have available in the context provided.
                                     message: "Please enter OpenAI API Key",
                                     }
                                 ]}
+                                style={toggleSettings != true ? { display: 'none' } : { }}
                                 >
-                                    <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
+                                <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
                                 </Form.Item>
                                 <Form.Item
                                 name="defaultKey"
                                 valuePropName="checked"
                                 initialValue={true}
-                                style={{paddingLeft: "24px"}}
+                                style={toggleSettings != true ? { display: 'none' } : { }}
                                 >
                                 <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
                                 </Form.Item>
@@ -176,6 +186,7 @@ information as you have available in the context provided.
                                     message: "Please select model",
                                     }
                                 ]}
+                                style={toggleSettings != true ? { display: 'none' } : { }}
                                 >
                                     <Select placeholder="Select Model">
                                         <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
@@ -195,6 +206,7 @@ information as you have available in the context provided.
                                     message: "Please input system prompt",
                                     }
                                 ]}
+                                style={toggleSettings != true ? { display: 'none' } : { }}
                                 >
                                     <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
                                 </Form.Item>
@@ -209,6 +221,7 @@ information as you have available in the context provided.
                                     message: "Please input maximum search relevancy results",
                                     }
                                 ]}
+                                style={toggleSettings != true ? { display: 'none' } : { }}
                                 >
                                     <Slider
                                         min={1}
@@ -226,6 +239,7 @@ information as you have available in the context provided.
                                         message: "Please input minimum threshold percentage for search hits",
                                         }
                                     ]}
+                                    style={toggleSettings != true ? { display: 'none' } : { }}
                                     >
                                         <Slider
                                             min={1}
@@ -243,6 +257,7 @@ information as you have available in the context provided.
                                         message: "Please input a creativity percentage",
                                         }
                                     ]}
+                                    style={toggleSettings != true ? { display: 'none' } : { }}
                                     >
                                         <Slider
                                             min={1}
