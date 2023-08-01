@@ -39,8 +39,7 @@
     max-height: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-top: 64px;
-    padding-bottom: 64px;
+    padding: 5%;
 }
 
 .settings-form-fields {
