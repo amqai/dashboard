@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Checkbox, Col, Divider, Form, Input, Modal, Row, Select, Slider, Typography } from "antd";
+import { Alert, Button, Card, Checkbox, Col, Divider, Form, Input, Modal, Row, Select, Slider, Typography, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { fetchOrganizations } from "../../Services/ApiService";
 import { useNavigate } from "react-router-dom";
@@ -214,7 +214,13 @@ information as you have available in the context provided.
                             <div className="settings-form-fields-100">
                                 <Form.Item
                                 name={"searchSize"}
-                                label="Max Search Results"
+                                label={
+                                    <div>
+                                      <Tooltip title="The maximum number of relevant search results that will be used in your prompts. We recommend 5-10 as a default.">
+                                        Max Search Results
+                                      </Tooltip>
+                                    </div>
+                                }
                                 rules={[
                                     {
                                     required: true,
@@ -231,7 +237,13 @@ information as you have available in the context provided.
                             </div>
                             <div className="settings-form-fields-100">
                                 <Form.Item
-                                    label="Search Threshold %"
+                                    label={
+                                        <div>
+                                          <Tooltip title="The minimum percentage amount necessary for a search result to be considered relevant. We recommend 80-90 as a default.">
+                                          Search Threshold %
+                                          </Tooltip>
+                                        </div>
+                                    }
                                     name={"searchThreshold"}
                                     rules={[
                                         {
@@ -249,7 +261,13 @@ information as you have available in the context provided.
                             </div>
                             <div className="settings-form-fields-100">
                                 <Form.Item
-                                    label="Creativity"
+                                    label={
+                                        <div>
+                                          <Tooltip title="Specify a value between 1 and 200 for how creative you want the answers to be. We recommend 50 as a default.">
+                                          Creativity
+                                          </Tooltip>
+                                        </div>
+                                    }
                                     name={"temperature"}
                                     rules={[
                                         {
