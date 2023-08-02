@@ -301,7 +301,7 @@ function Chat() {
                   loadChats={loadChats}
                   setAlertMessage={setAlertMessage}
                   loadConversation={loadConversation}
-                  clearChat={clearMessages}
+                  clearMessages={clearMessages}
                 />
             </div>
         )}
