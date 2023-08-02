@@ -78,7 +78,11 @@ const ConversationItem = ({organizationId, currentConversationId, conversations,
           >
             <Card 
               hoverable
-              style={{marginBottom: "16px"}}
+              style={{
+                marginBottom: "16px",
+                backgroundColor: conversation.conversationId === currentConversationId ? '#e6f7ff' : '',
+                border: conversation.conversationId === currentConversationId ? '2px solid #1890ff' : ''
+              }}
               onClick={selectConversation(conversation.conversationId)}
             >
               <Text strong>{conversation.title}</Text>
