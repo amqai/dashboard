@@ -20,7 +20,7 @@ interface Project {
   projectId: string,
 }
 
-const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, loadConversation, setAlertMessage}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, loadConversation: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>}) => {
+const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, loadConversation, setAlertMessage, clearMessages}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, loadConversation: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>, clearMessages: any}) => {
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const navigate = useNavigate();
@@ -28,6 +28,7 @@ const ConversationItem = ({organizationId, currentConversationId, conversations,
     const selectConversation = (conversationId: string) => {
       return () => {
         navigate(`/organization/${organizationId}/chat/${conversationId}`);
+        clearMessages();
         loadConversation(conversationId);
       };
     }
@@ -160,6 +161,10 @@ function Chat() {
       setAlertMessage(null);
     };
 
+    const clearMessages = () => {
+      setMessages([]);
+    }
+
     const submit = async (values: { prompt: string, projectIds: string[], model: string }) => {
       const { prompt, projectIds, model } = values;
       setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: [], externalSearch: true}]);
@@ -289,7 +294,15 @@ function Chat() {
         <Divider />
         {conversations && (
             <div className="chat-list">
-                <ConversationItem organizationId={organizationId} currentConversationId={conversationId} conversations={conversations.conversations} loadChats={loadChats} setAlertMessage={setAlertMessage} loadConversation={loadConversation} />
+                <ConversationItem
+                  organizationId={organizationId}
+                  currentConversationId={conversationId}
+                  conversations={conversations.conversations}
+                  loadChats={loadChats}
+                  setAlertMessage={setAlertMessage}
+                  loadConversation={loadConversation}
+                  clearChat={clearMessages}
+                />
             </div>
         )}
       </div>
