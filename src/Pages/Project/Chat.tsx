@@ -29,7 +29,6 @@ const ConversationItem = ({organizationId, currentConversationId, conversations,
       return () => {
         navigate(`/organization/${organizationId}/chat/${conversationId}`);
         clearMessages();
-        loadConversation(conversationId);
       };
     }
 
