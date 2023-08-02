@@ -20,14 +20,15 @@ interface Project {
   projectId: string,
 }
 
-const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, setAlertMessage}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>}) => {
+const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, loadConversation, setAlertMessage}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, loadConversation: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>}) => {
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const navigate = useNavigate();
 
     const selectConversation = (conversationId: string) => {
       return () => {
-        window.location.href = `/organization/${organizationId}/chat/${conversationId}`;
+        navigate(`/organization/${organizationId}/chat/${conversationId}`);
+        loadConversation(conversationId);
       };
     }
 
@@ -145,7 +146,7 @@ function Chat() {
         (
           async () => {
             if (conversationId) {
-              loadConversation();
+              loadConversation(conversationId);
             }
           }
           )();
@@ -217,7 +218,7 @@ function Chat() {
       });
   }, [projects, promptForm]);
 
-    const loadConversation = async () => {
+    const loadConversation = async (conversationId: string) => {
       setLoading(true);
       const jwt = localStorage.getItem('jwt');
       const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
@@ -288,7 +289,7 @@ function Chat() {
         <Divider />
         {conversations && (
             <div className="chat-list">
-                <ConversationItem organizationId={organizationId} currentConversationId={conversationId} conversations={conversations.conversations} loadChats={loadChats} setAlertMessage={setAlertMessage}/>
+                <ConversationItem organizationId={organizationId} currentConversationId={conversationId} conversations={conversations.conversations} loadChats={loadChats} setAlertMessage={setAlertMessage} loadConversation={loadConversation} />
             </div>
         )}
       </div>
