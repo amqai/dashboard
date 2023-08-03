@@ -10,17 +10,13 @@ import { BsFillPersonFill } from "react-icons/bs";
 import { GrSettingsOption } from "react-icons/gr";
 import { fetchProjects } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
+import { Topic } from "../../models/Topic";
+import AddData from "../../Components/AddData";
 
 
 const { Text, Title } = Typography;
 
-interface Project {
-  projectName: string,
-  projectDescription: string,
-  projectId: string,
-}
-
-const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, loadConversation, setAlertMessage, clearMessages}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, loadConversation: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>, clearMessages: any}) => {
+const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, setAlertMessage, clearMessages}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>, clearMessages: any}) => {
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const navigate = useNavigate();
@@ -112,7 +108,7 @@ function Chat() {
     const [conversations, setConversations] = useState<GetProjectConversationsApiResponse>();
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
-    const [projects, setProjects] = useState<Project[] | null>(null);
+    const [projects, setProjects] = useState<Topic[] | null>(null);
     const [externalSearch, setExternalSearch] = useState(false);
     const [externalSearchWarning, setExternalSearchWarningModal] = useState(false);
 
@@ -220,7 +216,7 @@ function Chat() {
 
     useEffect(() => {
       promptForm.setFieldsValue({
-        projectIds: projects ? projects.map((project: Project) => project.projectId) : [],
+        projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
         model: 'gpt-3.5-turbo',
         externalSearch: false,
       });
@@ -272,7 +268,7 @@ function Chat() {
         setExternalSearchWarningModal(true)
       } else {
         promptForm.setFieldsValue({
-          projectIds: projects ? projects.map((project: Project) => project.projectId) : [],
+          projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
           externalSearch: false,
         })
         setExternalSearchWarningModal(false)
@@ -303,7 +299,6 @@ function Chat() {
                   conversations={conversations.conversations}
                   loadChats={loadChats}
                   setAlertMessage={setAlertMessage}
-                  loadConversation={loadConversation}
                   clearMessages={clearMessages}
                 />
             </div>
@@ -369,7 +364,7 @@ function Chat() {
                   optionLabelProp="label"
                   disabled={externalSearch}
                 >
-                  {projects && projects.map((project: Project) => (
+                  {projects && projects.map((project: Topic) => (
                     <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
                       {project.projectName}
                     </Select.Option>
@@ -428,19 +423,26 @@ function Chat() {
                       </div>
                     </div>
                     {message.user === 'ai' && !message.externalSearch && message.contextList &&
-                        <Collapse bordered={false} ghost>
-                            <Panel header="Show context list" key={index}>
-                                <Table
-                                    style={{width:"100%"}}
-                                    size="large"
-                                    tableLayout="auto"
-                                    pagination={false}
-                                    columns={contextColumns}
-                                    dataSource={message.contextList}
-                                />
-                            </Panel>
-                        </Collapse>
+                      <Collapse style={{margin: "16px 0 0 24px"}}>
+                          <Panel header="Show context list" key={index}>
+                              <Table
+                                  style={{width:"100%"}}
+                                  size="large"
+                                  tableLayout="auto"
+                                  pagination={false}
+                                  columns={contextColumns}
+                                  dataSource={message.contextList}
+                              />
+                          </Panel>
+                      </Collapse>
                     }
+                    {message.user === 'ai' && message.externalSearch && message.response && (
+                     <AddData
+                      organizationId={organizationId}
+                      topics={projects}
+                      data={message.response}
+                     />
+                    )}
                 </div>
               </List.Item>
             }
