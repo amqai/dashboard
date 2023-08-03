@@ -17,6 +17,7 @@ export interface PromptApiResponse {
     user: string,
     contextList: PromptContextApiResponse[],
     externalSearch: boolean,
+    loading?: boolean,
 }
 
 export interface PromptContextApiResponse{

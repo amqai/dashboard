@@ -167,23 +167,31 @@ function Chat() {
     const submit = async (values: { prompt: string, projectIds: string[], model: string }) => {
       const { prompt, projectIds, model } = values;
       setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: [], externalSearch: true}]);
-        const jwt = localStorage.getItem('jwt');        
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwt}`
-            },
-            body: JSON.stringify({
-                prompt,
-                conversationId,
-                projectIds,
-                model,
-            })
-        });
-  
-        const content = await response.json();
-        setMessages(prevMessages => [...prevMessages, {response: content.response, user: "ai", contextList: content.contextList, externalSearch: content.externalSearch}]);
+      setMessages(prevMessages => [...prevMessages, {response: "", user: "ai", contextList: [], externalSearch: false, loading: true}]);
+
+      const jwt = localStorage.getItem('jwt');        
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+          body: JSON.stringify({
+              prompt,
+              conversationId,
+              projectIds,
+              model,
+          })
+      });
+
+      const content = await response.json();
+      // Make sure to update the last message and set its loading property to false
+      setMessages(prevMessages => {
+        const newMessages = [...prevMessages];
+        const lastMessageIndex = newMessages.length - 1;
+        newMessages[lastMessageIndex] = {response: content.response, user: "ai", contextList: content.contextList, externalSearch: content.externalSearch, loading: false};
+        return newMessages;
+      });
     }
 
     const loadChats = async () => {
@@ -409,7 +417,7 @@ function Chat() {
                 }}
               >
                 <div>
-                    <div style={{display: "flex", alignItems: "flex-start"}}>
+                  <div style={{display: "flex", alignItems: "flex-start"}}>
                       <div>
                         {message.user === 'ai' && (
                           <Tag icon={<GiBrain />} color="rgb(39,0,102)" />
@@ -419,10 +427,14 @@ function Chat() {
                         )}
                       </div>
                       <div style={{marginLeft: "10px", textAlign: "justify", flex: "1"}}>
-                        {message.response}
+                        {message.loading ? (
+                          <Spin size="default" />
+                        ) : (
+                          message.response
+                        )}
                       </div>
                     </div>
-                    {message.user === 'ai' && !message.externalSearch && message.contextList &&
+                    {message.user === 'ai' && !message.externalSearch && message.contextList && !message.loading &&
                       <Collapse style={{margin: "16px 0 0 24px"}}>
                           <Panel header="Show context list" key={index}>
                               <Table
