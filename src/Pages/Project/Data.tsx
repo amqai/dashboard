@@ -26,6 +26,7 @@ function Data() {
   const [isMemberModal, setIsMemberModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [memberEmail, setMemberEmail] = useState("")
+  const [activeKey, setActiveKey] = useState(localStorage.getItem('data_page.activeTabKey') || "1");
 
   useEffect(() => {
       (
@@ -265,8 +266,11 @@ function Data() {
         </Modal>
         <Tabs
           defaultActiveKey="1"
-          onChange={(activeKey) => {
-            if (activeKey === '1') {
+          activeKey={activeKey}
+          onChange={(newActiveKey) => {
+            setActiveKey(newActiveKey);
+            localStorage.setItem('data_page.activeTabKey', newActiveKey);
+            if (newActiveKey === '1') {
               loadEmbeddingsHandler();
             }
           }}
