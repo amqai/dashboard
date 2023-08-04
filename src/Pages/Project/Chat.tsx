@@ -464,7 +464,15 @@ function Chat() {
                         {message.loading ? (
                           <Spin size="default" />
                         ) : (
-                          message.response
+                          <>
+                            {message.user === "user" ? (
+                              message.response
+                            ) : (
+                              <pre 
+                              style={{overflowY:"auto", whiteSpace: "pre-wrap", wordWrap: "break-word", marginRight: "5%", width: "100%"}}
+                            >{message.response}</pre>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
