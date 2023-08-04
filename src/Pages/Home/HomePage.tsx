@@ -1,7 +1,8 @@
 import { Alert, Button, Card, Checkbox, Col, Divider, Form, Input, Modal, Row, Select, Slider, Typography, Tooltip } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { fetchOrganizations } from "../../Services/ApiService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 
@@ -79,6 +80,25 @@ function HomePage() {
           }
       }
 
+    const deleteOrganization = async (organizationId: string) => {
+        console.log("HERE")
+        const jwt = localStorage.getItem('jwt');        
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+        });
+
+        if(!response.ok) {
+            setAlertMessage({
+                message: "Unable to delete organization",
+                type: AlertType.Error
+            })
+        }
+    }
+
     const dismissAlert = () => {
         setAlertMessage(null);
     };
@@ -118,6 +138,16 @@ information as you have available in the context provided.
     } else {
         settingsVerb = "Show"
     }
+
+    const handleClick = (organizationId: string) => (e?: React.MouseEvent<HTMLElement>) => {
+        e?.stopPropagation();
+        Modal.confirm({
+          title: 'Are you sure to delete this conversation?',
+          okText: 'Yes',
+          cancelText: 'No',
+          onOk: () => deleteOrganization(organizationId),
+        });
+      }
 
     return (
         <>
@@ -305,6 +335,10 @@ information as you have available in the context provided.
                         <Col xs={24} sm={12} md={8} lg={6} key={organization.id} >
                             <Card className="projectCard" style={{height: "150px"}} title={organization.name} onClick={() => handleGoToDashboard(organization)} hoverable>
                                 Total Members: {organization.members.length}
+                                <DeleteOutlined 
+                                    style={{ float: 'right', marginTop: '5px', color: 'red' }} 
+                                    onClick={handleClick(organization.id)}
+                                />
                             </Card>
                         </Col>
                     ))}
