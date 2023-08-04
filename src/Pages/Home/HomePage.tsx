@@ -81,7 +81,6 @@ function HomePage() {
       }
 
     const deleteOrganization = async (organizationId: string) => {
-        console.log("HERE")
         const jwt = localStorage.getItem('jwt');        
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}`, {
           method: 'DELETE',
@@ -96,6 +95,8 @@ function HomePage() {
                 message: "Unable to delete organization",
                 type: AlertType.Error
             })
+        } else {
+            loadOrganizations()
         }
     }
 
