@@ -111,6 +111,8 @@ function Chat() {
     const [projects, setProjects] = useState<Topic[] | null>(null);
     const [externalSearch, setExternalSearch] = useState(false);
     const [externalSearchWarning, setExternalSearchWarningModal] = useState(false);
+    const [googleSearch, setGoogleSearch] = useState(false);
+    const [googleSearchWarning, setGoogleSearchWarningModal] = useState(false);
 
     const contextColumns = [
       {
@@ -164,8 +166,8 @@ function Chat() {
       setMessages([]);
     }
 
-    const submit = async (values: { prompt: string, projectIds: string[], model: string }) => {
-      const { prompt, projectIds, model } = values;
+    const submit = async (values: { prompt: string, projectIds: string[], model: string, googleSearch: boolean }) => {
+      const { prompt, projectIds, model, googleSearch } = values;
       setMessages(prevMessages => [...prevMessages, {response: prompt, user: "user", contextList: [], externalSearch: true}]);
       setMessages(prevMessages => [...prevMessages, {response: "", user: "ai", contextList: [], externalSearch: false, loading: true}]);
 
@@ -181,6 +183,7 @@ function Chat() {
               conversationId,
               projectIds,
               model,
+              googleSearch,
           })
       });
 
@@ -227,6 +230,7 @@ function Chat() {
         projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
         model: 'gpt-3.5-turbo',
         externalSearch: false,
+        googleSearch: false,
       });
   }, [projects, promptForm]);
 
@@ -278,8 +282,25 @@ function Chat() {
         promptForm.setFieldsValue({
           projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
           externalSearch: false,
+          googleSearch: false,
         })
         setExternalSearchWarningModal(false)
+      }
+    }
+
+    const handleGoogleKeyChange = () => {
+      setGoogleSearch(!googleSearch)
+
+      if(!googleSearch) {
+        promptForm.setFieldsValue({projectIds: [], googleSearch: true});
+        setGoogleSearchWarningModal(true)
+      } else {
+        promptForm.setFieldsValue({
+          projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
+          externalSearch: false,
+          googleSearch: false,
+        })
+        setGoogleSearchWarningModal(false)
       }
     }
 
@@ -370,7 +391,7 @@ function Chat() {
                   mode="multiple"
                   placeholder="Select Topics"
                   optionLabelProp="label"
-                  disabled={externalSearch}
+                  disabled={externalSearch || googleSearch}
                 >
                   {projects && projects.map((project: Topic) => (
                     <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
@@ -380,11 +401,24 @@ function Chat() {
                 </Select>
               </Form.Item>
               <Form.Item
-                name="externalSearch"
+                name={"externalSearch"}
                 valuePropName="checked"
-                initialValue={true}
                 >
-                <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Query base model knowledge only</Checkbox>
+                <Checkbox
+                  style={{marginTop: "10px"}}
+                  onChange={handleDefaultKeyChange}
+                  disabled={googleSearch}
+                >Query base model knowledge only</Checkbox>
+              </Form.Item>
+              <Form.Item
+                name={"googleSearch"}
+                valuePropName="checked"
+                >
+                <Checkbox
+                  style={{marginTop: "10px"}}
+                  onChange={handleGoogleKeyChange}
+                  disabled={externalSearch}
+                >Query Google only</Checkbox>
               </Form.Item>
               <Form.Item
                 name={"model"}
@@ -448,7 +482,7 @@ function Chat() {
                           </Panel>
                       </Collapse>
                     }
-                    {message.user === 'ai' && message.externalSearch && message.response && (
+                    {message.user === 'ai' && message.externalSearch && message.response && !message.response.includes("I am unable to answer your question") && (
                      <AddData
                       organizationId={organizationId}
                       topics={projects}
@@ -473,6 +507,20 @@ function Chat() {
               }}
           >
               <p>Selecting this option can have unpredictable answers.</p>
+          </Modal>
+          <Modal
+              open={googleSearchWarning}
+              title="Warning"
+              okText="Ok"
+              onCancel={() => {
+                handleGoogleKeyChange()
+              }}
+              onOk={() => {
+                setGoogleSearchWarningModal(false)
+                setGoogleSearch(true)
+              }}
+          >
+              <p>Selecting this option can have unpredictable answers and can incur high costs.</p>
           </Modal>
         </Card>
         ) : (
