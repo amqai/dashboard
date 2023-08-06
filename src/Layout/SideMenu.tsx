@@ -97,19 +97,15 @@ function SideMenu() {
   useEffect(() => {
     (
       async () => {
-        try {
-          const jwt = localStorage.getItem('jwt');
-          const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/person/status`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwt}`
-            },
-          });
-          const content = await response.json();
-          setCurrentPerson(content);
-        } catch (e) {
-          navigate('/logout');
-        }
+        const jwt = localStorage.getItem('jwt');
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/person/status`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+        });
+        const content = await response.json();
+        setCurrentPerson(content);
       }
     )();
 
@@ -154,12 +150,20 @@ function SideMenu() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('jwt.expiration');
+    navigate('/login')
+  }
+
   return (
     <Sider theme="light" collapsible collapsed={isMobile ? true : collapsed} onCollapse={onCollapse}>
       <Menu
         onClick={(item) => {
           if (item.key === "/") {
             window.location.href = item.key;
+          } else if (item.key === "/login") {
+            handleLogout();
           } else {
             navigate(item.key)
           }

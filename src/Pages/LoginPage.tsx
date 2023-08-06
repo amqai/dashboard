@@ -23,8 +23,14 @@ function LoginPage() {
         if (data.errorCode) {
             setErrorMessage(data.errorMessage)
         } else {
+          console.log(data.expiration)
+          if (data.expiration === undefined || data.expiration === null || Date.now() > Number(data.expiration)) {
+            setErrorMessage("Invalid credentials");
+          } else {
             localStorage.setItem('jwt', data.token);
+            localStorage.setItem('jwt.expiration', data.expiration);
             await navigate('/')
+          }
         }
     }
 
@@ -33,7 +39,19 @@ function LoginPage() {
     };
 
     useEffect(() => {
-        localStorage.clear();
+      const jwt = localStorage.getItem('jwt');
+      if (!jwt) {
+        localStorage.removeItem('jwt')
+        localStorage.removeItem('jwt.expiration')
+      } else {
+        const expiration = localStorage.getItem('jwt.expiration');
+        if (!expiration || Date.now() > new Date(expiration).getTime()) {
+          localStorage.removeItem('jwt')
+          localStorage.removeItem('jwt.expiration')
+        } else {
+          navigate('/')
+        }
+      }
     });
 
     function Register() {

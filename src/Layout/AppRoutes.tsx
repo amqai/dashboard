@@ -19,10 +19,20 @@ function AppRoutes() {
     useEffect(() => {
         // Check if jwt token is not set in localStorage
         const jwt = localStorage.getItem('jwt')
-        if (jwt === "undefined" || jwt === null) {
+        if (!jwt || jwt === null) {
             // If not set, redirect to /login
+            localStorage.removeItem('jwt');
+            localStorage.removeItem('jwt.expiration');
             navigate('/login');
         }
+        const expiration = localStorage.getItem('jwt.expiration')
+        if (!expiration || Date.now() > new Date(expiration).getTime()) {
+            localStorage.removeItem('jwt');
+            localStorage.removeItem('jwt.expiration');
+            navigate('/login');
+        }
+        console.log(Date.now() + " " + Number(expiration))
+        console.log(Date.now() > Number(expiration));
     }, []);
     return (
         <Routes>
