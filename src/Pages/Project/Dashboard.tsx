@@ -97,6 +97,7 @@ function HomePage() {
                                 {
                                 required: true,
                                 message: "Please enter topic name",
+                                max: 50,
                                 }
                             ]}
                             >
@@ -108,6 +109,7 @@ function HomePage() {
                                 {
                                 required: true,
                                 message: "Please enter topic description",
+                                max: 255,
                                 }
                             ]}
                             >

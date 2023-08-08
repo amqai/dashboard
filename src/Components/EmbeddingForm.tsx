@@ -53,7 +53,7 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
 
   return (
     <Modal
-      title={isEditing ? "Edit Embedding" : "Add Embedding"}
+      title={isEditing ? "Edit Data" : "Add Data"}
       open={visible}
       onCancel={handleCancel}
       onOk={() => {
@@ -75,6 +75,7 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
             {
               required: true,
               message: "Please enter unique data identifier",
+              max: 255,
             },
           ]}
         >
@@ -86,6 +87,7 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
             {
               required: true,
               message: "Please enter data",
+              max: 2000,
             },
           ]}
         >
