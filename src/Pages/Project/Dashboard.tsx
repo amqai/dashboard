@@ -93,10 +93,11 @@ function HomePage() {
                             <Typography.Title level={3}>Create new topic</Typography.Title>
                             <Form.Item
                             name={"projectName"}
+                            label="Topic name"
+                            labelCol={{ style: { display: 'none' } }}
                             rules={[
                                 {
                                 required: true,
-                                message: "Please enter topic name",
                                 max: 50,
                                 }
                             ]}
@@ -105,10 +106,11 @@ function HomePage() {
                             </Form.Item>
                             <Form.Item
                             name={"projectDescription"}
+                            label="Topic Description"
+                            labelCol={{ style: { display: 'none' } }}
                             rules={[
                                 {
                                 required: true,
-                                message: "Please enter topic description",
                                 max: 255,
                                 }
                             ]}

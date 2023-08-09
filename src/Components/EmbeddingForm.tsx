@@ -71,6 +71,8 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
       <Form form={form} layout="vertical" name="form_in_modal">
         <Form.Item
           name="identifier"
+          label="Identifier"
+          labelCol={{ style: { display: 'none' } }}
           rules={[
             {
               required: true,
@@ -83,6 +85,8 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
         </Form.Item>
         <Form.Item
           name="rawData"
+          label="Data"
+          labelCol={{ style: { display: 'none' } }}
           rules={[
             {
               required: true,
