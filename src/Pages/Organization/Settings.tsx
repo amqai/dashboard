@@ -384,14 +384,12 @@ function Settings() {
         }}
       >
         <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
-        <Checkbox.Group style={{ width: '100%' }} onChange={handleCheckboxChange} defaultValue={memberPermissions}>
-          <Row>
-            <Col span={8}><Checkbox value="READ">READ</Checkbox></Col>
-            <Col span={8}><Checkbox value="MANAGE_DATA">MANAGE_DATA</Checkbox></Col>
-            <Col span={8}><Checkbox value="CREATE_TOPICS">CREATE_TOPICS</Checkbox></Col>
-            <Col span={8}><Checkbox value="UPLOAD_DATA">UPLOAD_DATA</Checkbox></Col>
-            <Col span={8}><Checkbox value="MANAGE_ORGANIZATION">MANAGE_ORGANIZATION</Checkbox></Col>
-          </Row>
+        <Checkbox.Group onChange={handleCheckboxChange} defaultValue={memberPermissions}>
+            <Checkbox value="READ" className="settings-checkbox">READ</Checkbox>
+            <Checkbox value="MANAGE_DATA" className="settings-checkbox">MANAGE_DATA</Checkbox>
+            <Checkbox value="CREATE_TOPICS" className="settings-checkbox">CREATE_TOPICS</Checkbox>
+            <Checkbox value="UPLOAD_DATA" className="settings-checkbox">UPLOAD_DATA</Checkbox>
+            <Checkbox value="MANAGE_ORGANIZATION" className="settings-checkbox">MANAGE_ORGANIZATION</Checkbox>
         </Checkbox.Group>
       </Modal>
 
