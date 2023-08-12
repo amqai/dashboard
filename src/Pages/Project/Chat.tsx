@@ -104,6 +104,7 @@ function Chat() {
     const [promptForm] = Form.useForm();
     const [loading, setLoading] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
+    const [currentConversation, setCurrentConversation] = useState<ConversationApiDto | null>(null);
     const [messages, setMessages] = useState<PromptApiResponse[]>([]);
     const [conversations, setConversations] = useState<GetProjectConversationsApiResponse>();
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -246,17 +247,20 @@ function Chat() {
 
       const content = await response.json();
 
-      if (content && content.conversation && content.conversation.chat && content.conversation.chat.length > 0){
-        const newMessages = content.conversation.chat.map((prompt: { response: any; user: any; contextList: any; externalSearch: boolean; }) => {
-          return {
-            response: prompt.response,
-            user: prompt.user,
-            contextList: prompt.contextList,
-            externalSearch: prompt.externalSearch,
-          }
-        });
+      if (content && content.conversation) {
+        setCurrentConversation(content.conversation);
+        if (content.conversation.chat && content.conversation.chat.length > 0) {
+          const newMessages = content.conversation.chat.map((prompt: { response: any; user: any; contextList: any; externalSearch: boolean; }) => {
+            return {
+              response: prompt.response,
+              user: prompt.user,
+              contextList: prompt.contextList,
+              externalSearch: prompt.externalSearch,
+            }
+          });
 
-        setMessages(prevMessages => [...prevMessages, ...newMessages]);
+          setMessages(prevMessages => [...prevMessages, ...newMessages]);
+        }
       }
       setLoading(false);
     }
@@ -350,6 +354,9 @@ function Chat() {
         />
         {conversationId ? (
           <Card style={{ maxHeight: '90vh', overflowY: 'scroll' }}> 
+          {currentConversation !== null && (
+            <Typography.Title level={4}>{currentConversation.title}</Typography.Title>
+          )}
           <Form onFinish={submit} form={promptForm}>
             <Row 
               align="middle"

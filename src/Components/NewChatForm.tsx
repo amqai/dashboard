@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Input, Modal } from "antd";
 import { CreateConversationApiRequest } from '../models/Conversation';
+import { useNavigate } from 'react-router-dom';
 
 interface NewChatFormProps {
   form: any; 
@@ -17,6 +18,8 @@ const NewChatForm: React.FC<NewChatFormProps> = ({
   handleCancel,
   reloadChats,
 }) => {
+  const navigate = useNavigate();
+
   const handleSave = async (values: CreateConversationApiRequest) => {
     const jwt = localStorage.getItem('jwt');
     const url = `${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation?organizationId=${organizationId}`;
@@ -31,6 +34,9 @@ const NewChatForm: React.FC<NewChatFormProps> = ({
 
     if (response.ok) {
       reloadChats();
+      const chat = await response.json();
+      console.log(chat);
+      navigate(`/organization/${organizationId}/chat/${chat.conversation.conversationId}`);
       handleCancel();
     } else {
       // handle error
