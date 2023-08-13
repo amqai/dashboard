@@ -31,8 +31,6 @@ function AppRoutes() {
             localStorage.removeItem('jwt.expiration');
             navigate('/login');
         }
-        console.log(Date.now() + " " + Number(expiration))
-        console.log(Date.now() > Number(expiration));
     }, []);
     return (
         <Routes>

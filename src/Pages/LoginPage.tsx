@@ -23,7 +23,6 @@ function LoginPage() {
         if (data.errorCode) {
             setErrorMessage(data.errorMessage)
         } else {
-          console.log(data.expiration)
           if (data.expiration === undefined || data.expiration === null || Date.now() > Number(data.expiration)) {
             setErrorMessage("Invalid credentials");
           } else {

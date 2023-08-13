@@ -134,9 +134,7 @@ const PdfTable: React.FC<PdfTableProps> = ({
       let status = "ACTIVE_INGESTING";
       let finishedJobResponse = null;
 
-      let count = 1;
       while (status === "ACTIVE_INGESTING") {
-        console.log("attempt " + count++);
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/pdf/${pdfId}?organizationId=${organizationId}&projectId=${topicId}`, {
           method: 'GET',
           headers: {

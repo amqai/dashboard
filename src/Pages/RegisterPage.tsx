@@ -12,7 +12,6 @@ function RegisterPage() {
 
     const submit = async (values: { email: string; password: string }) => {
         const { email, password } = values;
-        console.log(JSON.stringify({email, password}))
         const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/register`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

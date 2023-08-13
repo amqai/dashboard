@@ -35,7 +35,6 @@ const NewChatForm: React.FC<NewChatFormProps> = ({
     if (response.ok) {
       reloadChats();
       const chat = await response.json();
-      console.log(chat);
       navigate(`/organization/${organizationId}/chat/${chat.conversation.conversationId}`);
       handleCancel();
     } else {
