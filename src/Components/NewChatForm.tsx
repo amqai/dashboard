@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Modal } from "antd";
 import { CreateConversationApiRequest } from '../models/Conversation';
 import { useNavigate } from 'react-router-dom';
 
 interface NewChatFormProps {
-  form: any; 
   visible: boolean; 
   organizationId: string;
   handleCancel: () => void;
@@ -12,13 +11,17 @@ interface NewChatFormProps {
 }
 
 const NewChatForm: React.FC<NewChatFormProps> = ({
-  form,
   visible,
   organizationId,
   handleCancel,
   reloadChats,
 }) => {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    form.resetFields();
+  }, [form]);
 
   const handleSave = async (values: CreateConversationApiRequest) => {
     const jwt = localStorage.getItem('jwt');

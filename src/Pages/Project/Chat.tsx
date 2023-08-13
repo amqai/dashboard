@@ -100,7 +100,6 @@ function Chat() {
     const organizationId = params.organizationId || "DEFAULT_VALUE"
     const conversationId = params.conversationId;
     const { Panel } = Collapse;
-    const [newChatForm] = Form.useForm();
     const [promptForm] = Form.useForm();
     const [loading, setLoading] = useState<boolean>(false);
     const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -266,7 +265,6 @@ function Chat() {
     }
 
     const onAddChat = () => {
-      newChatForm.resetFields();
       setIsAdding(true);
     }
 
@@ -346,7 +344,6 @@ function Chat() {
         )}
         <Loading />
         <NewChatForm
-          form={newChatForm} 
           visible={isAdding} 
           organizationId={organizationId} 
           handleCancel={closeAdding} 
