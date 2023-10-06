@@ -33,3 +33,21 @@ export async function fetchProjects(jwt: string, organizationId: string) {
     }
     return { status: response.status, data: content };
 }
+
+export async function fetchFequentQuestions(jwt: string, organizationId: string) {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/frequent-questions?organizationId=${organizationId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+        },
+    });
+
+    let content = null;
+    if (response.status === 403) {
+        localStorage.removeItem("jwt");
+    } else if (response.ok) {
+        content = await response.json();
+    }
+    return { status: response.status, data: content };
+}

@@ -12,6 +12,7 @@ import { fetchProjects } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { Topic } from "../../models/Topic";
 import AddData from "../../Components/AddData";
+import FrequentQuestions from "../Organization/FrequentQuestions";
 
 
 const { Text, Title } = Typography;
@@ -473,7 +474,7 @@ function Chat() {
                               message.response
                             ) : (
                               <pre 
-                              style={{overflowY:"auto", whiteSpace: "pre-wrap", wordWrap: "break-word", marginRight: "5%", width: "100%"}}
+                              style={{overflowY:"auto", whiteSpace: "pre-wrap", wordWrap: "break-word", marginRight: "5%", width: "100%", padding: "10px", paddingTop: "0"}}
                             >{message.response}</pre>
                             )}
                           </>
@@ -536,7 +537,9 @@ function Chat() {
           </Modal>
         </Card>
         ) : (
-          <div style={{minHeight: '92vh'}}>Please select a chat or <Button onClick={onAddChat}>Start a new chat</Button></div>
+          <div style={{minHeight: '92vh', margin: '5%'}}>Please select a chat or <Button onClick={onAddChat}>Start a new chat</Button>
+            <FrequentQuestions/>
+          </div>
         )}
       </div>
     </div>
