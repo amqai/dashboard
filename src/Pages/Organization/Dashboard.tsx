@@ -1,12 +1,14 @@
-import { Typography, Spin, Space} from "antd";
+import { Typography, Spin, Space, Table} from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";
 import { OrganizationApiDto } from "../../models/Organization";
+import { FrequentlyAskedQuestionsResponse } from "../../models/FrequentQuestions";
 
 function Dashboard() {
   const { organizationId } = useParams();
   const [organization, setOrganization] = useState<OrganizationApiDto | null>(null);
+  const [frequentQuestions, setFrequentQuestions] = useState<FrequentlyAskedQuestionsResponse | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -15,6 +17,7 @@ function Dashboard() {
     (
       async () => {
         if (organizationId) {
+          setLoading(true);
           const jwt = localStorage.getItem('jwt');
           const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}`, {
             headers: {
@@ -25,6 +28,28 @@ function Dashboard() {
 
           const content = await response.json();
           setOrganization(content)
+          setLoading(false);
+        }
+      }
+      )();
+  }, [organizationId]);
+
+  useEffect(() => {
+    (
+      async () => {
+        if (organizationId) {
+          setLoading(true);
+          const jwt = localStorage.getItem('jwt');
+          const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/frequent-questions?organizationId=${organizationId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwt}`
+            }
+          });
+
+          const content = await response.json();
+          setFrequentQuestions(content)
+          setLoading(false);
         }
       }
       )();
@@ -36,9 +61,24 @@ function Dashboard() {
     }
   }
 
+  const frequentlyAskedQuestionsColumns = [
+    {
+      title: 'Question',
+      dataIndex: 'question',
+      key: 'question',
+    },
+    {
+      title: 'Count',
+      dataIndex: 'count',
+      key: 'count',
+    },
+  ];
+
   return (
     <div className="center-wrapper">
       <Typography.Title level={2}>Dashboard</Typography.Title>
+      <Loading/>
+      <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
     </div>
   );
 }
