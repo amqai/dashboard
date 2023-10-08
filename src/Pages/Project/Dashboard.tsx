@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { fetchProjects } from "../../Services/ApiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
+import { hasPermission } from "../../Services/PermissionService";
 
 interface Project {
     projectName: string,
@@ -85,7 +86,9 @@ function HomePage() {
                     <Divider />
                     </div>
                 )}
-                <Button type="primary" onClick={() => setFormOpen(true)}>New Topic</Button>
+                {hasPermission("CREATE_TOPICS") && (
+                    <Button type="primary" onClick={() => setFormOpen(true)}>New Topic</Button>
+                )}
                 {formOpen && (
                     <>
                         <Divider></Divider>

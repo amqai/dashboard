@@ -76,7 +76,6 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
           rules={[
             {
               required: true,
-              message: "Please enter unique data identifier",
               max: 255,
             },
           ]}
@@ -90,7 +89,6 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
           rules={[
             {
               required: true,
-              message: "Please enter data",
               max: 2000,
             },
           ]}

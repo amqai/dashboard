@@ -1,11 +1,12 @@
-import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal, Checkbox, Row, Col, Slider} from "antd";
+import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal, Checkbox, Slider} from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/common.css";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { DeleteOutlined } from "@ant-design/icons";
+import { hasPermission } from "../../Services/PermissionService";
 
 interface Member {
     key: string
@@ -17,6 +18,7 @@ function Settings() {
   const [form] = Form.useForm();
   const { organizationId } = useParams();
   const [organization, setOrganization] = useState<OrganizationApiDto | null>(null);
+  const navigate = useNavigate();
 
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
@@ -67,6 +69,16 @@ function Settings() {
   const dismissAlert = () => {
     setAlertMessage(null);
   };
+
+  useEffect(() => {
+    (async () => {
+      if (organizationId) {
+        if (!hasPermission("MANAGE_ORGANIZATION")) {
+          navigate("/");
+        }
+      }
+    })();
+  }, [location, organizationId]);
 
   // Get organization
   useEffect(() => {
@@ -172,7 +184,7 @@ function Settings() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`
           },
-          body: JSON.stringify({ permissions: memberPermissions }) // Add this line to include permissions
+          body: JSON.stringify({ permissions: memberPermissions })
         });
 
         setMemberEmail("")
@@ -189,7 +201,6 @@ function Settings() {
       }
     }
   }
-
 
   const memberColumns = [
     {

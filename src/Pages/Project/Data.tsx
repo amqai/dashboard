@@ -7,7 +7,7 @@ import EmbeddingForm from "../../Components/EmbeddingForm";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import PdfTable from "../../Components/PdfTable";
 import TabPane from "antd/es/tabs/TabPane";
-
+import { hasPermission } from "../../Services/PermissionService";
 
 interface Member {
   key: string
@@ -103,17 +103,21 @@ function Data() {
       render: (record: Embedding) => {
         return (
           <>
-            <EditOutlined
-              onClick={() => {
-                onEditEmbedding(record);
-              }}
-            />
-            <DeleteOutlined
-              onClick={() => {
-                onDeleteEmbedding(record);
-              }}
-              style={{ color: "red", marginLeft: 12 }}
-            />
+            {hasPermission("MANAGE_DATA") && (
+              <>
+                <EditOutlined
+                  onClick={() => {
+                    onEditEmbedding(record);
+                  }}
+                />
+                <DeleteOutlined
+                  onClick={() => {
+                    onDeleteEmbedding(record);
+                  }}
+                  style={{ color: "red", marginLeft: 12 }}
+                />
+              </>
+            )}
           </>
         );
       },
@@ -278,7 +282,9 @@ function Data() {
 
           <TabPane tab="Data" key="1">
             <div className="settings-form-buttons" style={{borderTop: 0}}>
-                <Button onClick={onAddEmbedding} type="primary">Add data</Button>
+            {hasPermission("MANAGE_DATA") && (
+                <Button onClick={() => onAddEmbedding} type="primary">Add data</Button>
+            )}
             </div>
             <div className="settings-form-field-100">
               <Table columns={columns} dataSource={embeddings}></Table>
@@ -294,14 +300,17 @@ function Data() {
             </div>
           </TabPane>
 
-          <TabPane tab="Upload" key="2">
-            <PdfTable 
-              organizationId={organizationId}
-              topicId={topicId}
-            />
-          </TabPane>
+          {hasPermission("UPLOAD_DATA") && (
+            <TabPane tab="Upload" key="2">
+              <PdfTable 
+                organizationId={organizationId}
+                topicId={topicId}
+              />
+            </TabPane>
+          )}
 
-          <TabPane tab="Members" key="3">
+          {hasPermission("CREATE_TOPICS") && (
+            <TabPane tab="Members" key="3">
               <div className="settings-form-buttons" style={{borderTop: 0}}>
                 <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
               </div>
@@ -309,6 +318,7 @@ function Data() {
                 <Table dataSource={memberData} columns={memberColumns} />
               </div>
           </TabPane>
+          )}
   
         </Tabs>
     </div>
