@@ -5,6 +5,7 @@ import { fetchOrganizations } from "../../Services/ApiService";
 import { useNavigate} from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
+import { CurrentPerson } from "../../models/Person";
 
 function HomePage() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ function HomePage() {
     const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false);
     const [toggleSettings, setToggleSettings] = useState(false);
     const [form] = Form.useForm();
+    const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
 
     const loadOrganizations = async () => {
         const jwt = localStorage.getItem('jwt');
@@ -39,6 +41,22 @@ function HomePage() {
             }
         )();
     },[]);
+
+    useEffect(() => {
+        (
+            async () => {
+                const jwt = localStorage.getItem('jwt');
+                const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/person/status`, {
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`
+                    },
+                });
+                const content = await response.json();
+                setCurrentPerson(content);
+            }
+        )();
+    }, []);
 
     const submit = async (
         values: { name: string; projectDescription: string; openAiApiKey: string; model: string; prompt: string, temperature: number, searchSize: number, defaultKey: boolean, searchThreshold: number }
@@ -131,7 +149,12 @@ information as you have available in the context provided.
     }
     
 
-    const handleGoToDashboard = (organization: OrganizationApiDto) => window.location.href = `/organization/${organization.id}/chat`
+    const handleGoToDashboard = (organization: OrganizationApiDto) => {
+        const organizationId = organization.id;
+        window.location.href = `/organization/${organizationId}/`;
+        localStorage.setItem('organization.id', organizationId)
+        localStorage.setItem('organization.permissions', JSON.stringify(currentPerson?.organizationPermissions[organizationId]));
+    }
 
     let settingsVerb = ""
     if(toggleSettings) {
@@ -159,7 +182,9 @@ information as you have available in the context provided.
                     <Divider />
                     </div>
                 )}
-                <Button type="primary" onClick={() => openForm()}>New Organization</Button>
+                {currentPerson?.admin && (
+                    <Button type="primary" onClick={() => openForm()}>New Organization</Button>
+                )}
                 {formOpen && (
                     <>
                         <Divider></Divider>
@@ -336,10 +361,12 @@ information as you have available in the context provided.
                         <Col xs={24} sm={12} md={8} lg={6} key={organization.id} >
                             <Card className="projectCard" style={{height: "150px"}} title={organization.name} onClick={() => handleGoToDashboard(organization)} hoverable>
                                 Total Members: {organization.members.length}
-                                <DeleteOutlined 
-                                    style={{ float: 'right', marginTop: '5px', color: 'red' }} 
-                                    onClick={handleClick(organization.id)}
-                                />
+                                {currentPerson?.admin && (
+                                    <DeleteOutlined 
+                                        style={{ float: 'right', marginTop: '5px', color: 'red' }} 
+                                        onClick={handleClick(organization.id)}
+                                    />
+                                )}
                             </Card>
                         </Col>
                     ))}

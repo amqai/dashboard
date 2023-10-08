@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Chat from "../Pages/Project/Chat";
 import { OrganizationProvider } from "./OrganizationProvider";
 import ProjectDashboard from "../Pages/Project/Dashboard";
+import Dashboard from "../Pages/Organization/Dashboard";
 import Data from "../Pages/Project/Data";
 import Settings from "../Pages/Organization/Settings";
 
@@ -48,6 +49,7 @@ function AppRoutes() {
                                     <Route path="/invite" element={<InviteUsers />} />
                                     <Route path="/organization/:organizationId/*" element={
                                         <Routes>
+                                            <Route path="/" element={<Dashboard /> } />
                                             <Route path="settings" element={<Settings /> } />
                                             <Route path="topics" element={<ProjectDashboard /> } />
                                             <Route path="topics/:topicId/*" element={

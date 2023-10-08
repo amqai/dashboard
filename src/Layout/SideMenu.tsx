@@ -3,19 +3,12 @@ import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
 import { FiSettings } from "react-icons/fi";
-import { GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
+import { GrDashboard, GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
 import { BsChatText, BsPeople } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { OrganizationContext } from './OrganizationProvider';
 import { hasPermission } from '../Services/PermissionService';
-
-interface CurrentPerson {
-  personId: string,
-  email: string,
-  status: boolean,
-  admin: boolean,
-  organizationPermissions: Record<string, string[]>,
-}
+import { CurrentPerson } from '../models/Person';
 
 type MenuItem = {
   label: string,
@@ -23,7 +16,6 @@ type MenuItem = {
   icon: JSX.Element,
   children?: MenuItem[],
 };
-
 
 function SideMenu() {
 
@@ -66,7 +58,13 @@ function SideMenu() {
 
       const organization = orgs?.filter(item => item.id === organizationId)[0];
 
-      const children = [{
+      const children = [
+      {
+        label: "Dashboard",
+        key: `/organization/${organizationId}/`,
+        icon: <GrDashboard />
+      },
+      {
         label: "Chat",
         key: `/organization/${organizationId}/chat`,
         icon: <BsChatText />
@@ -148,28 +146,6 @@ function SideMenu() {
       isAdminAddedRef.current = true;
     }
   }, [currentPerson]);
-
-  useEffect(() => {
-    if (location.pathname.startsWith("/organization/") && !isOrganizationAddedRef.current) {
-      const parts = location.pathname.split('/');
-      const organizationIdIndex = parts.indexOf('organization') + 1;
-      const organizationId = parts[organizationIdIndex];
-
-      // eat shit and die
-      var lsOrganizationId = localStorage.getItem('organization.id');
-      // if it's not set or it's changed, set it again
-      if (lsOrganizationId === null || lsOrganizationId !== organizationId) {
-        localStorage.setItem('organization.id', organizationId)
-      }
-      // fetch it again
-      lsOrganizationId = localStorage.getItem('organization.id');
-      const permissions = localStorage.getItem('organization.permissions');
-      // if the organization is not null but the permissions are, set them
-      if (lsOrganizationId !== null && permissions === "undefined") {
-        localStorage.setItem('organization.permissions', JSON.stringify(currentPerson?.organizationPermissions[organizationId]));
-      }
-    }
-  }, [location, currentPerson]);
 
   const onCollapse = (collapsed: boolean) => {
     if (!isMobile) {

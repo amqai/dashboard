@@ -3,5 +3,5 @@ export interface CurrentPerson {
     email: string,
     status: boolean,
     admin: boolean,
-    permissions: string[],
-}
+    organizationPermissions: Record<string, string[]>,
+  }
