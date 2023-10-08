@@ -76,7 +76,7 @@ function Dashboard() {
 
   return (
     <div className="center-wrapper">
-      <Typography.Title level={2}>Dashboard</Typography.Title>
+      <Typography.Title level={2}>{organization?.name} Dashboard</Typography.Title>
       <Loading/>
       <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
     </div>
