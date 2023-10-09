@@ -173,7 +173,7 @@ function Settings() {
     if(organizationId) {
       const jwt = localStorage.getItem('jwt');
       const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${jwt}`
