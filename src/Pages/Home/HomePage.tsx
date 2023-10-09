@@ -151,9 +151,9 @@ information as you have available in the context provided.
 
     const handleGoToDashboard = (organization: OrganizationApiDto) => {
         const organizationId = organization.id;
-        window.location.href = `/organization/${organizationId}/`;
         localStorage.setItem('organization.id', organizationId)
         localStorage.setItem('organization.permissions', JSON.stringify(currentPerson?.organizationPermissions[organizationId]));
+        window.location.href = `/organization/${organizationId}/`;
     }
 
     let settingsVerb = ""
