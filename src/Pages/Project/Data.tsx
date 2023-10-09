@@ -27,6 +27,7 @@ function Data() {
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [memberEmail, setMemberEmail] = useState("")
   const [activeKey, setActiveKey] = useState(localStorage.getItem('data_page.activeTabKey') || "1");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
       (
@@ -73,6 +74,31 @@ function Data() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jwt}`
       }
+    });
+
+    const content = await response.json();
+    const embeds: Embedding[] = content.embeddings;
+    setEmbeddings(embeds.map(embedding => ({
+      ...embedding,
+      key: embedding.identifier, // use the unique identifier as key
+    })));
+    setLoading(false);
+  }
+
+  const handleSearch = () => {
+    search(organizationId, topicId, searchQuery);
+  };  
+
+  const search = async (organizationId: string, topicId: string, search: string) => {
+    setLoading(true);
+    const jwt = localStorage.getItem('jwt');
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/data/search?organizationId=${organizationId}&projectId=${topicId}`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      },
+      body: JSON.stringify({ searchInput: search })
     });
 
     const content = await response.json();
@@ -281,11 +307,29 @@ function Data() {
         >
 
           <TabPane tab="Data" key="1">
-            <div className="settings-form-buttons" style={{borderTop: 0}}>
             {hasPermission("MANAGE_DATA") && (
-                <Button onClick={() => onAddEmbedding} type="primary">Add data</Button>
+              <>
+                <div className="settings-form-buttons" style={{borderTop: 0}}>
+                  <Button onClick={() => onAddEmbedding} type="primary" style={{minWidth:"90px"}}>Add data</Button>
+                </div>
+                <Form className="settings-form-buttons" style={{ display: 'flex', width: '100%' }}>
+                  <Form.Item style={{ flex: 1, marginRight: 8 }}>
+                    <Input.TextArea
+                      placeholder="Search..."
+                      value={searchQuery}
+                      className="settings-form-fields-100"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+                  <Form.Item>
+                    <Button type="primary" onClick={handleSearch} style={{minWidth:"90px"}}>
+                      Search
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </>
             )}
-            </div>
             <div className="settings-form-field-100">
               <Table columns={columns} dataSource={embeddings}></Table>
               <EmbeddingForm
