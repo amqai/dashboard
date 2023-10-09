@@ -169,10 +169,10 @@ function Settings() {
   };
 
   // Add member
-  const handleAddMember = async (personId: string) => {
+  const handleAddMember = async () => {
     if(organizationId) {
       const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&email=${memberEmail}`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -447,7 +447,7 @@ function Settings() {
           if (isEditing) {
               handleUpdateMember(memberPersonId);
           } else {
-              handleAddMember(memberPersonId);
+              handleAddMember();
           }
           setIsMemberModal(false);
           setIsEditing(false);
