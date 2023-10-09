@@ -5,13 +5,14 @@ import "../../styles/common.css";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { hasPermission } from "../../Services/PermissionService";
 
 interface Member {
     key: string
     email: string
     personId: string
+    permissions: string
 }
 
 function Settings() {
@@ -24,10 +25,14 @@ function Settings() {
   const [loading, setLoading] = useState(false);
   const [isMemberModal, setIsMemberModal] = useState(false)
   const [memberEmail, setMemberEmail] = useState("")
+  const [memberPersonId, setMemberPersonId] = useState("")
   const [memberData, setMemberData] = useState<Member[]>()
   const [memberPermissions, setMemberPermissions] = useState<string[]>([]);
   const [defaultApiKey, setDefaultApiKey] = useState(false)
   const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentEditingMember, setCurrentEditingMember] = useState<Member | null>(null);
+
 
   const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; temperature: any, searchSize: any, searchThreshold: any }) => {
     setLoading(true)
@@ -124,17 +129,7 @@ function Settings() {
             searchThreshold: settings?.searchThreshold,
           });
           setDefaultApiKey(settings?.openAiApiKey === "" ? true : false);
-          const userData = settings?.members.map((member: { personId: any; email: any; permissions: any }) => (
-            {
-              key: member.personId,
-              email: member.email,
-              permissions: member.permissions.join(", "),
-              personId: member.personId
-            }
-          ))
-          if(userData != null) {
-            setMemberData(...[userData])
-          }
+          handleMemberTableUpdate(settings);
           setMemberPermissions(["READ", "MANAGE_DATA", "CREATE_TOPICS", "UPLOAD_DATA", "MANAGE_ORGANIZATION"])
         }
       }
@@ -152,7 +147,7 @@ function Settings() {
           })
         } else {
           const jwt = localStorage.getItem('jwt');
-          await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}&personId=${personId}`, {
+          await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {
             method: "DELETE",
             headers: {
               'Content-Type': 'application/json',
@@ -175,30 +170,72 @@ function Settings() {
 
   // Add member
   const handleAddMember = async () => {
-    {
-      if(organizationId) {
-        const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}&email=${memberEmail}`, {
-          method: "PUT",
+    if(organizationId) {
+      const jwt = localStorage.getItem('jwt');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&email=${memberEmail}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`
+        },
+        body: JSON.stringify({ permissions: memberPermissions })
+      });
+
+      setMemberEmail("")
+      const content = await response.json();
+      if(content) {
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`
-          },
-          body: JSON.stringify({ permissions: memberPermissions })
+          }
         });
 
-        setMemberEmail("")
-        const content = await response.json();
-        if(content) {
-          const member = [{
-            key: content?.personId,
-            email: content?.email,
-            personId: content?.personId
-          }]
-
-          setMemberData(memberData ? [...memberData, ...member] : [...member]);
-        }
+        const settings = await res.json()
+        handleMemberTableUpdate(settings);
       }
+    }
+  };
+
+  const handleUpdateMember = async (personId: string) => {
+    if (organizationId && currentEditingMember) {
+      const jwt = localStorage.getItem('jwt');
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`
+        },
+        body: JSON.stringify({ permissions: memberPermissions })
+      });
+
+      setMemberEmail("")
+      const content = await response.json();
+      if(content) {
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          }
+        });
+
+        const settings = await res.json()
+        handleMemberTableUpdate(settings);
+      }
+    }
+  };
+
+  const handleMemberTableUpdate = async(settings: any) => {
+    const userData = settings?.members.map((member: { personId: any; email: any; permissions: any }) => (
+      {
+        key: member.personId,
+        email: member.email,
+        permissions: member.permissions.join(", "),
+        personId: member.personId
+      }
+    ))
+    if(userData != null) {
+      setMemberData(...[userData])
     }
   }
 
@@ -219,13 +256,25 @@ function Settings() {
       title: 'Action',
       key: 'id',
       personId: 'id',
-      render: (_: any, record: { personId: any; }) => (
-        <DeleteOutlined
+      render: (_: any, record: Member) => (
+        <>
+          <EditOutlined
+              onClick={() => {
+                  setIsEditing(true);
+                  setIsMemberModal(true);
+                  setCurrentEditingMember(record);
+                  setMemberEmail(record.email);
+                  setMemberPermissions(record.permissions.split(", "));
+                  setMemberPersonId(record.personId);
+              }}
+          />
+          <DeleteOutlined
               onClick={() => {
                 handleDeleteMember(record.personId);
               }}
               style={{ color: "red", marginLeft: 12 }}
-            />
+          />
+        </>
       ),
     },
   ];
@@ -384,17 +433,33 @@ function Settings() {
 
       <Modal
         open={isMemberModal}
-        title="Add Member"
+        title={isEditing ? "Edit Member" : "Add Member"}
         okText="Save"
         onCancel={() => {
-          setIsMemberModal(false)
-        }}
+          setIsMemberModal(false);
+          setIsEditing(false);
+          setCurrentEditingMember(null);
+          setMemberEmail("");
+          setMemberPermissions([]);
+          setMemberPersonId("");
+        }}      
         onOk={() => {
-          handleAddMember()
-          setIsMemberModal(false)
-        }}
+          if (isEditing) {
+              handleUpdateMember(memberPersonId);
+          } else {
+              handleAddMember();
+          }
+          setIsMemberModal(false);
+          setIsEditing(false);
+          setCurrentEditingMember(null);
+      }}
       >
-        <Input placeholder="Enter member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)}/>
+        <Input 
+          placeholder="Enter member email"
+          value={memberEmail}
+          onChange={(e) => setMemberEmail(e.target.value)}
+          disabled={isEditing}
+        />
         <Checkbox.Group onChange={handleCheckboxChange} defaultValue={memberPermissions}>
             <Checkbox value="READ" className="settings-checkbox">READ</Checkbox>
             <Checkbox value="MANAGE_DATA" className="settings-checkbox">MANAGE_DATA</Checkbox>
