@@ -22,6 +22,7 @@ function Data() {
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
   const [memberData, setMemberData] = useState<Member[]>();
   const [isMemberModal, setIsMemberModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
@@ -107,6 +108,7 @@ function Data() {
       ...embedding,
       key: embedding.identifier, // use the unique identifier as key
     })));
+    setSearchPerformed(true);
     setLoading(false);
   }
 
@@ -253,6 +255,12 @@ function Data() {
     setAlertMessage(null);
   };
 
+  const clearSearch = () => {
+    setSearchPerformed(false);
+    setSearchQuery("");
+    loadEmbeddings(organizationId, topicId);
+  }
+
   const memberColumns = [
     {
       title: 'Email',
@@ -328,6 +336,11 @@ function Data() {
                     </Button>
                   </Form.Item>
                 </Form>
+                {searchPerformed && (
+                  <div style={{paddingBottom:"1em"}}>
+                    <a onClick={clearSearch}>Reset Search</a>
+                  </div>
+                )}
               </>
             )}
             <div className="settings-form-field-100">
