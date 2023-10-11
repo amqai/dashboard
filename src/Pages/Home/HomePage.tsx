@@ -166,7 +166,7 @@ information as you have available in the context provided.
     const handleClick = (organizationId: string) => (e?: React.MouseEvent<HTMLElement>) => {
         e?.stopPropagation();
         Modal.confirm({
-          title: 'Are you sure to delete this conversation?',
+          title: 'Are you sure you want to delete this organization?',
           okText: 'Yes',
           cancelText: 'No',
           onOk: () => deleteOrganization(organizationId),

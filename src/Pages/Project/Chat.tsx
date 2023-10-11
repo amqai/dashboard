@@ -57,7 +57,7 @@ const ConversationItem = ({organizationId, currentConversationId, conversations,
     const handleClick = (conversationId: string) => (e?: React.MouseEvent<HTMLElement>) => {
       e?.stopPropagation();
       Modal.confirm({
-        title: 'Are you sure to delete this conversation?',
+        title: 'Are you sure you want to delete this conversation?',
         okText: 'Yes',
         cancelText: 'No',
         onOk: () => deleteConversation(conversationId),
