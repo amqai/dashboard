@@ -100,7 +100,7 @@ function Dashboard() {
     if (content.errorCode) {
       setErrorMessage(content.errorCode)
     } else {
-    //include in override question set with spread
+      // doesnt work 
       questionsOverride?.questions.push(content)
       setQuestionsOverride(questionsOverride);
     }
@@ -126,8 +126,9 @@ function Dashboard() {
     if (content.errorCode) {
       setErrorMessage(content.errorCode)
     } else {
-      // remove from overrideQuestion Set
-      // setOverrideQuestions(content)
+      // Would prob be easier to conver this to a list
+      // const updatedList = questionsOverride?.filter((question) => question.question == content.question)
+      // setQuestionsOverride(updatedList)
     }
 
     setLoading(false);
@@ -188,47 +189,49 @@ function Dashboard() {
     <div className="center-wrapper">
       <Typography.Title level={2}>{organization?.name} Dashboard</Typography.Title>
       <Loading/>
-      <h3>Frequently Asked Questions</h3>
-      <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
+      <div className="frequentlyAskedQuestions" style={{padding: "5%", background: "#B0C3D4", marginTop: "5%", marginBottom: "5%", borderRadius: "10px"}}>
+      <h2>Frequently Asked Questions</h2>
+        <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
+      </div>
 
+      <div className="frequentlyAskedQuestions" style={{padding: "5%", background: "#B0C3D4", marginTop: "5%", marginBottom: "5%", borderRadius: "10px"}}>
+        <h2>Add a question to override</h2>
+        <Form className="questionOverriddeForm" onFinish={addQuestionToOverride} >
+          <Form.Item
+              name={"question"}
+              rules={[
+                  {
+                  required: true,
+                  message: "Please enter valid question",
+                  }
+              ]}
+          >                  
+          <Input placeholder="Enter a question to override" />
+          </Form.Item>
 
-      <h3>Add a question to override</h3>
-      <Form className="questionOverriddeForm" onFinish={addQuestionToOverride}>
-        <Form.Item
-            name={"question"}
-            rules={[
-                {
-                required: true,
-                message: "Please enter valid question",
-                }
-            ]}
-        >                  
-        <Input placeholder="Enter a question to override" />
-        </Form.Item>
+          <Form.Item
+              name={"answer"}
+              rules={[
+                  {
+                  required: true,
+                  message: "Please enter valid answer",
+                  }
+              ]}
+          >                  
+          <Input placeholder="Enter the expected answer" />
+          </Form.Item>
 
-        <Form.Item
-            name={"answer"}
-            rules={[
-                {
-                required: true,
-                message: "Please enter valid answer",
-                }
-            ]}
-        >                  
-        <Input placeholder="Enter the expected answer" />
-        </Form.Item>
+          <Button type="primary" htmlType="submit" block>Add</Button>
+          {errorMessage !== "" && (
+              <div className="erroralert">
+              <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
+              </div>
+          )}
+        </Form>
 
-
-        <Button type="primary" htmlType="submit" block>Add</Button>
-        {errorMessage !== "" && (
-            <div className="erroralert">
-            <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
-            </div>
-        )}
-      </Form>
-
-      <h3>Overridden Questions</h3>
-      <Table dataSource={questionsOverride?.questions} columns={questionOverrideColumns} />
+        <h2 style={{marginTop: "5%"}}>Overridden Questions</h2>
+        <Table dataSource={questionsOverride?.questions} columns={questionOverrideColumns} />
+      </div>
     </div>
   );
 }
