@@ -7,12 +7,18 @@ import { OrganizationApiDto } from "../../models/Organization";
 import { FrequentlyAskedQuestionsResponse } from "../../models/FrequentQuestions";
 import { QuestionsOverrideResponse, QuestionOverrideResponse } from "../../models/QuestionOverride";
 
+
 function Dashboard() {
   const { organizationId } = useParams();
   const [organization, setOrganization] = useState<OrganizationApiDto | null>(null);
   const [frequentQuestions, setFrequentQuestions] = useState<FrequentlyAskedQuestionsResponse | null>(null);
-  const [questionsOverride, setQuestionsOverride] = useState<QuestionsOverrideResponse | null>(null)
+  // const [questionsOverride, setQuestionsOverride] = useState<QuestionsOverrideResponse | null>(null)
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [questionsOverride, setQuestionsOverride] = useState<QuestionsOverrideResponse>({
+    questions: [],
+  });
+
 
   const [loading, setLoading] = useState(false);
 
@@ -100,9 +106,12 @@ function Dashboard() {
     if (content.errorCode) {
       setErrorMessage(content.errorCode)
     } else {
-      // doesnt work 
-      questionsOverride?.questions.push(content)
-      setQuestionsOverride(questionsOverride);
+      const updatedQuestions = [
+        ...questionsOverride.questions,
+        { question: content.question, answer: content.answer },
+      ];
+      
+      setQuestionsOverride({questions: updatedQuestions});
     }
 
     setLoading(false);
@@ -126,9 +135,11 @@ function Dashboard() {
     if (content.errorCode) {
       setErrorMessage(content.errorCode)
     } else {
-      // Would prob be easier to conver this to a list
-      // const updatedList = questionsOverride?.filter((question) => question.question == content.question)
-      // setQuestionsOverride(updatedList)
+      const updatedQuestions = questionsOverride.questions.filter(
+        (question) => question.question !== content.question
+      )
+      
+      setQuestionsOverride({ questions: updatedQuestions })
     }
 
     setLoading(false);
@@ -195,7 +206,8 @@ function Dashboard() {
       </div>
 
       <div className="frequentlyAskedQuestions" style={{padding: "5%", background: "#B0C3D4", marginTop: "5%", marginBottom: "5%", borderRadius: "10px"}}>
-        <h2>Add a question to override</h2>
+        <h2>Qustion Override</h2>
+        <h4 style={{fontStyle: "italic"}}>Overridden questions will always return the same response.</h4>
         <Form className="questionOverriddeForm" onFinish={addQuestionToOverride} >
           <Form.Item
               name={"question"}
