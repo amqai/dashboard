@@ -200,11 +200,11 @@ function Dashboard() {
     <div className="center-wrapper">
       <Typography.Title level={2}>{organization?.name} Dashboard</Typography.Title>
       <Loading/>
-      <Card title="Frequently Asked Questions" bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
+      <Card title="Frequently Asked Questions" style={{margin: "5%"}}>
         <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
       </Card>
 
-      <Card title="Question Override" bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
+      <Card title="Question Override" style={{margin: "5%"}}>
         <h4 style={{fontStyle: "italic"}}>Overridden questions will always return the same response.</h4>
         <Form className="questionOverriddeForm" onFinish={addQuestionToOverride} >
           <Form.Item
