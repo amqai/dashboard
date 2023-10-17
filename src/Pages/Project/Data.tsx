@@ -318,7 +318,7 @@ function Data() {
             {hasPermission("MANAGE_DATA") && (
               <>
                 <div className="settings-form-buttons" style={{borderTop: 0}}>
-                  <Button onClick={() => onAddEmbedding} type="primary" style={{minWidth:"90px"}}>Add data</Button>
+                  <Button onClick={onAddEmbedding} type="primary" style={{minWidth:"90px"}}>Add data</Button>
                 </div>
                 <Form className="settings-form-buttons" style={{ display: 'flex', width: '100%' }}>
                   <Form.Item style={{ flex: 1, marginRight: 8 }}>
