@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import "../../styles/common.css";
 import { OrganizationApiDto } from "../../models/Organization";
 import { FrequentlyAskedQuestionsResponse } from "../../models/FrequentQuestions";
-import { QuestionsOverrideResponse, QuestionOverrideResponse } from "../../models/QuestionOverride";
+import { QuestionsOverrideResponse } from "../../models/QuestionOverride";
 
 
 function Dashboard() {
