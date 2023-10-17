@@ -1,4 +1,4 @@
-import { Typography, Spin, Space, Table, Form, Button, Input, Alert } from "antd";
+import { Typography, Spin, Space, Table, Form, Button, Input, Alert, Card } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -200,13 +200,11 @@ function Dashboard() {
     <div className="center-wrapper">
       <Typography.Title level={2}>{organization?.name} Dashboard</Typography.Title>
       <Loading/>
-      <div className="frequentlyAskedQuestions" style={{padding: "5%", background: "#B0C3D4", marginTop: "5%", marginBottom: "5%", borderRadius: "10px"}}>
-      <h2>Frequently Asked Questions</h2>
+      <Card title="Frequently Asked Questions" bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
         <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
-      </div>
+      </Card>
 
-      <div className="frequentlyAskedQuestions" style={{padding: "5%", background: "#B0C3D4", marginTop: "5%", marginBottom: "5%", borderRadius: "10px"}}>
-        <h2>Qustion Override</h2>
+      <Card title="Question Override" bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
         <h4 style={{fontStyle: "italic"}}>Overridden questions will always return the same response.</h4>
         <Form className="questionOverriddeForm" onFinish={addQuestionToOverride} >
           <Form.Item
@@ -243,7 +241,7 @@ function Dashboard() {
 
         <h2 style={{marginTop: "5%"}}>Overridden Questions</h2>
         <Table dataSource={questionsOverride?.questions} columns={questionOverrideColumns} />
-      </div>
+      </Card>
     </div>
   );
 }
