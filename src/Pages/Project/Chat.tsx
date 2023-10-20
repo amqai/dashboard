@@ -310,17 +310,18 @@ function Chat() {
     <div className="chat-container">
       <div className="chat-section">
         <div>
-            <Title level={5}>Chats</Title>
+            <Title level={3}>Chats</Title>
         </div>
-        <Input
-            placeholder="Search chats"
-            prefix={<SearchOutlined />}
-        />
-        <Divider />
         <Button 
           type="primary"
           onClick={onAddChat}
+          style={{width: "100%"}}
         >+ New chat</Button>
+        <Divider />
+        <Input
+            placeholder="Search chats"
+            prefix={<SearchOutlined/>}
+        />
         <Divider />
         {conversations && (
             <div className="chat-list">
@@ -535,7 +536,9 @@ function Chat() {
           </Modal>
         </Card>
         ) : (
-          <div style={{minHeight: '92vh'}}>Please select a chat or <Button onClick={onAddChat}>Start a new chat</Button></div>
+          <div style={{minHeight: '92vh'}}>
+            <p>Load most recent chat here</p>
+          </div>
         )}
       </div>
     </div>

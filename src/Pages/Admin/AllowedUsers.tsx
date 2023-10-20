@@ -137,7 +137,7 @@ function AllowedUsers() {
   };
 
     return (
-        <div>
+        <div className="center-wrapper">
             <Card title={"Allowed Users"} bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
                 {alertMessage !== null && alertMessage.message !== "" && (
                   <div style={{margin: "24px"}}>

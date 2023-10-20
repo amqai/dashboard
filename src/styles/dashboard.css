@@ -1,5 +1,4 @@
 .container {
-    height: 100vh;
     width: 100vw;
 }
 
@@ -24,8 +23,6 @@
 }
 
 .wrapper-100vh {
-    max-height: 100%;
-    min-height: 100%;
     overflow-y: scroll
 }
 
@@ -35,11 +32,11 @@
 
 .center-wrapper {
     max-width: 1200px;
-    min-height: 100%;
-    max-height: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding: 5%;
+    padding: 10%;
+    padding-top: 5%;
+    overflow-y: auto;
 }
 
 .settings-form-fields {
