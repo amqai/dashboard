@@ -8,6 +8,11 @@ function App() {
     <>
       <ConfigProvider
         theme={{
+
+          token: {
+            colorPrimary: 'grey',
+          },
+
           algorithm: theme.darkAlgorithm,
             components: {
               Button: {

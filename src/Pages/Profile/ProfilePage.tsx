@@ -1,8 +1,12 @@
-import { Form, Button, Input, Alert, Typography } from "antd";
+import { Form, Button, Input, Alert, Typography, theme } from "antd";
 import { useState } from "react";
+
+//TODO: This is you import custom theme
+const { useToken } = theme;
 
 function ProfilePage() {
     const [errorMessage, setErrorMessage] = useState('');
+    const { token } = useToken();
 
     const resetPassword = async () => {
         console.log("here")
@@ -16,7 +20,8 @@ function ProfilePage() {
     
         <div className="center-wrapper"
         style={{
-            margin: "5%"
+            margin: "5%",
+            background: token.colorPrimary
         }}
         >
             <Typography.Title level={3}>Profile</Typography.Title>
