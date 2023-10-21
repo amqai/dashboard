@@ -6,16 +6,15 @@ import AppRoutes from "./Layout/AppRoutes"; // update with your actual path to A
 function App() {
   const primary = '#AF82F5' // purple
   const secondary = '#253237' // grey
-  const tertiary = '#253237' // light
   const accent1 = '#3C896D' // teal
-  const accent2 = '#D13610' // red
+  // const accent2 = '#D13610' // red
 
   return (
     <>
       <ConfigProvider
         theme={{
           token: {
-            colorPrimary: 'grey',
+            // change colors of antd here
           },
 
           algorithm: theme.darkAlgorithm,

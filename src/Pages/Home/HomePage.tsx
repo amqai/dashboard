@@ -218,151 +218,148 @@ information as you have available in the context provided.
                             labelAlign="left"
                         >
                             <Typography.Title level={3} style={{ marginBottom: '24px' }}>Create new organization</Typography.Title>
-                            <div className="settings-form-fields">
-                                <Form.Item
-                                name={"name"}
-                                label="Name"
-                                rules={[
-                                    {
-                                    required: true,
-                                    message: "Please enter organization name",
-                                    }
-                                ]}
-                                >
-                                    <Input placeholder="Project Name" />
-                                </Form.Item>
-                            </div>
+
+                            <Form.Item
+                            name={"name"}
+                            label="Name"
+                            rules={[
+                                {
+                                required: true,
+                                message: "Please enter organization name",
+                                }
+                            ]}
+                            >
+                                <Input placeholder="Project Name" />
+                            </Form.Item>
+    
                             <Button type="primary" onClick={() => setToggleSettings(!toggleSettings)} style={{marginBottom: '24px'}}>{settingsVerb} Advanced Settings</Button>
-                            <div className="settings-form-fields">
-                                <Form.Item
-                                name={"openAiApiKey"}
-                                label="OpenAI API Key"
-                                rules={[
-                                    {
-                                    message: "Please enter OpenAI API Key",
-                                    }
-                                ]}
-                                style={toggleSettings != true ? { display: 'none' } : { }}
-                                >
-                                <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
-                                </Form.Item>
-                                <Form.Item
-                                name="defaultKey"
-                                valuePropName="checked"
-                                initialValue={true}
-                                style={toggleSettings != true ? { display: 'none' } : { }}
-                                >
-                                <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
-                                </Form.Item>
-                            </div>
-                            <div className="settings-form-fields">
-                                <Form.Item
-                                name={"model"}
-                                label="Default Model"
-                                rules={[
-                                    {
-                                    required: true,
-                                    message: "Please select model",
-                                    }
-                                ]}
-                                style={toggleSettings != true ? { display: 'none' } : { }}
-                                >
-                                    <Select placeholder="Select Model">
-                                        <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                                        <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
-                                        <Select.Option value="gpt-4">GPT 4</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                            <div className="settings-form-fields-100">
-                                <Form.Item
-                                name={"prompt"}
-                                label="System Prompt"
-                                rules={[
-                                    {
-                                    required: true,
-                                    message: "Please input system prompt",
-                                    }
-                                ]}
-                                style={toggleSettings != true ? { display: 'none' } : { }}
-                                >
-                                    <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
-                                </Form.Item>
-                            </div>
-                            <div className="settings-form-fields-100">
-                                <Form.Item
-                                name={"searchSize"}
+
+                            <Form.Item
+                            name={"openAiApiKey"}
+                            label="OpenAI API Key"
+                            rules={[
+                                {
+                                message: "Please enter OpenAI API Key",
+                                }
+                            ]}
+                            style={toggleSettings != true ? { display: 'none' } : { }}
+                            >
+                            <Input.Password disabled={defaultApiKey} placeholder="OpenAI Api Key" />
+                            </Form.Item>
+
+                            <Form.Item
+                            name="defaultKey"
+                            valuePropName="checked"
+                            initialValue={true}
+                            style={toggleSettings != true ? { display: 'none' } : { }}
+                            >
+                            <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
+                            </Form.Item>
+
+                            <Form.Item
+                            name={"model"}
+                            label="Default Model"
+                            rules={[
+                                {
+                                required: true,
+                                message: "Please select model",
+                                }
+                            ]}
+                            style={toggleSettings != true ? { display: 'none' } : { }}
+                            >
+                                <Select placeholder="Select Model">
+                                    <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
+                                    <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                                    <Select.Option value="gpt-4">GPT 4</Select.Option>
+                                </Select>
+                            </Form.Item>
+
+                            <Form.Item
+                            name={"prompt"}
+                            label="System Prompt"
+                            rules={[
+                                {
+                                required: true,
+                                message: "Please input system prompt",
+                                }
+                            ]}
+                            style={toggleSettings != true ? { display: 'none' } : { }}
+                            >
+                                <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
+                            </Form.Item>
+    
+                            <Form.Item
+                            name={"searchSize"}
+                            label={
+                                <div>
+                                    <Tooltip title="The maximum number of relevant search results that will be used in your prompts. We recommend 5-10 as a default.">
+                                    Max Search Results
+                                    </Tooltip>
+                                </div>
+                            }
+                            rules={[
+                                {
+                                required: true,
+                                message: "Please input maximum search relevancy results",
+                                }
+                            ]}
+                            style={toggleSettings != true ? { display: 'none' } : { }}
+                            >
+                                <Slider
+                                    min={1}
+                                    max={20}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
                                 label={
                                     <div>
-                                      <Tooltip title="The maximum number of relevant search results that will be used in your prompts. We recommend 5-10 as a default.">
-                                        Max Search Results
-                                      </Tooltip>
+                                        <Tooltip title="The minimum percentage amount necessary for a search result to be considered relevant. We recommend 80-90 as a default.">
+                                        Search Threshold %
+                                        </Tooltip>
                                     </div>
                                 }
+                                name={"searchThreshold"}
                                 rules={[
                                     {
                                     required: true,
-                                    message: "Please input maximum search relevancy results",
+                                    message: "Please input minimum threshold percentage for search hits",
                                     }
                                 ]}
                                 style={toggleSettings != true ? { display: 'none' } : { }}
                                 >
                                     <Slider
                                         min={1}
-                                        max={20}
+                                        max={100}
                                     />
-                                </Form.Item>
-                            </div>
-                            <div className="settings-form-fields-100">
-                                <Form.Item
-                                    label={
-                                        <div>
-                                          <Tooltip title="The minimum percentage amount necessary for a search result to be considered relevant. We recommend 80-90 as a default.">
-                                          Search Threshold %
-                                          </Tooltip>
-                                        </div>
+                            </Form.Item>
+
+                            <Form.Item
+                                label={
+                                    <div>
+                                        <Tooltip title="Specify a value between 1 and 200 for how creative you want the answers to be. We recommend 50 as a default.">
+                                        Creativity
+                                        </Tooltip>
+                                    </div>
+                                }
+                                name={"temperature"}
+                                rules={[
+                                    {
+                                    required: true,
+                                    message: "Please input a creativity percentage",
                                     }
-                                    name={"searchThreshold"}
-                                    rules={[
-                                        {
-                                        required: true,
-                                        message: "Please input minimum threshold percentage for search hits",
-                                        }
-                                    ]}
-                                    style={toggleSettings != true ? { display: 'none' } : { }}
-                                    >
-                                        <Slider
-                                            min={1}
-                                            max={100}
-                                        />
-                                </Form.Item>
-                            </div>
-                            <div className="settings-form-fields-100">
-                                <Form.Item
-                                    label={
-                                        <div>
-                                          <Tooltip title="Specify a value between 1 and 200 for how creative you want the answers to be. We recommend 50 as a default.">
-                                          Creativity
-                                          </Tooltip>
-                                        </div>
-                                    }
-                                    name={"temperature"}
-                                    rules={[
-                                        {
-                                        required: true,
-                                        message: "Please input a creativity percentage",
-                                        }
-                                    ]}
-                                    style={toggleSettings != true ? { display: 'none' } : { }}
-                                    >
-                                        <Slider
-                                            min={1}
-                                            max={200}
-                                        />
-                                </Form.Item>
-                            </div>
+                                ]}
+                                style={toggleSettings != true ? { display: 'none' } : { }}
+                                >
+                                    <Slider
+                                        min={1}
+                                        max={200}
+                                    />
+                            </Form.Item>
+
                             <Button type="primary" htmlType="submit">Save</Button>
                             <Button style={{marginLeft: "10px"}} danger onClick={() => setFormOpen(false)}>Cancel</Button>
+
                             <Modal
                                 open={defaultApiKeyWarning}
                                 title="Warning"
@@ -372,7 +369,7 @@ information as you have available in the context provided.
                                 setDefaultApiKey(true)
                                 }}
                             >
-                                <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
+                            <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
                             </Modal>
                         </Form>
                     </>

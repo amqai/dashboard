@@ -4,7 +4,6 @@ import Sider from "antd/es/layout/Sider";
 import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
 import { RiOrganizationChart } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
-import { GrProjects } from "react-icons/gr";
 import { GoOrganization } from "react-icons/go"
 import { MdAdminPanelSettings } from "react-icons/md"
 import { AiOutlineDashboard, AiOutlineDatabase } from "react-icons/ai"
