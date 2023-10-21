@@ -222,7 +222,7 @@ function Settings() {
   return (
     <div className="center-wrapper">
       <Typography.Title level={2}>Settings</Typography.Title>
-      <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
+      <Card title={project?.projectName + " settings"}>
       {alertMessage !== null && alertMessage.message !== "" && (
         <div style={{margin: "24px"}}>
           <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />

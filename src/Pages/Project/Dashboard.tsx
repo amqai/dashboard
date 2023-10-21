@@ -4,6 +4,7 @@ import { fetchProjects } from "../../Services/ApiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { hasPermission } from "../../Services/PermissionService";
+import { IoAddSharp } from "react-icons/io5"
 
 interface Project {
     projectName: string,
@@ -80,15 +81,28 @@ function HomePage() {
     return (
         <>
             <div className="center-wrapper">
+            <div className="page-headers"
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                }}>
+                    <div>
+                        <Typography.Title level={2}>Topics</Typography.Title>
+                        <Typography.Text>Select an existing topic, or create a new one</Typography.Text>
+                    </div>
+
+                    {hasPermission("CREATE_TOPICS") && (
+                        <Button type="primary" shape="circle" icon={<IoAddSharp/>} onClick={() => setFormOpen(true)}></Button>
+                    )}
+
+                </div>
+
                 {alertMessage !== null && alertMessage.message !== "" && (
                     <div>
                     <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
-                    <Divider />
                     </div>
                 )}
-                {hasPermission("CREATE_TOPICS") && (
-                    <Button type="primary" onClick={() => setFormOpen(true)}>New Topic</Button>
-                )}
+
                 {formOpen && (
                     <>
                         <Divider></Divider>

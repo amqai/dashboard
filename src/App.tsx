@@ -4,11 +4,16 @@ import { ConfigProvider, theme } from 'antd';
 import AppRoutes from "./Layout/AppRoutes"; // update with your actual path to AppRoutes
 
 function App() {
+  const primary = '#AF82F5' // purple
+  const secondary = '#253237' // grey
+  const tertiary = '#253237' // light
+  const accent1 = '#3C896D' // teal
+  const accent2 = '#D13610' // red
+
   return (
     <>
       <ConfigProvider
         theme={{
-
           token: {
             colorPrimary: 'grey',
           },
@@ -16,13 +21,12 @@ function App() {
           algorithm: theme.darkAlgorithm,
             components: {
               Button: {
-                // colorPrimary: '#00b96b',
-                // colorPrimaryHover: 'orange',
+                colorPrimary: accent1,
+                colorPrimaryHover: accent1,
               },
               Menu: {
-                //todo: Do better with colors here
-                itemSelectedColor: 'purple',
-                itemSelectedBg: 'grey',
+                itemSelectedColor: primary,
+                // itemSelectedBg: secondary,
               }
             },
 

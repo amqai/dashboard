@@ -176,15 +176,38 @@ information as you have available in the context provided.
     return (
         <>
             <div className="center-wrapper">
+                <div className="page-headers"
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                }}>
+                    <div>
+                    <Typography.Title level={2}>Organizations</Typography.Title>
+                    <Typography.Text>Select an existing organization, or create a new one</Typography.Text>
+                    </div>
+
+                    <div
+                    style={{
+                        
+                    }}
+                    >
+                        {currentPerson?.admin && (
+                        <Button type="primary"
+                        shape="circle"
+                        style={{fontSize: "10"}}
+                        onClick={() => openForm()}>+</Button>)}
+                    </div>
+
+                </div>
+
+
                 {alertMessage !== null && alertMessage.message !== "" && (
                     <div>
                     <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
                     <Divider />
                     </div>
                 )}
-                {currentPerson?.admin && (
-                    <Button type="primary" onClick={() => openForm()}>New Organization</Button>
-                )}
+
                 {formOpen && (
                     <>
                         <Divider></Divider>
