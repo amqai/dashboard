@@ -1,19 +1,11 @@
-import { Alert, Button, Card, Form, Input, Select, Table, Typography, Spin, Space, Modal, Checkbox, Slider} from "antd";
+import { Alert, Button, Card, Form, Input, Select, Typography, Spin, Space, Modal, Checkbox, Slider} from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/common.css";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
-import { CheckboxValueType } from "antd/es/checkbox/Group";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { hasPermission } from "../../Services/PermissionService";
-
-interface Member {
-    key: string
-    email: string
-    personId: string
-    permissions: string
-}
+import OrganizationMembersList from "../../Components/OrganizationMembersList";
 
 function Settings() {
   const [form] = Form.useForm();
@@ -23,15 +15,8 @@ function Settings() {
 
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isMemberModal, setIsMemberModal] = useState(false)
-  const [memberEmail, setMemberEmail] = useState("")
-  const [memberPersonId, setMemberPersonId] = useState("")
-  const [memberData, setMemberData] = useState<Member[]>()
-  const [memberPermissions, setMemberPermissions] = useState<string[]>([]);
   const [defaultApiKey, setDefaultApiKey] = useState(false)
   const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false)
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentEditingMember, setCurrentEditingMember] = useState<Member | null>(null);
 
 
   const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; temperature: any, searchSize: any, searchThreshold: any }) => {
@@ -129,155 +114,10 @@ function Settings() {
             searchThreshold: settings?.searchThreshold,
           });
           setDefaultApiKey(settings?.openAiApiKey === "" ? true : false);
-          handleMemberTableUpdate(settings);
-          setMemberPermissions(["READ", "MANAGE_DATA", "CREATE_TOPICS", "UPLOAD_DATA", "MANAGE_ORGANIZATION"])
         }
       }
     )();
   }, [organizationId])
-
-  // Delete member
-  const handleDeleteMember = async (personId: string) => {
-    {
-      if(organizationId) {
-        if(memberData?.length == 1){
-          setAlertMessage({
-            message: 'There must be at least one member in the project',
-            type: AlertType.Error,
-          })
-        } else {
-          const jwt = localStorage.getItem('jwt');
-          await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {
-            method: "DELETE",
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwt}`
-            },
-          })
-          .then((response) => {
-            if(response.ok) {
-              setMemberData(memberData?.filter((member) => member.personId != personId))
-            }
-          })
-        }
-      }
-    }
-  }
-
-  const handleCheckboxChange = (checkedValues: CheckboxValueType[]) => {
-    setMemberPermissions(checkedValues as string[]);
-  };
-
-  // Add member
-  const handleAddMember = async () => {
-    if(organizationId) {
-      const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&email=${memberEmail}`, {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`
-        },
-        body: JSON.stringify({ permissions: memberPermissions })
-      });
-
-      setMemberEmail("")
-      const content = await response.json();
-      if(content) {
-        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-          }
-        });
-
-        const settings = await res.json()
-        handleMemberTableUpdate(settings);
-      }
-    }
-  };
-
-  const handleUpdateMember = async (personId: string) => {
-    if (organizationId && currentEditingMember) {
-      const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {
-        method: "PUT",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`
-        },
-        body: JSON.stringify({ permissions: memberPermissions })
-      });
-
-      setMemberEmail("")
-      const content = await response.json();
-      if(content) {
-        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-          }
-        });
-
-        const settings = await res.json()
-        handleMemberTableUpdate(settings);
-      }
-    }
-  };
-
-  const handleMemberTableUpdate = async(settings: any) => {
-    const userData = settings?.members.map((member: { personId: any; email: any; permissions: any }) => (
-      {
-        key: member.personId,
-        email: member.email,
-        permissions: member.permissions.join(", "),
-        personId: member.personId
-      }
-    ))
-    if(userData != null) {
-      setMemberData(...[userData])
-    }
-  }
-
-  const memberColumns = [
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-      personId: 'id',
-    },
-    {
-      title: 'Permissions',
-      dataIndex: 'permissions',
-      key: 'permissions',
-      personId: 'id',
-    },
-    {
-      title: 'Action',
-      key: 'id',
-      personId: 'id',
-      render: (_: any, record: Member) => (
-        <>
-          <EditOutlined
-              onClick={() => {
-                  setIsEditing(true);
-                  setIsMemberModal(true);
-                  setCurrentEditingMember(record);
-                  setMemberEmail(record.email);
-                  setMemberPermissions(record.permissions.split(", "));
-                  setMemberPersonId(record.personId);
-              }}
-          />
-          <DeleteOutlined
-              onClick={() => {
-                handleDeleteMember(record.personId);
-              }}
-              style={{ color: "red", marginLeft: 12 }}
-          />
-        </>
-      ),
-    },
-  ];
 
   function Loading() {
     if(loading) {
@@ -295,7 +135,6 @@ function Settings() {
 
   return (
     <div className="center-wrapper">
-      <Typography.Title level={2}>Settings</Typography.Title>
       <Card title={organization?.name + " settings"} bodyStyle={{padding: "0"}}>
       {alertMessage !== null && alertMessage.message !== "" && (
         <div style={{margin: "24px"}}>
@@ -431,44 +270,6 @@ function Settings() {
       </Card>
 
       <Modal
-        open={isMemberModal}
-        title={isEditing ? "Edit Member" : "Add Member"}
-        okText="Save"
-        onCancel={() => {
-          setIsMemberModal(false);
-          setIsEditing(false);
-          setCurrentEditingMember(null);
-          setMemberEmail("");
-          setMemberPermissions([]);
-          setMemberPersonId("");
-        }}      
-        onOk={() => {
-          if (isEditing) {
-              handleUpdateMember(memberPersonId);
-          } else {
-              handleAddMember();
-          }
-          setIsMemberModal(false);
-          setIsEditing(false);
-          setCurrentEditingMember(null);
-      }}
-      >
-        <Input 
-          placeholder="Enter member email"
-          value={memberEmail}
-          onChange={(e) => setMemberEmail(e.target.value)}
-          disabled={isEditing}
-        />
-        <Checkbox.Group onChange={handleCheckboxChange} defaultValue={memberPermissions}>
-            <Checkbox value="READ" className="settings-checkbox">READ</Checkbox>
-            <Checkbox value="MANAGE_DATA" className="settings-checkbox">MANAGE_DATA</Checkbox>
-            <Checkbox value="CREATE_TOPICS" className="settings-checkbox">CREATE_TOPICS</Checkbox>
-            <Checkbox value="UPLOAD_DATA" className="settings-checkbox">UPLOAD_DATA</Checkbox>
-            <Checkbox value="MANAGE_ORGANIZATION" className="settings-checkbox">MANAGE_ORGANIZATION</Checkbox>
-        </Checkbox.Group>
-      </Modal>
-
-      <Modal
         open={defaultApiKeyWarning}
         title="Warning"
         okText="Ok"
@@ -479,15 +280,7 @@ function Settings() {
       >
         <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
       </Modal>
-
-      <Card title={organization?.name + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
-        <div className="settings-form-buttons" style={{borderTop: 0}}>
-          <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
-        </div>
-        <div className="settings-form-field-100">
-          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={memberData} columns={memberColumns} />
-        </div>
-      </Card>
+      <OrganizationMembersList organizationId={organizationId} />
     </div>
   );
 }
