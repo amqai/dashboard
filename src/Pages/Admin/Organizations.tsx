@@ -5,7 +5,7 @@ import "../../styles/common.css";
 import { Member, OrganizationApiDto } from "../../models/Organization";
 import { useNavigate } from "react-router-dom";
 import FeatureToggleList from "../../Components/FeatureToggleList";
-import OrganizationMembersModal from "../../Components/OrganizationMembersList";
+import OrganizationMembersList from "../../Components/OrganizationMembersList";
 
 function Organizations() {
     const [organizations, setOrganizations] = useState<OrganizationApiDto[]>()
@@ -13,8 +13,6 @@ function Organizations() {
     const navigate = useNavigate();
     const [isFeatureModalVisible, setIsFeatureModalVisible] = useState(false);
     const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(null);
-    const [organizationMembers, setOrganizationMembers] = useState<Member[]>();
-    const [organizationOwner, setOrganizationOwner] = useState<string>();
     const [isOrganizationMembersModalVisible, setIsOrganizationMembersModalVisible] = useState(false);
 
     const handleFeaturesClick = (organizationId: string) => {
@@ -30,9 +28,8 @@ function Organizations() {
         navigate(`/organization/${organizationId}/settings`)
     }
 
-    const handleOrganizationMembersClick = (members: Member[], ownerId: string) => {
-        setOrganizationMembers(members);
-        setOrganizationOwner(ownerId);
+    const handleOrganizationMembersClick = (organizationId: string) => {
+        setSelectedOrganizationId(organizationId);
         setIsOrganizationMembersModalVisible(true);
     };
 
@@ -74,8 +71,8 @@ function Organizations() {
         {
             title: 'Members',
             key: 'members',
-            render: (r: { members: Member[], ownerId: string}) => (
-                <a onClick={() => handleOrganizationMembersClick(r.members, r.ownerId)}>{r.members.length}</a>
+            render: (r: { members: Member[], id: string}) => (
+                <a onClick={() => handleOrganizationMembersClick(r.id)}>{r.members.length}</a>
             )
         },
         {
@@ -120,11 +117,22 @@ function Organizations() {
                 <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={organizations} columns={organizationColumns} />
                 </div>
             </Card>
-            <Modal title="Organization Features" visible={isFeatureModalVisible} onCancel={handleFeatureModalClose} onOk={handleFeatureModalClose}>
+            <Modal
+                title="Organization Features"
+                visible={isFeatureModalVisible}
+                onCancel={handleFeatureModalClose}
+                onOk={handleFeatureModalClose}
+            >
                 <FeatureToggleList organizationId={selectedOrganizationId} visible={isFeatureModalVisible} />
             </Modal>
-            <Modal title="Organization Members" visible={isOrganizationMembersModalVisible} onCancel={handleOrganizationMembersModalClose} onOk={handleOrganizationMembersModalClose}>
-                <OrganizationMembersModal organizationMembers={organizationMembers} organizationOwner={organizationOwner} />
+            <Modal 
+                title="Organization Members"
+                visible={isOrganizationMembersModalVisible}
+                onCancel={handleOrganizationMembersModalClose}
+                onOk={handleOrganizationMembersModalClose}
+                width={1000}
+            >
+                <OrganizationMembersList organizationId={selectedOrganizationId!!} setAlertMessage={setAlertMessage} />
             </Modal>
       </div>
     );
