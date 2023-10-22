@@ -13,6 +13,7 @@ import ProjectDashboard from "../Pages/Project/Dashboard";
 import Dashboard from "../Pages/Organization/Dashboard";
 import Data from "../Pages/Project/Data";
 import Settings from "../Pages/Organization/Settings";
+import Organizations from "../Pages/Admin/Organizations";
 
 function AppRoutes() {
     const navigate = useNavigate();
@@ -46,7 +47,8 @@ function AppRoutes() {
                             <Layout.Content>
                                 <Routes>
                                     <Route path="/" element={<HomePage />} />
-                                    <Route path="/invite" element={<InviteUsers />} />
+                                    <Route path="/admin/invite" element={<InviteUsers />} />
+                                    <Route path="/admin/organizations" element={<Organizations />} />
                                     <Route path="/organization/:organizationId/*" element={
                                         <Routes>
                                             <Route path="/" element={<Dashboard /> } />
