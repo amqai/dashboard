@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, Checkbox, Input, Modal, Table } from 'antd';
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
+import { Alert as AlertModel, AlertType } from "../models/Alert";
 
 interface OrganizationMembersListProps {
     organizationId: string | undefined;
+    setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>;
 }
 
 interface Member {
@@ -14,7 +16,7 @@ interface Member {
     permissions: string
 }
   
-const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organizationId }) => {
+const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organizationId, setAlertMessage }) => {
     const [memberData, setMemberData] = useState<Member[]>();
     const [isMemberModal, setIsMemberModal] = useState(false);
     const [memberPersonId, setMemberPersonId] = useState("");
@@ -75,11 +77,12 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
     const handleDeleteMember = async (personId: string) => {
         {
         if(organizationId) {
-            if(memberData?.length == 1){
-                // setAlertMessage({
-                //     message: 'There must be at least one member in the project',
-                //     type: AlertType.Error,
-                // })
+            if(memberData?.length == 1) {
+                console.log("TEST");
+                setAlertMessage({
+                    message: 'There must be at least one member in the project',
+                    type: AlertType.Error,
+                })
             } else {
                 const jwt = localStorage.getItem('jwt');
                 await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/members?organizationId=${organizationId}&personId=${personId}`, {

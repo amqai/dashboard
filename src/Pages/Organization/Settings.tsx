@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Form, Input, Select, Typography, Spin, Space, Modal, Checkbox, Slider, Tabs} from "antd";
+import { Alert, Button, Card, Form, Input, Select, Spin, Space, Modal, Checkbox, Slider, Tabs} from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -17,7 +17,7 @@ function Settings() {
   const [loading, setLoading] = useState(false);
   const [defaultApiKey, setDefaultApiKey] = useState(false);
   const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false);
-  const [activeKey, setActiveKey] = useState(localStorage.getItem('organization.setting_page.activeTabKey') || "1");
+  const [activeKey, setActiveKey] = useState(localStorage.getItem('organization.settings_page.activeTabKey') || "1");
 
 
   const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; temperature: any, searchSize: any, searchThreshold: any }) => {
@@ -141,6 +141,11 @@ function Settings() {
   return (
     <div className="center-wrapper">
       <Loading/>
+      {alertMessage !== null && alertMessage.message !== "" && (
+        <div style={{margin: "24px"}}>
+          <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
+        </div>
+      )}
       <Tabs
           defaultActiveKey="1"
           activeKey={activeKey}
@@ -152,13 +157,9 @@ function Settings() {
             }
           }}
         >
-        <TabPane tab="Data" key="1">
+          
+        <TabPane tab="Settings" key="1">
           <Card title={organization?.name + " settings"} bodyStyle={{padding: "0"}}>
-          {alertMessage !== null && alertMessage.message !== "" && (
-            <div style={{margin: "24px"}}>
-              <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
-            </div>
-          )}
             <Form
                 form={form}
                 onFinish={saveSettings}
@@ -287,7 +288,13 @@ function Settings() {
           </Card>
         </TabPane>
         <TabPane tab="Members" key="2">
-          <OrganizationMembersList organizationId={organizationId} />
+          <OrganizationMembersList organizationId={organizationId} setAlertMessage={setAlertMessage} />
+        </TabPane>
+        <TabPane tab="Overrides" key="3">
+          
+        </TabPane>
+        <TabPane tab="WordPress Integration" key="4">
+          Wordpress integration here
         </TabPane>
       </Tabs>
 
