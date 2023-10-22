@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
+import { RiOrganizationChart } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
 import { GrDashboard, GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
 import { BsChatText, BsPeople } from "react-icons/bs";
@@ -136,8 +137,13 @@ function SideMenu() {
           icon: <GrUserAdmin />,
           children: [
             {
-              label: "Invite",
-              key: "/invite",
+              label: "Organizations",
+              key: "/admin/organizations",
+              icon: <RiOrganizationChart />
+            },
+            {
+              label: "Allowed Users",
+              key: "/admin/invite",
               icon: <BsPeople />
             }
           ],

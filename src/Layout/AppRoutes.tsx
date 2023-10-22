@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import HomePage from "../Pages/Home/HomePage";
-import InviteUsers from "../Pages/Admin/InviteUsers";
+import AllowedUsers from "../Pages/Admin/AllowedUsers";
 import LoginPage from '../Pages/LoginPage'; // Update with your actual LoginPage path
 import RegisterPage from "../Pages/RegisterPage";
 import AppHeader from "../Layout/AppHeader";
@@ -13,6 +13,7 @@ import ProjectDashboard from "../Pages/Project/Dashboard";
 import Dashboard from "../Pages/Organization/Dashboard";
 import Data from "../Pages/Project/Data";
 import Settings from "../Pages/Organization/Settings";
+import Organizations from "../Pages/Admin/Organizations";
 
 function AppRoutes() {
     const navigate = useNavigate();
@@ -46,7 +47,8 @@ function AppRoutes() {
                             <Layout.Content>
                                 <Routes>
                                     <Route path="/" element={<HomePage />} />
-                                    <Route path="/invite" element={<InviteUsers />} />
+                                    <Route path="/admin/invite" element={<AllowedUsers />} />
+                                    <Route path="/admin/organizations" element={<Organizations />} />
                                     <Route path="/organization/:organizationId/*" element={
                                         <Routes>
                                             <Route path="/" element={<Dashboard /> } />
