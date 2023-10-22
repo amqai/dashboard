@@ -7,6 +7,8 @@ import { OrganizationApiDto } from "../../models/Organization";
 import { hasPermission } from "../../Services/PermissionService";
 import OrganizationMembersList from "../../Components/OrganizationMembersList";
 import TabPane from "antd/es/tabs/TabPane";
+import QuestionOverrideForm from "../../Components/QuestionOverrideForm";
+import WordpressIntegrationForm from "../../Components/WordpressIntegrationForm";
 
 function Settings() {
   const [form] = Form.useForm();
@@ -291,10 +293,10 @@ function Settings() {
           <OrganizationMembersList organizationId={organizationId} setAlertMessage={setAlertMessage} />
         </TabPane>
         <TabPane tab="Overrides" key="3">
-          
+          <QuestionOverrideForm organizationId={organizationId} setAlertMessage={setAlertMessage} />
         </TabPane>
         <TabPane tab="WordPress Integration" key="4">
-          Wordpress integration here
+          <WordpressIntegrationForm organizationId={organizationId} setAlertMessage={setAlertMessage} />
         </TabPane>
       </Tabs>
 
