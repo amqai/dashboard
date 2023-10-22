@@ -13,7 +13,7 @@ interface FeatureToggleActionProps {
     onToggle: () => void; // Prop to handle toggling in the parent component
 }
   
-const FeatureAction: React.FC<FeatureToggleActionProps> = ({ organizationId, feature, enabled, onToggle  }) => {
+const FeatureToggleListItem: React.FC<FeatureToggleActionProps> = ({ organizationId, feature, enabled, onToggle  }) => {
     const handleToggle = async (enable: boolean) => {
         const jwt = localStorage.getItem('jwt');
         try {
@@ -37,18 +37,13 @@ const FeatureAction: React.FC<FeatureToggleActionProps> = ({ organizationId, fea
     };
 
     return (
-        <Form
-            labelCol={{ span: 5 }}
-            style={{ maxWidth: 600 }}
-        >
-            <Form.Item label={feature}>
-                <Switch checked={enabled} onChange={handleToggle} />
-            </Form.Item>
-        </Form>
+        <Form.Item label={feature}>
+            <Switch checked={enabled} onChange={handleToggle} />
+        </Form.Item>
     );
 };
   
-const FeatureToggleModal: React.FC<FeatureToggleModalProps> = ({ organizationId, visible }) => {
+const FeatureToggleList: React.FC<FeatureToggleModalProps> = ({ organizationId, visible }) => {
     const [features, setFeatures] = useState<{ [key: string]: boolean }>({});
     const [loading, setLoading] = useState(false);
 
@@ -98,13 +93,16 @@ const FeatureToggleModal: React.FC<FeatureToggleModalProps> = ({ organizationId,
             {loading ? (
                 <Spin />
             ) : (
-                <>
-                    <FeatureAction feature="CHAT" enabled={!!features.CHAT} organizationId={organizationId} onToggle={handleFeatureToggle} />
-                    <FeatureAction feature="WORDPRESS" enabled={!!features.WORDPRESS} organizationId={organizationId} onToggle={handleFeatureToggle} />
-                </>
+                <Form
+                    labelCol={{ span: 5 }}
+                    style={{ maxWidth: 600 }}
+                >
+                    <FeatureToggleListItem feature="CHAT" enabled={!!features.CHAT} organizationId={organizationId} onToggle={handleFeatureToggle} />
+                    <FeatureToggleListItem feature="WORDPRESS" enabled={!!features.WORDPRESS} organizationId={organizationId} onToggle={handleFeatureToggle} />
+                </Form>
             )}
         </>
     );
 };
 
-export default FeatureToggleModal;
+export default FeatureToggleList;

@@ -9,7 +9,7 @@ interface User {
     admin: string
 }
 
-function InviteUsers() {
+function AllowedUsers() {
     const [allowedUsers, setAllowedUsers] = useState<User[]>()
     const [isUserModal, setIsUserModal] = useState(false)
     const [addUser, setAddUser] = useState({
@@ -172,4 +172,4 @@ function InviteUsers() {
     );
 }
 
-export default InviteUsers;
+export default AllowedUsers;

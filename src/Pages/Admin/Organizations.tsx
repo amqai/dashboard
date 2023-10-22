@@ -4,7 +4,7 @@ import { Alert as AlertModel } from "../../models/Alert";
 import "../../styles/common.css";
 import { Member, OrganizationApiDto } from "../../models/Organization";
 import { useNavigate } from "react-router-dom";
-import FeatureToggleModal from "../../Components/FeatureToggleModal";
+import FeatureToggleList from "../../Components/FeatureToggleList";
 import OrganizationMembersModal from "../../Components/OrganizationMembersList";
 
 function Organizations() {
@@ -88,9 +88,9 @@ function Organizations() {
             key: 'id',
             render: (_: any, record: { id: any; }) => (
                 <>
-                    <Button 
+                    <a 
                         onClick={() => goToSettings(record.id)}
-                    >Settings</Button>
+                    >Settings</a>
                     <Button
                         style={{marginLeft:"1rem"}}
                         onClick={() => handleFeaturesClick(record.id)}
@@ -121,7 +121,7 @@ function Organizations() {
                 </div>
             </Card>
             <Modal title="Organization Features" visible={isFeatureModalVisible} onCancel={handleFeatureModalClose} onOk={handleFeatureModalClose}>
-                <FeatureToggleModal organizationId={selectedOrganizationId} visible={isFeatureModalVisible} />
+                <FeatureToggleList organizationId={selectedOrganizationId} visible={isFeatureModalVisible} />
             </Modal>
             <Modal title="Organization Members" visible={isOrganizationMembersModalVisible} onCancel={handleOrganizationMembersModalClose} onOk={handleOrganizationMembersModalClose}>
                 <OrganizationMembersModal organizationMembers={organizationMembers} organizationOwner={organizationOwner} />

@@ -142,7 +142,7 @@ function SideMenu() {
               icon: <RiOrganizationChart />
             },
             {
-              label: "Invite",
+              label: "Allowed Users",
               key: "/admin/invite",
               icon: <BsPeople />
             }
