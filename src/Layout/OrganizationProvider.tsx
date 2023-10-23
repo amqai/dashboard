@@ -28,7 +28,9 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
 
   const loadOrganizations = async () => {
     const jwt = localStorage.getItem('jwt');
-    const content = await fetchOrganizations(jwt!);
+    const superUserString = localStorage.getItem('super_user');
+    const superUser = superUserString === 'true';
+    const content = await fetchOrganizations(jwt!, superUser);
     if (content.status === 403) {
       navigate("/login");
     } else if (content.data.errorCode) {

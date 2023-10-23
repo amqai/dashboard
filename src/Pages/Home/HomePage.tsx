@@ -20,7 +20,7 @@ function HomePage() {
 
     const loadOrganizations = async () => {
         const jwt = localStorage.getItem('jwt');
-        const content = await fetchOrganizations(jwt!);
+        const content = await fetchOrganizations(jwt!, false);
         if (content.status === 403) {
             navigate("/login");
         } else if (content.data.errorCode) {

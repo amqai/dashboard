@@ -57,7 +57,9 @@ function SideMenu() {
       const organizationIdIndex = parts.indexOf('organization') + 1;
       const organizationId = parts[organizationIdIndex];
 
+      console.log(orgs);
       const organization = orgs?.filter(item => item.id === organizationId)[0];
+      console.log(organization);
 
       const children = [
       {
@@ -110,6 +112,7 @@ function SideMenu() {
         });
         const content = await response.json();
         setCurrentPerson(content);
+        localStorage.setItem('super_user', content.admin);
       }
     )();
 

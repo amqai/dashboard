@@ -1,11 +1,21 @@
 
-export async function fetchOrganizations(jwt: string) {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/person`, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-        },
-    });
+export async function fetchOrganizations(jwt: string, superUser: boolean) {
+    var response;
+    if (superUser) {
+        response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization:all`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwt}`
+            },
+        });
+    } else {
+        response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/person`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwt}`
+            },
+        });
+    }
 
     let content = null;
     if (response.status === 403) {

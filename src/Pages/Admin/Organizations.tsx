@@ -28,6 +28,12 @@ function Organizations() {
         navigate(`/organization/${organizationId}/settings`)
     }
 
+    const goToOrganizationDashboard = (organizationId: string) => {
+        localStorage.setItem('organization.id', organizationId)
+        localStorage.setItem('organization.permissions', JSON.stringify(["READ", "MANAGE_DATA", "CREATE_TOPICS", "UPLOAD_DATA", "MANAGE_ORGANIZATION", "MANAGE_INTEGRATIONS"]));
+        navigate(`/organization/${organizationId}/`);
+    }
+
     const handleOrganizationMembersClick = (organizationId: string) => {
         setSelectedOrganizationId(organizationId);
         setIsOrganizationMembersModalVisible(true);
@@ -62,7 +68,7 @@ function Organizations() {
             title: 'Id',
             key: 'id',
             render: (r: { id: string}) => (
-                <a href={`/organization/${r.id}/`}>{r.id}</a>
+                <a onClick={() => goToOrganizationDashboard(r.id)}>{r.id}</a>
             )
         },
         {
