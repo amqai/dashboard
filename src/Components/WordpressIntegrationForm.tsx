@@ -2,7 +2,7 @@ import { Button, Card, Form, Input, Select, Slider, Space, Spin, Switch } from '
 import React, { useEffect, useState } from 'react';
 import { BiSolidHelpCircle } from "react-icons/bi";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
-import { GetWordpressSettingsResponse } from '../models/Wordpress';
+import { GetOrganizationFeatureTogglesResponse, GetWordpressSettingsResponse } from '../models/Wordpress';
 import { Topic } from '../models/Topic';
 import { fetchProjects } from '../Services/ApiService';
 
