@@ -57,10 +57,7 @@ function SideMenu() {
       const organizationIdIndex = parts.indexOf('organization') + 1;
       const organizationId = parts[organizationIdIndex];
 
-      console.log(orgs);
       const organization = orgs?.filter(item => item.id === organizationId)[0];
-      console.log(organization);
-
       const children = [
       {
         label: "Dashboard",

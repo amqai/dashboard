@@ -126,9 +126,10 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
             setMaximumResponses(settings.maximumResponses);
             setCurrentResponses(settings.currentMonthResponses);
             if (settings.currentMonthResponses === 0) {
-                setCurrentMonthPercent(0)
+                setCurrentMonthPercent(0);
             } else {
-                setCurrentMonthPercent(settings.maximumResponses / settings.currentMonthResponses)
+                const percent = (settings.currentMonthResponses / settings.maximumResponses) * 100;
+                setCurrentMonthPercent(Number(percent.toFixed(2)));
             }
             setApiKey(settings.apiKey);
             form.setFieldsValue({

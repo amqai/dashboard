@@ -78,7 +78,6 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
         {
         if(organizationId) {
             if(memberData?.length == 1) {
-                console.log("TEST");
                 setAlertMessage({
                     message: 'There must be at least one member in the project',
                     type: AlertType.Error,
