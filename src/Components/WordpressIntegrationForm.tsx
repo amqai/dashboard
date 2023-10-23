@@ -182,7 +182,6 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
             title={
                 <span>WordPress Integration <BiSolidHelpCircle title="Settings for your WordPress Chatbot Integration" /></span>
             }
-            style={{margin: "5%"}}
         >
             {loading ? <Loading /> : (
                 <Form 

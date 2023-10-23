@@ -139,7 +139,6 @@ const QuestionOverrideForm: React.FC<QuestionOverrideFormProps> = ({ organizatio
             title={
                 <span>Question override <BiSolidHelpCircle title="Overridden questions will always return the same response" /></span>
             }
-            style={{margin: "5%"}}
         >
             <Loading/>
             <h4 style={{fontStyle: "italic"}}></h4>

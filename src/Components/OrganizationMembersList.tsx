@@ -175,7 +175,7 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
 
     return (
         <>
-            <Card title="Members" bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
+            <Card title="Members" bodyStyle={{padding: "0"}}>
                 <div className="settings-form-buttons" style={{borderTop: 0}}>
                 <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
                 </div>
