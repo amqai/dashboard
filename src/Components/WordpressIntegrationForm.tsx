@@ -10,10 +10,6 @@ interface WordpressIntegrationFormProps {
     organizationId: string | undefined;
     setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>;
 }
-
-interface GetOrganizationFeatureTogglesResponse {
-    organizationFeatures: string[],
-}
   
 const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ organizationId, setAlertMessage }) => {
     const [loading, setLoading] = useState(false);
@@ -210,11 +206,11 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                     </Form.Item>
                     <Form.Item
                         label={
-                            <span>Monthly Limit <BiSolidHelpCircle title="The maximum number of responses allowed by your plan." /></span>
+                            <span>Current / Total Monthly Limit <BiSolidHelpCircle title="The maximum number of responses allowed by your plan." /></span>
                         }
                         style={toggleSettings != true ? { display: 'none' } : { }}
                     >                  
-                        {maximumResponses}
+                        {wordpressSettings != null ? (<>{wordpressSettings?.currentMonthResponses}</>) : (0)} / {maximumResponses}
                     </Form.Item>
                     <Form.Item
                         name={"model"}

@@ -7,4 +7,9 @@ export interface GetWordpressSettingsResponse {
     maximumIpConversations: number,
     terminationResponse: string,
     topicIds: string[],
+    currentMonthResponses: number,
+}
+
+export interface GetOrganizationFeatureTogglesResponse {
+    organizationFeatures: string[],
 }
