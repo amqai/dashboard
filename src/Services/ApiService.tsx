@@ -1,3 +1,4 @@
+import { GetOrganizationFeatureTogglesResponse } from "../models/Wordpress";
 
 export async function fetchOrganizations(jwt: string, superUser: boolean) {
     var response;
@@ -42,4 +43,19 @@ export async function fetchProjects(jwt: string, organizationId: string) {
         content = await response.json();
     }
     return { status: response.status, data: content };
+}
+
+export async function fetchFeatureToggles(organizationId: string) {
+    const jwt = localStorage.getItem('jwt');
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/feature?organizationId=${organizationId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+        }
+    });
+
+    const content = await response.json();
+    const orgFeatureToggles: GetOrganizationFeatureTogglesResponse = content;
+    return orgFeatureToggles;
 }

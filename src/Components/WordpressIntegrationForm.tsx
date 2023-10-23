@@ -4,7 +4,7 @@ import { BiSolidHelpCircle } from "react-icons/bi";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
 import { GetOrganizationFeatureTogglesResponse, GetWordpressSettingsResponse } from '../models/Wordpress';
 import { Topic } from '../models/Topic';
-import { fetchProjects } from '../Services/ApiService';
+import { fetchFeatureToggles, fetchProjects } from '../Services/ApiService';
 
 interface WordpressIntegrationFormProps {
     organizationId: string | undefined;
@@ -147,20 +147,15 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
     const loadFeatureToggles = async (organizationId: string) => {
         setLoading(true);
         loadTopics(organizationId);
-
-        const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/feature?organizationId=${organizationId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwt}`
-            }
-        });
-
-        const content = await response.json();
-        const orgFeatureToggles: GetOrganizationFeatureTogglesResponse = content;
+        const orgFeatureToggles = await fetchFeatureToggles(organizationId);
         const hasWordpressFeature = orgFeatureToggles.organizationFeatures.includes("WORDPRESS");
         setHasWordpressFeatureToggle(hasWordpressFeature);
+        if (!hasWordpressFeature) {
+            setToggleSettings(false);
+            form.setFieldsValue({
+                enabled: false,
+            });
+        }
         setLoading(false);
     }
 
@@ -294,7 +289,13 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                             rows={6}
                         />
                     </Form.Item>
-                    <Button type="primary" htmlType="submit" block disabled={!hasWordpressFeatureToggle}>Save</Button>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        block
+                        disabled={!hasWordpressFeatureToggle}
+                        style={hasWordpressFeatureToggle != true ? { display: 'none' } : { }}
+                    >Save</Button>
                 </Form>
             )}
         </Card>
