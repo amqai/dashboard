@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, Select, Slider, Space, Spin, Switch } from 'antd';
+import { Button, Card, Form, Input, Progress, Select, Slider, Space, Spin, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { BiSolidHelpCircle } from "react-icons/bi";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
@@ -16,7 +16,9 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
     const [wordpressSettings, setWordpressSettings] = useState<GetWordpressSettingsResponse | null>(null);
     const [form] = Form.useForm();
     const [apiKey, setApiKey] = useState<string | undefined>("");
-    const [maximumResponses, setMaximumResponses] = useState<number | undefined>(1000);
+    const [currentResponses, setCurrentResponses] = useState<number>(0);
+    const [maximumResponses, setMaximumResponses] = useState<number>(1000);
+    const [currentMonthPercent, setCurrentMonthPercent] = useState<number>(0);
     const [toggleSettings, setToggleSettings] = useState(false);
     const [topics, setTopics] = useState<Topic[] | null>(null);
     const [configurationExists, setConfigurationExists] = useState(false);
@@ -107,7 +109,6 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
         if (content.errorCode) {
             setConfigurationExists(false);
             setToggleSettings(false);
-            setMaximumResponses(1000);
             setApiKey("Will generate after you save");
             form.setFieldsValue({
                 enabled: false,
@@ -123,6 +124,12 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
             setWordpressSettings(settings);
             setToggleSettings(settings.enabled);
             setMaximumResponses(settings.maximumResponses);
+            setCurrentResponses(settings.currentMonthResponses);
+            if (settings.currentMonthResponses === 0) {
+                setCurrentMonthPercent(0)
+            } else {
+                setCurrentMonthPercent(settings.maximumResponses / settings.currentMonthResponses)
+            }
             setApiKey(settings.apiKey);
             form.setFieldsValue({
                 enabled: settings.enabled,
@@ -206,11 +213,12 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                     </Form.Item>
                     <Form.Item
                         label={
-                            <span>Current / Total Monthly Limit <BiSolidHelpCircle title="The maximum number of responses allowed by your plan." /></span>
+                            <span>Monthly Limit <BiSolidHelpCircle title="The current / total number of monthly responses allowed by your plan." /></span>
                         }
                         style={toggleSettings != true ? { display: 'none' } : { }}
-                    >                  
-                        {wordpressSettings != null ? (<>{wordpressSettings?.currentMonthResponses}</>) : (0)} / {maximumResponses}
+                    >
+                        <Progress percent={currentMonthPercent} />
+                        {currentResponses} / {maximumResponses}
                     </Form.Item>
                     <Form.Item
                         name={"model"}
