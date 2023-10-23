@@ -167,7 +167,7 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
           async () => {
             if(organizationId) {
                 handleMemberTableUpdate();
-                setMemberPermissions(["READ", "MANAGE_DATA", "CREATE_TOPICS", "UPLOAD_DATA", "MANAGE_ORGANIZATION"])
+                setMemberPermissions(["READ", "MANAGE_DATA", "CREATE_TOPICS", "UPLOAD_DATA", "MANAGE_ORGANIZATION", "MANAGE_INTEGRATIONS"])
             }
           }
         )();
@@ -218,6 +218,7 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
                     <Checkbox value="CREATE_TOPICS" className="settings-checkbox">CREATE_TOPICS</Checkbox>
                     <Checkbox value="UPLOAD_DATA" className="settings-checkbox">UPLOAD_DATA</Checkbox>
                     <Checkbox value="MANAGE_ORGANIZATION" className="settings-checkbox">MANAGE_ORGANIZATION</Checkbox>
+                    <Checkbox value="MANAGE_INTEGRATIONS" className="settings-checkbox">MANAGE_INTEGRATIONS</Checkbox>
                 </Checkbox.Group>
             </Modal>
         </>
