@@ -60,8 +60,10 @@ function Organizations() {
     const organizationColumns = [
         {
             title: 'Id',
-            dataIndex: 'id',
             key: 'id',
+            render: (r: { id: string}) => (
+                <a href={`/organization/${r.id}/`}>{r.id}</a>
+            )
         },
         {
             title: 'Name',
