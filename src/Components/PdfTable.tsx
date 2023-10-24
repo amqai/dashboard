@@ -215,9 +215,7 @@ const PdfTable: React.FC<PdfTableProps> = ({
             <div  className="settings-form-buttons" style={{borderTop: 0}}>
               <Button type="primary" onClick={uploadFile}>Upload</Button>
             </div>
-            <div className="settings-form-field-100">
-                <Table dataSource={tableData} columns={columns}/>
-            </div>
+              <Table dataSource={tableData} columns={columns}/>
             <Modal
               title={"Upload file"}
               open={visible}

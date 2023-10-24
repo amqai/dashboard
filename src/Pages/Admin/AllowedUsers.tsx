@@ -138,7 +138,7 @@ function AllowedUsers() {
 
     return (
         <div className="center-wrapper">
-          <Card title={"Allowed Users"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
+          <Card title={"Allowed Users"} bodyStyle={{padding: "5%", overflowX: "auto"}}>
               {alertMessage !== null && alertMessage.message !== "" && (
                 <div style={{margin: "24px"}}>
                   <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />

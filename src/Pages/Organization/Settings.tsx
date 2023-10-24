@@ -161,14 +161,13 @@ function Settings() {
         >
           
         <TabPane tab="Settings" key="1">
-          <Card title={organization?.name + " settings"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
+          <Card title={organization?.name + " settings"} bodyStyle={{padding: "5%", overflowX: "auto"}}>
             <Form
                 form={form}
                 onFinish={saveSettings}
                 labelCol={{style: {minWidth: "150px"}}}
                 labelAlign="left"
             >
-              <div className="settings-form-fields">
               <Form.Item
                   label="Open AI Api Key"
                   name={"openAiApiKey"}
@@ -181,18 +180,15 @@ function Settings() {
               >
                   <Input.Password disabled={defaultApiKey} placeholder="Enter OpenAI Api Key" />
               </Form.Item>
-              </div>
 
-              <div className="settings-form-fields">
               <Form.Item
                   name="defaultKey"
                   valuePropName="checked"
               >
                   <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
               </Form.Item>
-              </div>
 
-              <div className="settings-form-fields">
+
               <Form.Item
                   label="Model"
 
@@ -210,9 +206,8 @@ function Settings() {
                   <Select.Option value="gpt-4">GPT 4</Select.Option>
                   </Select>
               </Form.Item>
-              </div>
 
-              <div className="settings-form-field-100">
+
               <Form.Item
                   label="Base Prompt"
                   name={"prompt"}
@@ -225,8 +220,7 @@ function Settings() {
               >
                   <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
               </Form.Item>
-              </div>
-              <div className="settings-form-field-100">
+
               <Form.Item
                   label="Max Search Size"
                   name={"searchSize"}
@@ -242,8 +236,6 @@ function Settings() {
                           max={20}
                       />
               </Form.Item>
-              </div>
-              <div className="settings-form-field-100">
               <Form.Item
                   label="Search Threshold %"
                   name={"searchThreshold"}
@@ -259,8 +251,7 @@ function Settings() {
                       max={100}
                     />
               </Form.Item>
-              </div>
-              <div className="settings-form-field-100">
+
               <Form.Item
                   label="Creativity"
                   name={"temperature"}
@@ -276,7 +267,6 @@ function Settings() {
                       max={200}
                     />
               </Form.Item>
-              </div>
               <div className="settings-form-buttons">
               <Button type="primary" disabled={loading} htmlType="submit">Save</Button>
               </div>

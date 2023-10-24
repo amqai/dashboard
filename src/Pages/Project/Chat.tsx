@@ -405,7 +405,7 @@ function Chat() {
                     disabled={externalSearch || googleSearch}
                   >
                     {projects && projects.map((project: Topic) => (
-                      <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
+                      <Select.Option style={{marginBottom: "5px"}} value={project.projectId} label={project.projectName} key={project.projectId}>
                         {project.projectName}
                       </Select.Option>
                     ))}

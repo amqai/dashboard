@@ -281,7 +281,7 @@ function Data() {
   ];
 
   return (
-    <div className="wrapper-100vh wrapper-content">
+    <div className="center-wrapper">
         {alertMessage !== null && alertMessage.message !== "" && (
         <div style={{margin: "24px"}}>
             <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
@@ -313,11 +313,9 @@ function Data() {
             }
           }}
         >
-
           <TabPane tab="Data" key="1">
             {hasPermission("MANAGE_DATA") && (
               <>
-
                 <div className="searchContainer"
                 style={{display: 'flex'}}>
                   <div>
@@ -330,18 +328,12 @@ function Data() {
                     <Input.TextArea
                       placeholder="Search..."
                       value={searchQuery}
-                      className="settings-form-fields-100"
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </Form.Item>
-
                 </div>
 
-                <Divider></Divider>
-                <Form style={{ display: 'flex', width: '100%' }}>
-
-
-                </Form>
+                <Divider/>
                 {searchPerformed && (
                   <div style={{paddingBottom:"1em"}}>
                     <a onClick={clearSearch}>Reset Search</a>
@@ -349,7 +341,6 @@ function Data() {
                 )}
               </>
             )}
-            <div className="settings-form-field-100">
               <Table columns={columns} dataSource={embeddings}></Table>
               <EmbeddingForm
                 form={form} 
@@ -360,7 +351,6 @@ function Data() {
                 handleCancel={resetEditing} 
                 reloadEmbeddings={loadEmbeddingsHandler} 
               />
-            </div>
           </TabPane>
 
           {hasPermission("UPLOAD_DATA") && (
@@ -377,13 +367,11 @@ function Data() {
               <div className="settings-form-buttons" style={{borderTop: 0}}>
                 <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
               </div>
-              <div className="settings-form-field-100">
-                <Table dataSource={memberData} columns={memberColumns} />
-              </div>
+              <Table dataSource={memberData} columns={memberColumns} />
           </TabPane>
           )}
   
-        </Tabs>
+          </Tabs>
     </div>
   );
 }
