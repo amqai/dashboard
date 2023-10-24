@@ -32,13 +32,22 @@ function RegisterPage() {
         setErrorMessage("");
     };
 
+    function handleLoginPage() {
+        navigate('/login')
+    }
+
     return(
         <div className="background">
             <AmqParticles />
             <div className="logowrapper">
                 <div className="logocontainer"/>
                 <Form className="loginform" onFinish={submit}>
-                    <Typography.Title>Register</Typography.Title>
+                    {errorMessage !== "" && (
+                        <div className="erroralert">
+                        <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
+                        </div>
+                    )}
+                    <Typography.Title level={3} style={{width: "100%"}}>Create an account</Typography.Title>
                     <Form.Item
                         name={"email"}
                         rules={[
@@ -49,7 +58,7 @@ function RegisterPage() {
                             }
                         ]}
                     >                  
-                    <Input placeholder="Enter a email" />
+                    <Input placeholder="Enter a email" size="large" />
                     </Form.Item>
                     <Form.Item
                         name={"password"}
@@ -59,14 +68,12 @@ function RegisterPage() {
                             }
                         ]}
                     >                  
-                    <Input.Password placeholder="Enter your password" />
+                    <Input.Password placeholder="Enter your password" size="large" />
                     </Form.Item>
-                    <Button type="primary" htmlType="submit" block>Register</Button>
-                    {errorMessage !== "" && (
-                        <div className="erroralert">
-                        <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
-                        </div>
-                    )}
+                    <Button type="primary" htmlType="submit" block size="large">Register</Button>
+                    <p style={{width: "100%", marginTop: "20px"}}>
+                        Already have an account? <a onClick={handleLoginPage}>Login here</a>
+                    </p>
                 </Form>
             </div>
         </div>

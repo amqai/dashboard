@@ -59,8 +59,20 @@ function LoginPage() {
       }
 
       return (
-        <Button type="primary" htmlType="button" onClick={handleRegister} block>Register</Button>
+        <a onClick={handleRegister}>Get started</a>
       );
+    }
+
+    function ForgotPassword() {
+      function handleForgotPassword() {
+        console.log("Not implemented yet");
+      }
+
+      return (
+        <p style={{width: "100%", textAlign: "right"}}>
+          <a onClick={handleForgotPassword}>Forgot password?</a>
+        </p>
+      )
     }
     
     return (
@@ -74,35 +86,35 @@ function LoginPage() {
                   <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
                 </div>
               )}
-              <div className="login">
-                <Typography.Title>Welcome back!</Typography.Title>
-                <Form.Item
-                  name={"username"}
-                  rules={[
-                    {
-                      required: true,
-                      type: "email",
-                      message: "Please enter valid email",
-                    }
-                  ]}
-                >
-                  <Input placeholder="Enter your email" />
-                </Form.Item>
-                <Form.Item
-                  name={"password"}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your password",
-                    }
-                  ]}
-                >
-                  <Input.Password placeholder="Enter your password" />
-                </Form.Item>
-                <Button type="primary" htmlType="submit" block>Login</Button>
-                <Divider style={{ borderColor: "black" }}>Forgot your password?</Divider>
-                <Register />
-              </div>
+              <Typography.Title level={3} style={{width: "100%"}}>Sign in to AMQai</Typography.Title>
+              <p style={{width: "100%"}}>
+                Don't have an account? <Register />
+              </p>
+              <Form.Item
+                name={"username"}
+                rules={[
+                  {
+                    required: true,
+                    type: "email",
+                    message: "Please enter valid email",
+                  }
+                ]}
+              >
+                <Input placeholder="Enter your email" size="large" />
+              </Form.Item>
+              <Form.Item
+                name={"password"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your password",
+                  }
+                ]}
+              >
+                <Input.Password placeholder="Enter your password" size="large" />
+              </Form.Item>
+              <ForgotPassword />
+              <Button type="primary" htmlType="submit" block size="large">Login</Button>
             </Form>
           </div>
         </div>

@@ -67,7 +67,7 @@ const AmqParticles: React.FC = () => {
                             default: "bounce",
                         },
                         random: false,
-                        speed: 6,
+                        speed: 2.5,
                         straight: false,
                     },
                     number: {
@@ -81,7 +81,7 @@ const AmqParticles: React.FC = () => {
                         value: 0.5,
                     },
                     shape: {
-                        type: "circle",
+                        type: "triangle",
                     },
                     size: {
                         value: { min: 1, max: 5 },

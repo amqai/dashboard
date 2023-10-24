@@ -42,3 +42,12 @@
 .erroralert {
     padding-bottom: 15px;
 }
+
+a {
+    color: #AF82F5;
+    text-decoration: underline;
+}
+
+.ant-form-item {
+    width: 100%;
+}
