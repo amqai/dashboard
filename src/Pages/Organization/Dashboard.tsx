@@ -1,4 +1,4 @@
-import { Typography, Spin, Space, Table, Card, Alert } from "antd";
+import { Typography, Spin, Space, Table, Card } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../../styles/common.css";

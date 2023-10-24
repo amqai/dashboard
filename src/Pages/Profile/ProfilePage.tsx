@@ -1,12 +1,12 @@
-import { Form, Button, Input, Alert, Typography, theme, Card} from "antd";
+import { Form, Button, Input, Alert, Typography, Card} from "antd";
 import { useState } from "react";
 
 //TODO: This is you import custom theme
-const { useToken } = theme;
+// const { useToken } = theme;
 
 function ProfilePage() {
     const [errorMessage, setErrorMessage] = useState('');
-    const { token } = useToken();
+    // const { token } = useToken();
 
     const resetPassword = async () => {
         console.log("here")

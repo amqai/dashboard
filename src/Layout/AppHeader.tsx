@@ -9,9 +9,9 @@ function AppHeader() {
       }
 
     return (
-        <Header className="header" style={{display: "flex", justifyContent: "space-between"}}>
+        <Header className="header">
             <div>
-                <div className="brand" onClick={navigateHome}>AmQai</div>
+                <div className="brand" onClick={navigateHome}/>
             </div>
         </Header>
     );

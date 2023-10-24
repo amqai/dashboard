@@ -1,13 +1,11 @@
 import  "../../styles/chat.css";
-import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select, Checkbox, Modal, theme } from "antd";
-import Icon from '@ant-design/icons';
+import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Typography, Alert, Select, Checkbox, Modal, theme } from "antd";
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ConversationApiDto, GetProjectConversationsApiResponse, PromptApiResponse } from "../../models/Conversation";
 import { useNavigate, useParams } from "react-router-dom";
 import NewChatForm from "../../Components/NewChatForm";
-import { GiBrain } from "react-icons/gi";
-import { BsFillPersonFill, BsGear } from "react-icons/bs";
+import { BsGear } from "react-icons/bs";
 import { fetchProjects } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { Topic } from "../../models/Topic";

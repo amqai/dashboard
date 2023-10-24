@@ -1,12 +1,11 @@
 import "./styles/dashboard.css"
 import { BrowserRouter } from "react-router-dom";
-import { ConfigProvider, theme } from 'antd';
 import AppRoutes from "./Layout/AppRoutes"; // update with your actual path to AppRoutes
 
 function App() {
-  const primary = '#AF82F5' // purple
-  const secondary = '#253237' // grey
-  const accent1 = '#3C896D' // teal
+  // const primary = '#AF82F5' // purple
+  // const secondary = '#182125' // grey
+  // const accent1 = '#3C896D' // teal
   // const accent2 = '#D13610' // red
 
   return (
@@ -14,14 +13,13 @@ function App() {
       {/* <ConfigProvider
         theme={{
           token: {
-            // change colors of antd here
+            colorBgBase: secondary,
           },
 
           algorithm: theme.darkAlgorithm,
             components: {
               Layout: {
                 colorBgHeader: "black",
-                colorBgBody: primary,
               },
 
               Button: {
@@ -35,10 +33,9 @@ function App() {
             },
         }}
       > */}
-
         <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
       {/* </ConfigProvider> */}
 
 
