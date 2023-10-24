@@ -3,6 +3,7 @@ import "../styles/common.css";
 import { Alert, Button, Divider, Form, Input, Typography } from 'antd';
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import AmqParticles from "../Components/AmqParticles";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -63,8 +64,8 @@ function LoginPage() {
     }
     
     return (
-
         <div className="background">
+          <AmqParticles />
           <div className="logowrapper">
             <div className="logocontainer"/>
             <Form className="loginform" onFinish={submit}>
