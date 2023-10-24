@@ -161,7 +161,7 @@ function Settings() {
         >
           
         <TabPane tab="Settings" key="1">
-          <Card title={organization?.name + " settings"} bodyStyle={{padding: "0"}}>
+          <Card title={organization?.name + " settings"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
             <Form
                 form={form}
                 onFinish={saveSettings}
@@ -171,7 +171,6 @@ function Settings() {
               <div className="settings-form-fields">
               <Form.Item
                   label="Open AI Api Key"
-                  style={{paddingLeft: "24px", paddingTop: "24px"}}
                   name={"openAiApiKey"}
                   rules={[
                   {
@@ -188,7 +187,6 @@ function Settings() {
               <Form.Item
                   name="defaultKey"
                   valuePropName="checked"
-                  style={{paddingLeft: "24px"}}
               >
                   <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
               </Form.Item>
@@ -197,7 +195,7 @@ function Settings() {
               <div className="settings-form-fields">
               <Form.Item
                   label="Model"
-                  style={{paddingLeft: "24px", paddingTop: "24px"}}
+
                   name={"model"}
                   rules={[
                   {
@@ -217,7 +215,6 @@ function Settings() {
               <div className="settings-form-field-100">
               <Form.Item
                   label="Base Prompt"
-                  style={{paddingLeft: "24px", paddingTop: "24px"}}
                   name={"prompt"}
                   rules={[
                   {
@@ -233,7 +230,6 @@ function Settings() {
               <Form.Item
                   label="Max Search Size"
                   name={"searchSize"}
-                  style={{paddingLeft: "24px", paddingTop: "24px"}}
                   rules={[
                       {
                       required: true,
@@ -251,7 +247,6 @@ function Settings() {
               <Form.Item
                   label="Search Threshold %"
                   name={"searchThreshold"}
-                  style={{paddingLeft: "24px", paddingTop: "24px"}}
                   rules={[
                       {
                       required: true,
@@ -269,7 +264,6 @@ function Settings() {
               <Form.Item
                   label="Creativity"
                   name={"temperature"}
-                  style={{paddingLeft: "24px", paddingTop: "24px"}}
                   rules={[
                       {
                       required: true,

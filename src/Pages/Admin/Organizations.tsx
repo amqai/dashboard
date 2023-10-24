@@ -114,16 +114,14 @@ function Organizations() {
     };
 
     return (
-        <div>
-            <Card title={"Manage Organizations"} bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
+        <div className="center-wrapper">
+            <Card title={"Manage Organizations"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
                 {alertMessage !== null && alertMessage.message !== "" && (
                   <div style={{margin: "24px"}}>
                     <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
                   </div>
                 )}
-                <div className="settings-form-field-100">
-                <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={organizations} columns={organizationColumns} />
-                </div>
+                <Table dataSource={organizations} columns={organizationColumns} />
             </Card>
             <Modal
                 title="Organization Features"

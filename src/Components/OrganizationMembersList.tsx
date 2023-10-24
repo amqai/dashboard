@@ -175,13 +175,11 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
 
     return (
         <>
-            <Card title="Members" bodyStyle={{padding: "0"}}>
-                <div className="settings-form-buttons" style={{borderTop: 0}}>
+            <Card title="Members" bodyStyle={{padding: "5%", overflowX: "scroll"}}>
+                <div className="settings-form-buttons">
                 <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
                 </div>
-                <div className="settings-form-field-100">
-                <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={memberData} columns={memberColumns} />
-                </div>
+                <Table dataSource={memberData} columns={memberColumns} />
             </Card>
             <Modal
                 open={isMemberModal}

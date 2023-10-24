@@ -11,7 +11,7 @@ function App() {
 
   return (
     <>
-      <ConfigProvider
+      {/* <ConfigProvider
         theme={{
           token: {
             // change colors of antd here
@@ -19,6 +19,11 @@ function App() {
 
           algorithm: theme.darkAlgorithm,
             components: {
+              Layout: {
+                colorBgHeader: "black",
+                colorBgBody: primary,
+              },
+
               Button: {
                 colorPrimary: accent1,
                 colorPrimaryHover: accent1,
@@ -28,16 +33,13 @@ function App() {
                 // itemSelectedBg: secondary,
               }
             },
-
-          // Combine dark algorithm and compact algorithm
-          // algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
         }}
-      >
+      > */}
 
         <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
-      </ConfigProvider>
+      {/* </ConfigProvider> */}
 
 
     </>

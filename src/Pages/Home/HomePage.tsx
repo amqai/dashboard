@@ -231,9 +231,6 @@ information as you have available in the context provided.
                             >
                                 <Input placeholder="Project Name" />
                             </Form.Item>
-    
-                            <Button type="primary" onClick={() => setToggleSettings(!toggleSettings)} style={{marginBottom: '24px'}}>{settingsVerb} Advanced Settings</Button>
-
                             <Form.Item
                             name={"openAiApiKey"}
                             label="OpenAI API Key"
@@ -357,9 +354,10 @@ information as you have available in the context provided.
                                     />
                             </Form.Item>
 
-                            <Button type="primary" htmlType="submit">Save</Button>
+                            <Button type="primary" onClick={() => setToggleSettings(!toggleSettings)} style={{marginBottom: '24px'}}>{settingsVerb} Advanced Settings</Button>
+                            <Button type="primary" htmlType="submit" style={{marginLeft: "10px"}}>Save</Button>
                             <Button style={{marginLeft: "10px"}} danger onClick={() => setFormOpen(false)}>Cancel</Button>
-
+                            
                             <Modal
                                 open={defaultApiKeyWarning}
                                 title="Warning"
