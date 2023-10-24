@@ -30,6 +30,7 @@
     width: 60%;
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
+    z-index: 100;
 }
 
 @media (max-width: 768px) {
@@ -40,4 +41,13 @@
 
 .erroralert {
     padding-bottom: 15px;
+}
+
+a {
+    color: #AF82F5;
+    text-decoration: underline;
+}
+
+.ant-form-item {
+    width: 100%;
 }
