@@ -1,6 +1,6 @@
 import "../styles/login.css";
 import "../styles/common.css";
-import { Alert, Button, Divider, Form, Input, Typography } from 'antd';
+import { Alert, Button, Form, Input, Typography } from 'antd';
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import AmqParticles from "../Components/AmqParticles";
