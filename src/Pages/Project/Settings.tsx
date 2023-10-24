@@ -222,9 +222,9 @@ function Settings() {
   return (
     <div className="center-wrapper">
       <Typography.Title level={2}>Settings</Typography.Title>
-      <Card title={project?.projectName + " settings"} bodyStyle={{padding: "0"}}>
+      <Card title={project?.projectName + " settings"}>
       {alertMessage !== null && alertMessage.message !== "" && (
-        <div style={{margin: "24px"}}>
+        <div >
           <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
         </div>
       )}
@@ -235,70 +235,64 @@ function Settings() {
             labelCol={{style: {minWidth: "130px"}}}
             labelAlign="left"
         >
-          <div className="settings-form-fields">
-            <Form.Item
-              label="Open AI Api Key"
-              style={{paddingLeft: "24px", paddingTop: "24px"}}
-              name={"openAiApiKey"}
-              rules={[
-                {
-                  required: !defaultApiKey,
-                  message: "Please enter OpenAI Api Key",
-                }
-              ]}
-            >
-              <Input.Password disabled={defaultApiKey} placeholder="Enter OpenAI Api Key" />
-            </Form.Item>
+          <div className="settings-form" style={{padding: "5%"}}>
+
+              <Form.Item
+                label="Open AI Api Key"
+                name={"openAiApiKey"}
+                rules={[
+                  {
+                    required: !defaultApiKey,
+                    message: "Please enter OpenAI Api Key",
+                  }
+                ]}
+              >
+                <Input.Password disabled={defaultApiKey} placeholder="Enter OpenAI Api Key" />
+              </Form.Item>
+
+              <Form.Item
+                name="defaultKey"
+                valuePropName="checked"
+              >
+                <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
+              </Form.Item>
+
+              <Form.Item
+                label="Model"
+                name={"model"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select model",
+                  }
+                ]}
+              >
+                <Select placeholder="Select Model">
+                  <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
+                  <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                  <Select.Option value="gpt-4">GPT 4</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Base Prompt"
+                style={{paddingLeft: "24px", paddingTop: "24px"}}
+                name={"prompt"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input system prompt",
+                  }
+                ]}
+              >
+                <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
+              </Form.Item>
+
+            <div className="settings-form-buttons">
+              <Button type="primary" disabled={loading} htmlType="submit">Save</Button>
+            </div>
           </div>
 
-          <div className="settings-form-fields">
-            <Form.Item
-              name="defaultKey"
-              valuePropName="checked"
-              style={{paddingLeft: "24px"}}
-            >
-              <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
-            </Form.Item>
-          </div>
-
-          <div className="settings-form-fields">
-            <Form.Item
-              label="Model"
-              style={{paddingLeft: "24px", paddingTop: "24px"}}
-              name={"model"}
-              rules={[
-                {
-                  required: true,
-                  message: "Please select model",
-                }
-              ]}
-            >
-              <Select placeholder="Select Model">
-                <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
-                <Select.Option value="gpt-4">GPT 4</Select.Option>
-              </Select>
-            </Form.Item>
-          </div>
-
-          <div className="settings-form-field-100">
-            <Form.Item
-              label="Base Prompt"
-              style={{paddingLeft: "24px", paddingTop: "24px"}}
-              name={"prompt"}
-              rules={[
-                {
-                  required: true,
-                  message: "Please input system prompt",
-                }
-              ]}
-            >
-              <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
-            </Form.Item>
-          </div>
-          <div className="settings-form-buttons">
-            <Button type="primary" disabled={loading} htmlType="submit">Save</Button>
-          </div>
         </Form>
       </Card>
 
@@ -329,12 +323,12 @@ function Settings() {
         <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
       </Modal>
 
-      <Card title={project?.projectName + " members"} bodyStyle={{padding: "0"}} style={{marginTop: "24px"}}>
+      <Card title={project?.projectName + " members"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
         <div className="settings-form-buttons" style={{borderTop: 0}}>
           <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
         </div>
         <div className="settings-form-field-100">
-          <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={memberData} columns={memberColumns} />
+          <Table dataSource={memberData} columns={memberColumns} />
         </div>
       </Card>
     </div>

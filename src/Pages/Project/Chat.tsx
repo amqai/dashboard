@@ -1,13 +1,13 @@
 import  "../../styles/chat.css";
-import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select, Checkbox, Modal } from "antd";
+import { Button, Card, Col, Collapse, Divider, Form, Input, List, Row, Space, Spin, Table, Tag, Typography, Alert, Select, Checkbox, Modal, theme } from "antd";
+import Icon from '@ant-design/icons';
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { ConversationApiDto, GetProjectConversationsApiResponse, PromptApiResponse } from "../../models/Conversation";
 import { useNavigate, useParams } from "react-router-dom";
 import NewChatForm from "../../Components/NewChatForm";
 import { GiBrain } from "react-icons/gi";
-import { BsFillPersonFill } from "react-icons/bs";
-import { GrSettingsOption } from "react-icons/gr";
+import { BsFillPersonFill, BsGear } from "react-icons/bs";
 import { fetchProjects } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { Topic } from "../../models/Topic";
@@ -15,9 +15,9 @@ import AddData from "../../Components/AddData";
 
 
 const { Text, Title } = Typography;
+const { useToken } = theme;
 
 const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, setAlertMessage, clearMessages}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>, clearMessages: any}) => {
-
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const navigate = useNavigate();
 
@@ -113,6 +113,7 @@ function Chat() {
     const [externalSearchWarning, setExternalSearchWarningModal] = useState(false);
     const [googleSearch, setGoogleSearch] = useState(false);
     const [googleSearchWarning, setGoogleSearchWarningModal] = useState(false);
+    const { token } = useToken();
 
     const contextColumns = [
       {
@@ -310,17 +311,18 @@ function Chat() {
     <div className="chat-container">
       <div className="chat-section">
         <div>
-            <Title level={5}>Chats</Title>
+            <Title level={3}>Chats</Title>
         </div>
-        <Input
-            placeholder="Search chats"
-            prefix={<SearchOutlined />}
-        />
-        <Divider />
         <Button 
           type="primary"
           onClick={onAddChat}
+          style={{width: "100%"}}
         >+ New chat</Button>
+        <Divider />
+        <Input
+            placeholder="Search chats"
+            prefix={<SearchOutlined/>}
+        />
         <Divider />
         {conversations && (
             <div className="chat-list">
@@ -338,7 +340,7 @@ function Chat() {
       <div className="prompt-section">
         {alertMessage !== null && alertMessage.message !== "" && (
             <div>
-            <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
+            <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true}/>
             <Divider />
             </div>
         )}
@@ -350,7 +352,7 @@ function Chat() {
           reloadChats={loadChats} 
         />
         {conversationId ? (
-          <Card style={{ maxHeight: '90vh', overflowY: 'scroll' }}> 
+        <Card style={{height: "85vh", overflowY: 'scroll', padding: "3%"}}> 
           {currentConversation !== null && (
             <Typography.Title level={4}>{currentConversation.title}</Typography.Title>
           )}
@@ -372,75 +374,77 @@ function Chat() {
               </Col>
               <Col>
                 <Button
-                  style={{marginLeft:"1rem"}}
-                  onClick={() => setIsSettingsVisible(!isSettingsVisible)}
-                ><GrSettingsOption /></Button>
-                <Button
                   htmlType="submit"
                   type="primary"
                   style={{marginLeft:"1rem"}}
                 >Ask Question</Button>
+                <Button
+                  style={{marginLeft:"1rem"}}
+                  onClick={() => setIsSettingsVisible(!isSettingsVisible)}
+                ><BsGear /></Button>
               </Col>
             </Row>
-            <Row 
-              align="middle"
-              style={{ marginBottom: '1rem' }}
-              hidden={!isSettingsVisible}
-            >
-              <Col flex="auto">
-              <Form.Item 
-                name={"projectIds"}
+            <div hidden={!isSettingsVisible} style={{margin: "3%"}}>
+              <Typography.Text style={{fontStyle: "italic"}}>Select topics to search on</Typography.Text>
+              <Row 
+                align="middle"
+                style={{ marginBottom: '1rem', marginTop:'.5rem' }}
               >
-                <Select
-                  mode="multiple"
-                  placeholder="Select Topics"
-                  optionLabelProp="label"
-                  disabled={externalSearch || googleSearch}
+                <Col flex="auto">
+                <Form.Item 
+                  name={"projectIds"}
                 >
-                  {projects && projects.map((project: Topic) => (
-                    <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
-                      {project.projectName}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name={"externalSearch"}
-                valuePropName="checked"
-                >
-                <Checkbox
-                  style={{marginTop: "10px"}}
-                  onChange={handleDefaultKeyChange}
-                  disabled={googleSearch}
-                >Query base model knowledge only</Checkbox>
-              </Form.Item>
-              <Form.Item
-                name={"googleSearch"}
-                valuePropName="checked"
-                >
-                <Checkbox
-                  style={{marginTop: "10px"}}
-                  onChange={handleGoogleKeyChange}
-                  disabled={externalSearch}
-                >Query Google only</Checkbox>
-              </Form.Item>
-              <Form.Item
-                name={"model"}
-                style={{ marginBottom: 0 }}
-                rules={[
-                    {
-                    message: "Please select model",
-                    }
-                ]}
-                >
-                <Select placeholder="Select Model">
-                  <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                  <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
-                  <Select.Option value="gpt-4">GPT 4</Select.Option>
-                </Select>
-              </Form.Item>
-              </Col>
-            </Row>
+                  <Select
+                    mode="multiple"
+                    placeholder="Select Topics"
+                    optionLabelProp="label"
+                    disabled={externalSearch || googleSearch}
+                  >
+                    {projects && projects.map((project: Topic) => (
+                      <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
+                        {project.projectName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name={"externalSearch"}
+                    valuePropName="checked"
+                    >
+                    <Checkbox
+                      style={{marginTop: "5px"}}
+                      onChange={handleDefaultKeyChange}
+                      disabled={googleSearch}
+                    >Query base model knowledge only</Checkbox>
+                  </Form.Item>
+                  <Form.Item
+                    name={"googleSearch"}
+                    valuePropName="checked"
+                    >
+                    <Checkbox
+                      style={{marginTop: "5px"}}
+                      onChange={handleGoogleKeyChange}
+                      disabled={externalSearch}
+                    >Query Google only</Checkbox>
+                  </Form.Item>
+                  <Form.Item
+                    name={"model"}
+                    style={{ marginBottom: 0 }}
+                    rules={[
+                        {
+                        message: "Please select model",
+                        }
+                    ]}
+                    >
+                    <Select placeholder="Select Model">
+                      <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
+                      <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                      <Select.Option value="gpt-4">GPT 4</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
           </Form>
           <Divider />
           <List 
@@ -450,20 +454,40 @@ function Chat() {
                 style={{
                     paddingTop: "24px",
                     paddingBottom: "24px",
-                    backgroundColor: message.user === 'ai' ? 'rgba(39,0,102,0.03)' : 'inherit'
+                    borderRadius: "10px",
+                    backgroundColor: message.user === 'ai' ? token.colorBgElevated : token.colorFillSecondary,
+                    marginTop: "10px",
+                    marginBottom: "10px",
                 }}
               >
                 <div>
-                  <div style={{display: "flex", alignItems: "flex-start"}}>
-                      <div>
+                  <div 
+                  style={{display: "flex", 
+                  marginLeft: "10px", 
+                  marginRight: "10px",
+                  justifyContent: "center",
+                  alignItems: "center"
+                  }}>
+                      <div style={{
+                        height: "50px", 
+                        width: "50px",
+                        margin: "10px",
+                        backgroundColor: '#AF82F5',
+                        borderRadius: "50%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                        }}>
                         {message.user === 'ai' && (
-                          <Tag icon={<GiBrain />} color="rgb(39,0,102)" />
+                          <div>A</div>
+                          // <Tag icon={<GiBrain/>}/>
                         )}
                         {message.user === 'user' && (
-                          <Tag icon={<BsFillPersonFill color="#55acee" />} />
+                          // <Tag icon={<BsFillPersonFill/>} />
+                          <div>Q</div>
                         )}
                       </div>
-                      <div style={{marginLeft: "10px", textAlign: "justify", flex: "1"}}>
+                      <div style={{textAlign: "justify", flex: "1"}}>
                         {message.loading ? (
                           <Spin size="default" />
                         ) : (
@@ -472,15 +496,16 @@ function Chat() {
                               message.response
                             ) : (
                               <pre 
-                              style={{overflowY:"auto", whiteSpace: "pre-wrap", wordWrap: "break-word", marginRight: "5%", width: "100%"}}
+                              style={{overflowY:"auto", whiteSpace: "pre-wrap", wordWrap: "break-word", width: "100%", margin: "10px", padding: "10px"}}
                             >{message.response}</pre>
                             )}
                           </>
                         )}
                       </div>
                     </div>
+                
                     {message.user === 'ai' && !message.externalSearch && message.contextList && !message.loading &&
-                      <Collapse style={{margin: "16px 0 0 24px"}}>
+                      <Collapse style={{margin: "16px 24px 0 24px"}}>
                           <Panel header="Show context list" key={index}>
                               <Table
                                   style={{width:"100%"}}
@@ -494,13 +519,13 @@ function Chat() {
                       </Collapse>
                     }
                     {message.user === 'ai' && message.externalSearch && message.response && !message.response.includes("I am unable to answer your question") && (
-                     <AddData
+                    <AddData
                       organizationId={organizationId}
                       topics={projects}
                       data={message.response}
-                     />
+                    />
                     )}
-                </div>
+                  </div>
               </List.Item>
             }
           >
@@ -535,7 +560,9 @@ function Chat() {
           </Modal>
         </Card>
         ) : (
-          <div style={{minHeight: '92vh'}}>Please select a chat or <Button onClick={onAddChat}>Start a new chat</Button></div>
+          <div style={{minHeight: '92vh'}}>
+            <p>Load most recent chat here</p>
+          </div>
         )}
       </div>
     </div>

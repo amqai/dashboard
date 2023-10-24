@@ -14,6 +14,7 @@ import Dashboard from "../Pages/Organization/Dashboard";
 import Data from "../Pages/Project/Data";
 import Settings from "../Pages/Organization/Settings";
 import Organizations from "../Pages/Admin/Organizations";
+import ProfilePage from "../Pages/Profile/ProfilePage";
 
 function AppRoutes() {
     const navigate = useNavigate();
@@ -49,6 +50,7 @@ function AppRoutes() {
                                     <Route path="/" element={<HomePage />} />
                                     <Route path="/admin/invite" element={<AllowedUsers />} />
                                     <Route path="/admin/organizations" element={<Organizations />} />
+                                    <Route path="profile" element={<ProfilePage />} />
                                     <Route path="/organization/:organizationId/*" element={
                                         <Routes>
                                             <Route path="/" element={<Dashboard /> } />

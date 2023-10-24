@@ -1,4 +1,4 @@
-import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs } from "antd";
+import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs, Divider } from "antd";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -317,24 +317,30 @@ function Data() {
           <TabPane tab="Data" key="1">
             {hasPermission("MANAGE_DATA") && (
               <>
-                <div className="settings-form-buttons" style={{borderTop: 0}}>
-                  <Button onClick={onAddEmbedding} type="primary" style={{minWidth:"90px"}}>Add data</Button>
-                </div>
-                <Form className="settings-form-buttons" style={{ display: 'flex', width: '100%' }}>
-                  <Form.Item style={{ flex: 1, marginRight: 8 }}>
+
+                <div className="searchContainer"
+                style={{display: 'flex'}}>
+                  <div>
+                  <Button onClick={onAddEmbedding} type="primary" style={{width:"100px", marginTop: "10px"}}>Add data +</Button>
+                  <Form.Item>
+                      <Button type="primary" onClick={handleSearch} style={{width:"100px", marginTop: "10px"}}> Search </Button>
+                  </Form.Item>
+                  </div>
+                  <Form.Item style={{ marginTop: "10px", width: "100%", marginLeft: "20px"}}>
                     <Input.TextArea
                       placeholder="Search..."
                       value={searchQuery}
                       className="settings-form-fields-100"
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      style={{ width: '100%' }}
                     />
                   </Form.Item>
-                  <Form.Item>
-                    <Button type="primary" onClick={handleSearch} style={{minWidth:"90px"}}>
-                      Search
-                    </Button>
-                  </Form.Item>
+
+                </div>
+
+                <Divider></Divider>
+                <Form style={{ display: 'flex', width: '100%' }}>
+
+
                 </Form>
                 {searchPerformed && (
                   <div style={{paddingBottom:"1em"}}>

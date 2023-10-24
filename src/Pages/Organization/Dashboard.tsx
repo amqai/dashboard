@@ -4,14 +4,12 @@ import { useParams } from "react-router-dom";
 import "../../styles/common.css";
 import { OrganizationApiDto } from "../../models/Organization";
 import { FrequentlyAskedQuestionsResponse } from "../../models/FrequentQuestions";
-import { Alert as AlertModel } from "../../models/Alert";
 
 function Dashboard() {
   const { organizationId } = useParams();
   const [organization, setOrganization] = useState<OrganizationApiDto | null>(null);
   const [frequentQuestions, setFrequentQuestions] = useState<FrequentlyAskedQuestionsResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
 
   // Get organization
   useEffect(() => {
@@ -76,20 +74,11 @@ function Dashboard() {
     },
   ];
 
-  const dismissAlert = () => {
-    setAlertMessage(null);
-  };
-
   return (
     <div className="center-wrapper">
-      {alertMessage !== null && alertMessage.message !== "" && (
-        <div style={{margin: "24px"}}>
-          <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
-        </div>
-      )}
       <Typography.Title level={2}>{organization?.name} Dashboard</Typography.Title>
       <Loading/>
-      <Card title="Frequently Asked Questions" style={{margin: "5%"}}>
+      <Card title="Frequently Asked Questions" style={{marginBottom: "5%"}}>
         <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
       </Card>
     </div>

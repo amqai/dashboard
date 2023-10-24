@@ -137,37 +137,34 @@ function AllowedUsers() {
   };
 
     return (
-        <div>
-            <Card title={"Allowed Users"} bodyStyle={{padding: "0"}} style={{margin: "5%"}}>
-                {alertMessage !== null && alertMessage.message !== "" && (
-                  <div style={{margin: "24px"}}>
-                    <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
-                  </div>
-                )}
-                <Button type="primary" onClick={() => setIsUserModal(true)} style={{marginTop: "24px", marginLeft: "24px"}}> + Add User</Button>
-                <div className="settings-form-buttons" style={{borderTop: 0}}>
+        <div className="center-wrapper">
+          <Card title={"Allowed Users"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
+              {alertMessage !== null && alertMessage.message !== "" && (
+                <div style={{margin: "24px"}}>
+                  <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
                 </div>
-                <div className="settings-form-field-100">
-                <Table style={{paddingLeft: "24px", paddingTop: "24px"}} dataSource={allowedUsers} columns={allowedUserColumns} />
-                </div>
-            </Card>
+              )}
+              <div className="settings-form-buttons">
+                <Button type="primary" onClick={() => setIsUserModal(true)} > + Add User</Button>
+              </div>
+              <Table dataSource={allowedUsers} columns={allowedUserColumns} />
+          </Card>
 
-            <Modal
-                open={isUserModal}
-                title="Add Allowed User"
-                okText="Save"
-                onCancel={() => {
-                    setIsUserModal(false)
-                }}
-                onOk={() => {
-                    handleAddUser()
-                    setIsUserModal(false)
-                }}
-            >
-                <Input placeholder="Enter user email" value={addUser?.email} onChange={(e) => setAddUser((addUser) => ({ ...addUser, email: e.target.value}))}/>
-                <Checkbox style={{marginTop: "10px"}} checked={addUser?.admin} onChange={(e) => setAddUser((addUser) => ({ ...addUser, admin: e.target.checked}))}>Check for admin privileges</Checkbox>
-            </Modal>
-
+          <Modal
+              open={isUserModal}
+              title="Add Allowed User"
+              okText="Save"
+              onCancel={() => {
+                  setIsUserModal(false)
+              }}
+              onOk={() => {
+                  handleAddUser()
+                  setIsUserModal(false)
+              }}
+          >
+              <Input placeholder="Enter user email" value={addUser?.email} onChange={(e) => setAddUser((addUser) => ({ ...addUser, email: e.target.value}))}/>
+              <Checkbox style={{marginTop: "10px"}} checked={addUser?.admin} onChange={(e) => setAddUser((addUser) => ({ ...addUser, admin: e.target.checked}))}>Check for admin privileges</Checkbox>
+          </Modal>
       </div>
     );
 }

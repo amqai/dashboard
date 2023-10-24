@@ -4,8 +4,10 @@ import Sider from "antd/es/layout/Sider";
 import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
 import { RiOrganizationChart } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
-import { GrDashboard, GrDatabase, GrProjects, GrUserAdmin } from "react-icons/gr";
-import { BsChatText, BsPeople } from "react-icons/bs";
+import { GoOrganization } from "react-icons/go"
+import { MdAdminPanelSettings } from "react-icons/md"
+import { AiOutlineDashboard, AiOutlineDatabase } from "react-icons/ai"
+import { BsChatText, BsPeople, BsPersonGear } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { OrganizationContext } from './OrganizationProvider';
 import { hasPermission } from '../Services/PermissionService';
@@ -28,10 +30,11 @@ function SideMenu() {
     "/": { label: "Organizations", key: "/", icon: <HiOutlineHome /> },
     "/organization": null,  // placeholder items set to null
     "/admin": null,  // placeholder items set to null
+    "/profile": {label: "Profile", key: "/profile", icon: <BsPersonGear />},
     "/login": { label: "Logout", key: "/login", icon: <HiOutlineLogout /> },
   });
 
-  const itemOrder = ["/", "/organization", "/admin", "/login"]; 
+  const itemOrder = ["/", "/organization", "/admin", "/profile", "/login"]; 
 
   const location = useLocation();
 
@@ -62,7 +65,7 @@ function SideMenu() {
       {
         label: "Dashboard",
         key: `/organization/${organizationId}/`,
-        icon: <GrDashboard />
+        icon: <AiOutlineDashboard />
       },
       {
         label: "Chat",
@@ -72,7 +75,7 @@ function SideMenu() {
       {
         label: "Topics",
         key: `/organization/${organizationId}/topics`,
-        icon: <GrDatabase />,
+        icon: <AiOutlineDatabase />,
       }];
 
       if (hasPermission("MANAGE_ORGANIZATION")) {
@@ -86,7 +89,7 @@ function SideMenu() {
       const organizationMenuItem: MenuItem = {
         label: organization.name,
         key: "/organization",
-        icon: <GrProjects />,
+        icon: <GoOrganization />,
         children: children,
       };
       setItems(prevItems => ({
@@ -134,7 +137,7 @@ function SideMenu() {
         "/admin": {
           label: "Admin",
           key: "/admin",
-          icon: <GrUserAdmin />,
+          icon: <MdAdminPanelSettings />,
           children: [
             {
               label: "Organizations",
@@ -166,7 +169,11 @@ function SideMenu() {
   }
 
   return (
-    <Sider theme="light" collapsible collapsed={isMobile ? true : collapsed} onCollapse={onCollapse}>
+    <Sider 
+    theme="light"
+    collapsible collapsed={isMobile ? true : collapsed}
+    onCollapse={onCollapse}
+    >
       <Menu
         onClick={(item) => {
           if (item.key === "/") {
@@ -181,6 +188,7 @@ function SideMenu() {
         items={itemOrder.map(key => items[key]).filter(Boolean)}
         defaultOpenKeys={['/organization']}
         selectedKeys={[activeLink]}
+        style={{height: "100vh", border: "none", padding: "10px"}}
       />
     </Sider>
   )
