@@ -48,6 +48,9 @@ function RegisterPage() {
                         </div>
                     )}
                     <Typography.Title level={3} style={{width: "100%"}}>Create an account</Typography.Title>
+                    <p style={{width: "100%"}}>
+                        Already have an account? <a onClick={handleLoginPage}>Login here</a>
+                    </p>
                     <Form.Item
                         name={"email"}
                         rules={[
@@ -71,9 +74,6 @@ function RegisterPage() {
                     <Input.Password placeholder="Enter your password" size="large" />
                     </Form.Item>
                     <Button type="primary" htmlType="submit" block size="large">Register</Button>
-                    <p style={{width: "100%", marginTop: "20px"}}>
-                        Already have an account? <a onClick={handleLoginPage}>Login here</a>
-                    </p>
                 </Form>
             </div>
         </div>
