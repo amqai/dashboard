@@ -3,6 +3,7 @@ import "../styles/common.css";
 import { Alert, Button, Form, Input, Typography } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import AmqParticles from "../Components/AmqParticles";
 
 function RegisterPage() {
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ function RegisterPage() {
 
     return(
         <div className="background">
+            <AmqParticles />
             <div className="logowrapper">
                 <div className="logocontainer"/>
                 <Form className="loginform" onFinish={submit}>
