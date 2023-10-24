@@ -1,8 +1,6 @@
 import "../styles/login.css";
 import "../styles/common.css";
-import "../styles/register.css";
 import { Alert, Button, Form, Input, Typography } from 'antd';
-import logo from '../assets/logo.png';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
@@ -36,9 +34,7 @@ function RegisterPage() {
     return(
         <div className="background">
             <div className="logowrapper">
-                <div className="logocontainer">
-                <img src={logo} />
-                </div>
+                <div className="logocontainer"/>
                 <Form className="loginform" onFinish={submit}>
                     <Typography.Title>Register</Typography.Title>
                     <Form.Item
@@ -69,7 +65,7 @@ function RegisterPage() {
                         <Alert message={errorMessage} onClose={dismissAlert} type="error" closable={true} />
                         </div>
                     )}
-                    </Form>
+                </Form>
             </div>
         </div>
     )

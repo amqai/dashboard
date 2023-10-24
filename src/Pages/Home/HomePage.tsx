@@ -177,14 +177,14 @@ information as you have available in the context provided.
         <>
             <div className="center-wrapper">
                 <div className="page-headers"
-                style={{
+                    style={{
                     display: 'flex',
                     justifyContent: 'space-between'
-                }}>
-                    <div>
-                    <Typography.Title level={2}>Organizations</Typography.Title>
-                    <Typography.Text>Select an existing organization, or create a new one</Typography.Text>
-                    </div>
+                    }}>
+                        <div>
+                            <Typography.Title level={2}>Organizations</Typography.Title>
+                            <Typography.Text>Select an existing organization, or create a new one</Typography.Text>
+                        </div>
 
                     <div
                     style={{

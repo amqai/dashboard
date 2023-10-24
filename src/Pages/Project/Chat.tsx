@@ -18,6 +18,7 @@ const { useToken } = theme;
 const ConversationItem = ({organizationId, currentConversationId, conversations, loadChats, setAlertMessage, clearMessages}: {organizationId: string, currentConversationId: string | undefined, conversations: ConversationApiDto[] | undefined, loadChats: any, setAlertMessage: React.Dispatch<React.SetStateAction<AlertModel | null>>, clearMessages: any}) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const navigate = useNavigate();
+    const { token } = useToken();
 
     const selectConversation = (conversationId: string) => {
       return () => {
@@ -74,8 +75,8 @@ const ConversationItem = ({organizationId, currentConversationId, conversations,
               hoverable
               style={{
                 marginBottom: "16px",
-                backgroundColor: conversation.conversationId === currentConversationId ? '#e6f7ff' : '',
-                border: conversation.conversationId === currentConversationId ? '2px solid #1890ff' : ''
+                backgroundColor: conversation.conversationId === currentConversationId ? token.colorPrimary : '',
+                textAlign: "center"
               }}
               onClick={selectConversation(conversation.conversationId)}
             >
@@ -338,7 +339,12 @@ function Chat() {
       <div className="prompt-section">
         {alertMessage !== null && alertMessage.message !== "" && (
             <div>
-            <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true}/>
+            <Alert
+            message={alertMessage.message} 
+            onClose={dismissAlert} 
+            type={alertMessage.type} 
+            closable={true}
+            style={{width: "auto"}}/>
             <Divider />
             </div>
         )}
@@ -558,7 +564,7 @@ function Chat() {
           </Modal>
         </Card>
         ) : (
-          <div style={{minHeight: '92vh'}}>
+          <div>
             <p>Load most recent chat here</p>
           </div>
         )}

@@ -1,7 +1,6 @@
 import "../styles/login.css";
 import "../styles/common.css";
 import { Alert, Button, Divider, Form, Input, Typography } from 'antd';
-import logo from '../assets/logo.png';
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 
@@ -67,9 +66,7 @@ function LoginPage() {
 
         <div className="background">
           <div className="logowrapper">
-            <div className="logocontainer">
-              <img src={logo} />
-            </div>
+            <div className="logocontainer"/>
             <Form className="loginform" onFinish={submit}>
               {errorMessage !== "" && (
                 <div className="erroralert">
