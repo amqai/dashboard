@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Table, Card, Button, Modal, Input, Checkbox, Alert} from "antd";
-import { Alert as AlertModel, AlertType } from "../../models/Alert";
-import "../../styles/common.css";
+import { Alert as AlertModel, AlertType } from "../models/Alert";
+import "../styles/common.css";
 
 interface User {
     key: string,
