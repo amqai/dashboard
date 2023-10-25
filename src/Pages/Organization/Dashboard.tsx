@@ -79,7 +79,7 @@ function Dashboard() {
       <Typography.Title level={2}>{organization?.name} Dashboard</Typography.Title>
       <Loading/>
       <Card title="Frequently Asked Questions" style={{marginBottom: "5%"}}>
-        <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns} />
+        <Table dataSource={frequentQuestions?.questions} columns={frequentlyAskedQuestionsColumns}/>
       </Card>
     </div>
   );

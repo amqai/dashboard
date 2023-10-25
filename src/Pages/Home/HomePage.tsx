@@ -187,9 +187,6 @@ information as you have available in the context provided.
                         </div>
 
                     <div
-                    style={{
-                        
-                    }}
                     >
                         {currentPerson?.admin && (
                         <Button type="primary"

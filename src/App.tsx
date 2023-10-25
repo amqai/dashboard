@@ -1,4 +1,5 @@
 import "./styles/dashboard.css"
+import "./styles/header.css"
 import { ConfigProvider, theme } from "antd";
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./Layout/AppRoutes"; // update with your actual path to AppRoutes
@@ -15,6 +16,7 @@ function App() {
         theme={{
           token: {
             colorBgBase: secondary,
+            // colorBgBase: '#2a0a2e',
             colorPrimary: primary,
             colorSuccessBg: accent1,
           },

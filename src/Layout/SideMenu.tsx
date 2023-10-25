@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { HiOutlineHome, HiOutlineLogout } from "react-icons/hi";
+import { HiOutlineHome } from "react-icons/hi";
 import { RiOrganizationChart } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
 import { GoOrganization } from "react-icons/go"
 import { MdAdminPanelSettings } from "react-icons/md"
 import { AiOutlineDashboard, AiOutlineDatabase } from "react-icons/ai"
-import { BsChatText, BsPeople, BsPersonGear } from "react-icons/bs";
+import { BsChatText, BsPeople } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { OrganizationContext } from './OrganizationProvider';
 import { hasPermission } from '../Services/PermissionService';
@@ -30,11 +30,9 @@ function SideMenu() {
     "/": { label: "Organizations", key: "/", icon: <HiOutlineHome /> },
     "/organization": null,  // placeholder items set to null
     "/admin": null,  // placeholder items set to null
-    "/profile": {label: "Profile", key: "/profile", icon: <BsPersonGear />},
-    "/login": { label: "Logout", key: "/login", icon: <HiOutlineLogout /> },
   });
 
-  const itemOrder = ["/", "/organization", "/admin", "/profile", "/login"]; 
+  const itemOrder = ["/", "/organization", "/admin"]; 
 
   const location = useLocation();
 
@@ -45,7 +43,6 @@ function SideMenu() {
   }
   const activeLink = activeLinkParts.join('/');
 
-  const isOrganizationAddedRef = useRef(false);
   const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
 
   const orgContext = useContext(OrganizationContext);
@@ -55,11 +52,11 @@ function SideMenu() {
   const { orgs } = orgContext;
 
   useEffect(() => {
-    if (orgs && location.pathname.startsWith("/organization/") && !isOrganizationAddedRef.current) {
+    if (orgs && location.pathname.startsWith("/organization/") ) {
       const parts = location.pathname.split('/');
       const organizationIdIndex = parts.indexOf('organization') + 1;
       const organizationId = parts[organizationIdIndex];
-
+      console.log(organizationId)
       const organization = orgs?.filter(item => item.id === organizationId)[0];
       const children = [
       {
@@ -96,7 +93,6 @@ function SideMenu() {
         ...prevItems,
         "/organization": organizationMenuItem,
       }));
-      isOrganizationAddedRef.current = true;
     }
   }, [location, orgs]);
 
@@ -162,12 +158,6 @@ function SideMenu() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('jwt');
-    localStorage.removeItem('jwt.expiration');
-    navigate('/login')
-  }
-
   return (
     <Sider 
     theme="light"
@@ -178,8 +168,6 @@ function SideMenu() {
         onClick={(item) => {
           if (item.key === "/") {
             window.location.href = item.key;
-          } else if (item.key === "/login") {
-            handleLogout();
           } else {
             navigate(item.key)
           }
