@@ -371,8 +371,14 @@ function Chat() {
                   name={"prompt"}
                 >
                   <Input.TextArea
-                    rows={1}
                     placeholder="Ask my anything about my data"
+                    autoSize={{ minRows: 1, maxRows: 6 }}
+                    onPressEnter={(e) => {
+                      // Prevent default behavior of Enter key in TextArea
+                      e.preventDefault();
+                      promptForm.submit();
+                    }}
+                    size="large"
                   />
                 </Form.Item>
               </Col>
@@ -381,10 +387,12 @@ function Chat() {
                   htmlType="submit"
                   type="primary"
                   style={{marginLeft:"1rem"}}
+                  size="large"
                 >Ask Question</Button>
                 <Button
                   style={{marginLeft:"1rem"}}
                   onClick={() => setIsSettingsVisible(!isSettingsVisible)}
+                  size="large"
                 ><BsGear /></Button>
               </Col>
             </Row>
