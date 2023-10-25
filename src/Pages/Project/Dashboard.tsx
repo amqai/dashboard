@@ -1,10 +1,11 @@
-import { Alert, Button, Card, Col, Divider, Form, Input, Row, Typography } from "antd";
+import { Alert, Button, Card, Col, Divider, Form, Input, Modal, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { fetchProjects } from "../../Services/ApiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { hasPermission } from "../../Services/PermissionService";
 import { IoAddSharp } from "react-icons/io5"
+import { DeleteOutlined } from "@ant-design/icons";
 
 interface Project {
     projectName: string,
@@ -72,11 +73,64 @@ function HomePage() {
       }
     }
 
+    const showDeleteConfirm = (projectId: string, projectName: string) => {
+        Modal.confirm({
+            title: `Are you sure you want to delete the topic "${projectName}"?`,
+            content: 'This action cannot be undone.',
+            okText: 'Yes, delete it',
+            okType: 'danger',
+            cancelText: 'Cancel',
+            onOk() {
+                deleteTopic(projectId);
+            },
+        });
+    };
+
+    const deleteTopic = async (topicId: string) => {
+        const jwt = localStorage.getItem('jwt');
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?projectId=${topicId}&organizationId=${organizationId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwt}`
+            }
+        });
+  
+        if (response.ok) {
+          setAlertMessage({
+            message: 'Your topic was deleted successfully',
+            type: AlertType.Success,
+          })
+          setFormOpen(false)
+          loadProjects(organizationId!!)
+        } else {
+          setAlertMessage({
+            message: 'There was an error deleted your topic',
+            type: AlertType.Error,
+          })
+        }
+    }
+
     const dismissAlert = () => {
         setAlertMessage(null);
     };
 
     const handleGoToDashboard = (project: Project) => navigate(`/organization/${organizationId}/topics/${project.projectId}/data`);
+
+    const CardTitle = ({ projectName, projectId }: { projectName: string, projectId: string }) => (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{projectName}</span>
+            {hasPermission("CREATE_TOPICS") && (
+                <DeleteOutlined
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent onClick of Card
+                        showDeleteConfirm(projectId, projectName);
+                    }}
+                    style={{ color: "red", cursor: "pointer" }}
+                />
+            )}
+        </div>
+    );
 
     return (
         <>
@@ -143,7 +197,12 @@ function HomePage() {
                 <Row gutter={[16, 16]}>
                     {projects != null && projects.map((project) => (
                         <Col xs={24} sm={12} md={8} lg={6} key={project.projectId} >
-                            <Card className="projectCard" style={{height: "150px"}} title={project.projectName} onClick={() => handleGoToDashboard(project)}>
+                            <Card 
+                                className="projectCard"
+                                style={{height: "150px"}}
+                                title={<CardTitle projectName={project.projectName} projectId={project.projectId} />}
+                                onClick={() => handleGoToDashboard(project)}
+                            >
                                 {project.projectDescription}
                             </Card>
                         </Col>
