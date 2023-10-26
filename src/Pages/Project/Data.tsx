@@ -387,12 +387,12 @@ function Data() {
               <div style={{borderTop: 0, paddingBottom: "2rem"}}>
               <strong>ALL MEMBERS </strong>
               <Switch 
-                checked={organizationVisibility === "PUBLIC"}
+                checked={organizationVisibility === "SELECTED_MEMBERS"}
                 onChange={changeOrganizationVisibility} 
               />
               <strong> SPECIFIC MEMBERS</strong>
               </div>
-              {organizationVisibility === "PUBLIC" && (
+              {organizationVisibility === "SELECTED_MEMBERS" && (
                 <>
                   <div className="settings-form-buttons" style={{borderTop: 0}}>
                     <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
