@@ -4,12 +4,16 @@ import { Dropdown, Alert} from 'antd';
 import { OrganizationApiDto } from "../models/Organization";
 import { fetchOrganizations } from "../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
+import { CurrentPerson } from '../models/Person';
 import { useEffect, useState } from "react";
 
 function AppHeader() {
     const navigate = useNavigate();
     const [organizations, setOrganizations] = useState<OrganizationApiDto[] | null>(null);
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
+    const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
+    const [isAdmin, setIsAdmin] = useState<Boolean>(false);
+
 
     useEffect(() => {
         (
@@ -34,25 +38,30 @@ function AppHeader() {
         }
     }
 
-    const items = organizations !== null ? organizations.map((organization, index) => (
-        {
-            key: index.toString(),
-            label: (
-                <a onClick={() => navigateOrganization(organization.id)} style={{textDecoration: "none"}}>
-                {organization.name}
-                </a>
-            )
+    useEffect(() => {
+        (
+          async () => {
+            const jwt = localStorage.getItem('jwt');
+            const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/person/status`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwt}`
+              },
+            });
+            const content = await response.json();
+            setCurrentPerson(content);
+            localStorage.setItem('super_user', content.admin);
+          }
+        )();
+    }, []);
+
+    useEffect(() => {
+        if (currentPerson?.admin) {
+            setIsAdmin(true)
+        } else {
+            setIsAdmin(false)
         }
-    )) : []
-
-    const navigateOrganization = (id: string) => {
-        // call 
-        navigate('/organization/' + id)
-    }
-
-    const navigateHome = () => {
-        navigate(`/`);
-    }
+    }, [currentPerson]);
 
     const navigateLogout = () => {
         localStorage.removeItem('jwt');
@@ -60,23 +69,85 @@ function AppHeader() {
         navigate('/login')
     }
 
-    const navigateProfile = () => {
-        navigate('/profile')
-    }
-
     const dismissAlert = () => {
         setAlertMessage(null);
     };
 
+    const organizationItems = organizations !== null ? organizations.map((organization, index) => (
+        {
+            key: index.toString(),
+            label: (
+                <a onClick={() => navigate('/organization/' + organization.id)} style={{textDecoration: "none"}}>
+                {organization.name}
+                </a>
+            )
+        }
+    )) : []
+
+    const OrganizationDropdown = () => {
+        const items = organizationItems
+        return(
+            <Dropdown menu={{items}}>
+                <a onClick={(e) => e.preventDefault()}>Organizations</a>
+            </Dropdown>
+        )
+    }
+
+    const adminItems = [
+        {
+            key: 1,
+            label: (
+                <a onClick={() => navigate("/admin/organizations")} style={{textDecoration: "none"}}>Organizations</a>
+            )
+        },
+        {
+            key: 2,
+            label: (
+                <a onClick={() => navigate("/admin/manage-users")} style={{textDecoration: "none"}}>Users</a>
+            )
+        },
+    ]
+
+    const AdminDropdown = () => {
+        const items = adminItems
+        return(
+                <Dropdown menu={{items}}>
+                    <a onClick={(e) => e.preventDefault()}>Admin</a>
+                </Dropdown>
+            )
+    }
+
+    const settingsItems = [
+        {
+            key: 1,
+            label: (
+                <a onClick={() => navigate("/profile")} style={{textDecoration: "none"}}>Profile</a>
+            )
+        },
+        {
+            key: 2,
+            label: (
+                <a onClick={navigateLogout} style={{textDecoration: "none"}}>Logout</a>
+            )
+        },
+    ]
+
+    const SettingsDropdown = () => {
+        const items = settingsItems
+        return(
+            <Dropdown menu={{items}}>
+                <a onClick={(e) => e.preventDefault()}>Settings</a>
+            </Dropdown>
+        )
+    }
+
     return (
         <Header className="header">
-            <div className="brand" onClick={navigateHome}/>
+            <div className="brand" onClick={() => navigate('/')}/>
             <div className="headerNav">
-                <Dropdown menu={{items}}>
-                    <a onClick={(e) => e.preventDefault()}>Organizations</a>
-                </Dropdown>
-                <a href="" onClick={navigateProfile}>Profile</a>
-                <a onClick={navigateLogout}>Logout</a>
+                <OrganizationDropdown/>
+                {isAdmin && <AdminDropdown/>}
+                <SettingsDropdown/>
             </div>
 
             {alertMessage !== null && alertMessage.message !== "" && (

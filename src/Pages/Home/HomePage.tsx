@@ -163,7 +163,7 @@ information as you have available in the context provided.
         settingsVerb = "Show"
     }
 
-    const handleClick = (organizationId: string) => (e?: React.MouseEvent<HTMLElement>) => {
+    const handleDeleteOrg = (organizationId: string) => (e?: React.MouseEvent<HTMLElement>) => {
         e?.stopPropagation();
         Modal.confirm({
           title: 'Are you sure you want to delete this organization?',
@@ -194,9 +194,7 @@ information as you have available in the context provided.
                         style={{fontSize: "10"}}
                         onClick={() => openForm()}>+</Button>)}
                     </div>
-
                 </div>
-
 
                 {alertMessage !== null && alertMessage.message !== "" && (
                     <div>
@@ -378,7 +376,7 @@ information as you have available in the context provided.
                                 {currentPerson?.admin && (
                                     <DeleteOutlined 
                                         style={{ float: 'right', marginTop: '5px', color: 'red' }} 
-                                        onClick={handleClick(organization.id)}
+                                        onClick={handleDeleteOrg(organization.id)}
                                     />
                                 )}
                             </Card>

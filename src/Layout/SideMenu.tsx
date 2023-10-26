@@ -1,17 +1,13 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { HiOutlineHome } from "react-icons/hi";
-import { RiOrganizationChart } from "react-icons/ri";
 import { FiSettings } from "react-icons/fi";
 import { GoOrganization } from "react-icons/go"
-import { MdAdminPanelSettings } from "react-icons/md"
 import { AiOutlineDashboard, AiOutlineDatabase } from "react-icons/ai"
-import { BsChatText, BsPeople } from "react-icons/bs";
+import { BsChatText } from "react-icons/bs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { OrganizationContext } from './OrganizationProvider';
 import { hasPermission } from '../Services/PermissionService';
-import { CurrentPerson } from '../models/Person';
 
 type MenuItem = {
   label: string,
@@ -25,15 +21,9 @@ function SideMenu() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  const [items, setItems] = useState<{ [key: string]: MenuItem | null }>({
-    "/": { label: "Organizations", key: "/", icon: <HiOutlineHome /> },
-    "/organization": null,  // placeholder items set to null
-    "/admin": null,  // placeholder items set to null
-  });
-
-  const itemOrder = ["/", "/organization", "/admin"]; 
-
+  const [items, setItems] = useState<{ [key: string]: MenuItem | null }>({});
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const itemOrder = ["/organization"]; 
   const location = useLocation();
 
   let activeLinkParts = location.pathname.split('/');
@@ -43,8 +33,6 @@ function SideMenu() {
   }
   const activeLink = activeLinkParts.join('/');
 
-  const [currentPerson, setCurrentPerson] = useState<CurrentPerson | null>(null);
-
   const orgContext = useContext(OrganizationContext);
   if(!orgContext) {
     throw new Error("SideMenu must be used within an OrganizationProvider");
@@ -52,11 +40,10 @@ function SideMenu() {
   const { orgs } = orgContext;
 
   useEffect(() => {
-    if (orgs && location.pathname.startsWith("/organization/") ) {
+    if (orgs && location.pathname.startsWith("/organization/" )) {
       const parts = location.pathname.split('/');
       const organizationIdIndex = parts.indexOf('organization') + 1;
       const organizationId = parts[organizationIdIndex];
-      console.log(organizationId)
       const organization = orgs?.filter(item => item.id === organizationId)[0];
       const children = [
       {
@@ -89,29 +76,21 @@ function SideMenu() {
         icon: <GoOrganization />,
         children: children,
       };
+
       setItems(prevItems => ({
         ...prevItems,
         "/organization": organizationMenuItem,
       }));
+      setIsMenuVisible(true)
+
+    } else if (location.pathname = "/") {
+      const emptyItems: { [key: string]: MenuItem | null } = {};
+      setItems(emptyItems);
+      setIsMenuVisible(false)
     }
   }, [location, orgs]);
 
   useEffect(() => {
-    (
-      async () => {
-        const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/person/status`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-          },
-        });
-        const content = await response.json();
-        setCurrentPerson(content);
-        localStorage.setItem('super_user', content.admin);
-      }
-    )();
-
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);  // breakpoint at which to collapse the Sider
       setCollapsed(window.innerWidth < 768);
@@ -125,33 +104,6 @@ function SideMenu() {
     }
   }, []);
 
-  const isAdminAddedRef = useRef(false);
-  useEffect(() => {
-    if (currentPerson?.admin && !isAdminAddedRef.current) {
-      setItems(prevItems => ({
-        ...prevItems,
-        "/admin": {
-          label: "Admin",
-          key: "/admin",
-          icon: <MdAdminPanelSettings />,
-          children: [
-            {
-              label: "Organizations",
-              key: "/admin/organizations",
-              icon: <RiOrganizationChart />
-            },
-            {
-              label: "Users",
-              key: "/admin/manage-users",
-              icon: <BsPeople />
-            }
-          ],
-        },  // fill in the placeholder item
-      }));
-      isAdminAddedRef.current = true;
-    }
-  }, [currentPerson]);
-
   const onCollapse = (collapsed: boolean) => {
     if (!isMobile) {
       setCollapsed(collapsed);
@@ -163,6 +115,7 @@ function SideMenu() {
     theme="light"
     collapsible collapsed={isMobile ? true : collapsed}
     onCollapse={onCollapse}
+    width={isMenuVisible ? '200px' : "0px"}
     >
       <Menu
         onClick={(item) => {
