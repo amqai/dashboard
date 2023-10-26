@@ -1,4 +1,4 @@
-import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs, Divider, Switch, Checkbox } from "antd";
+import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs, Divider, Switch } from "antd";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
