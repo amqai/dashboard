@@ -1,4 +1,4 @@
-import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs, Divider } from "antd";
+import { Table, Modal, Form, Button, Space, Spin, Alert, Input, Tabs, Divider, Switch, Checkbox } from "antd";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -8,12 +8,7 @@ import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import PdfTable from "../../Components/PdfTable";
 import TabPane from "antd/es/tabs/TabPane";
 import { hasPermission } from "../../Services/PermissionService";
-
-interface Member {
-  key: string
-  email: string
-  personId: string
-}
+import { Member } from "../../models/Organization";
 
 function Data() {
   const params = useParams<{ topicId: string, organizationId: string }>();
@@ -29,6 +24,7 @@ function Data() {
   const [memberEmail, setMemberEmail] = useState("")
   const [activeKey, setActiveKey] = useState(localStorage.getItem('data_page.activeTabKey') || "1");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [organizationVisibility, setOrganizationVisibility] = useState<"PUBLIC" | "SELECTED_MEMBERS">("SELECTED_MEMBERS");
 
   useEffect(() => {
       (
@@ -54,6 +50,8 @@ function Data() {
 
     const content = await response.json();
 
+    setOrganizationVisibility(content.organizationVisibility);
+
     const userData = content?.members.map((member: { personId: any; email: any; role: any; }) => (
       {
         key: member.personId,
@@ -62,7 +60,7 @@ function Data() {
         personId: member.personId
       }
     ))
-    if(userData != null) {
+    if (userData != null) {
       setMemberData(...[userData])
     }
   }
@@ -261,6 +259,28 @@ function Data() {
     loadEmbeddings(organizationId, topicId);
   }
 
+  const changeOrganizationVisibility = async () => {
+    const newVisibility = organizationVisibility === "PUBLIC" ? "SELECTED_MEMBERS" : "PUBLIC";
+    
+    Modal.confirm({
+      title: "Are you sure you change the visibility settings of this topic?",
+      onOk: async () => {
+        const jwt = localStorage.getItem('jwt');
+        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?projectId=${topicId}`, {
+          method: "PUT",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwt}`
+          },
+          body: JSON.stringify({ 
+            projectOrganizationVisibility: newVisibility
+          })
+        });
+        setOrganizationVisibility(newVisibility);
+      }
+    })
+  }
+
   const memberColumns = [
     {
       title: 'Email',
@@ -363,11 +383,23 @@ function Data() {
           )}
 
           {hasPermission("CREATE_TOPICS") && (
-            <TabPane tab="Members" key="3">
-              <div className="settings-form-buttons" style={{borderTop: 0}}>
-                <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
+            <TabPane tab="Visibility" key="3">
+              <div style={{borderTop: 0, paddingBottom: "2rem"}}>
+              <strong>ALL MEMBERS </strong>
+              <Switch 
+                checked={organizationVisibility === "PUBLIC"}
+                onChange={changeOrganizationVisibility} 
+              />
+              <strong> SPECIFIC MEMBERS</strong>
               </div>
-              <Table dataSource={memberData} columns={memberColumns} />
+              {organizationVisibility === "PUBLIC" && (
+                <>
+                  <div className="settings-form-buttons" style={{borderTop: 0}}>
+                    <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
+                  </div>
+                  <Table dataSource={memberData} columns={memberColumns} />
+                </>
+              )}
           </TabPane>
           )}
   
