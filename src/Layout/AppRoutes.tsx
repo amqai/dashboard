@@ -7,7 +7,6 @@ import SideMenu from "../Layout/SideMenu";
 import { Layout } from "antd";
 import { useEffect } from "react";
 import Chat from "../Pages/Project/Chat";
-import { OrganizationProvider } from "./OrganizationProvider";
 import ProjectDashboard from "../Pages/Project/Dashboard";
 import Dashboard from "../Pages/Organization/Dashboard";
 import Data from "../Pages/Project/Data";
@@ -40,38 +39,36 @@ function AppRoutes() {
             <Route path="/register" element={<RegisterPage /> } />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={
-                <OrganizationProvider>
-                    <Layout className="container">
-                        <AppHeader />
-                        <Layout>
-                            <SideMenu />
-                            <Layout.Content>
-                                <Routes>
-                                    <Route path="/" element={<HomePage />} />
-                                    <Route path="/admin/manage-users" element={<ManageUsers />} />
-                                    <Route path="/admin/organizations" element={<Organizations />} />
-                                    <Route path="profile" element={<ProfilePage />} />
-                                    <Route path="/organization/:organizationId/*" element={
-                                        <Routes>
-                                            <Route path="/" element={<Dashboard /> } />
-                                            <Route path="settings" element={<Settings /> } />
-                                            <Route path="topics" element={<ProjectDashboard /> } />
-                                            <Route path="topics/:topicId/*" element={
-                                                <Routes>
-                                                    <Route path="data" element={<Data /> } />
-                                                </Routes>
-                                            } />
-                                            <Route path="chat" element={<Chat />} />
-                                            <Route path="chat/:conversationId" element={<Chat />} />
-                                            {/* Add your other project related routes here */}
-                                        </Routes>
-                                    } />
-                                    <Route path="*" element={<Navigate to="/" replace />} />
-                                </Routes>
-                            </Layout.Content>
-                        </Layout>
+                <Layout className="container">
+                    <AppHeader />
+                    <Layout>
+                        <SideMenu />
+                        <Layout.Content>
+                            <Routes>
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/admin/manage-users" element={<ManageUsers />} />
+                                <Route path="/admin/organizations" element={<Organizations />} />
+                                <Route path="profile" element={<ProfilePage />} />
+                                <Route path="/organization/:organizationId/*" element={
+                                    <Routes>
+                                        <Route path="/" element={<Dashboard /> } />
+                                        <Route path="settings" element={<Settings /> } />
+                                        <Route path="topics" element={<ProjectDashboard /> } />
+                                        <Route path="topics/:topicId/*" element={
+                                            <Routes>
+                                                <Route path="data" element={<Data /> } />
+                                            </Routes>
+                                        } />
+                                        <Route path="chat" element={<Chat />} />
+                                        <Route path="chat/:conversationId" element={<Chat />} />
+                                        {/* Add your other project related routes here */}
+                                    </Routes>
+                                } />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </Layout.Content>
                     </Layout>
-                </OrganizationProvider>
+                </Layout>
                 }
             />
 
