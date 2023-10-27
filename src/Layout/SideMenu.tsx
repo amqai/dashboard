@@ -83,7 +83,7 @@ function SideMenu() {
       }));
       setIsMenuVisible(true)
 
-    } else if (location.pathname = "/") {
+    } else {
       const emptyItems: { [key: string]: MenuItem | null } = {};
       setItems(emptyItems);
       setIsMenuVisible(false)
