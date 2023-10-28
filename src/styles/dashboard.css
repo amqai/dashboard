@@ -5,6 +5,13 @@
     padding: 2%;
     padding-top: 2%;
     overflow-y: auto;
+    max-width: 1200px;
+}
+
+.page-headers {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .settings-form-buttons {

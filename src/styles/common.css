@@ -28,3 +28,8 @@
     transition: all .1s ease-in-out; 
 }
 
+.addButton {
+    height: 50px;
+    width: 50px !important;
+    margin: 20px;
+}

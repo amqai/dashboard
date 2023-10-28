@@ -323,7 +323,7 @@ function Settings() {
         <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
       </Modal>
 
-      <Card title={project?.projectName + " members"} bodyStyle={{padding: "5%", overflowX: "auto"}}>
+      <Card title={project?.projectName + " members"} bodyStyle={{overflowX: "auto"}}>
         <div className="settings-form-buttons" style={{borderTop: 0}}>
           <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
         </div>

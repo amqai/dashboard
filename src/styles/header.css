@@ -9,7 +9,7 @@
 
 .headerNav {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 350px;
 }
 

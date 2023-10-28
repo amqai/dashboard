@@ -36,7 +36,7 @@ function SideMenu() {
 
       const newItems = [
         {
-          label: "Dashboard",
+          label: "Home",
           key: `/organization/${organizationId}/`,
           icon: <AiOutlineDashboard />
         },
@@ -102,7 +102,11 @@ function SideMenu() {
         items={items}
         defaultOpenKeys={['/organization']}
         selectedKeys={[activeLink]}
-        style={{ height: "100vh", border: "none", padding: "10px" }}
+        style={{ 
+          height: "100vh",
+          border: "none",
+          padding: "10px",
+        }}
       />
     </Sider>
   )

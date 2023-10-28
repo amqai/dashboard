@@ -135,20 +135,19 @@ function HomePage() {
     return (
         <>
             <div className="center-wrapper">
-            <div className="page-headers"
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
+                <div className="page-headers">
                     <div>
                         <Typography.Title level={2}>Topics</Typography.Title>
                         <Typography.Text>Select an existing topic, or create a new one</Typography.Text>
                     </div>
 
                     {hasPermission("CREATE_TOPICS") && (
-                        <Button type="primary" shape="circle" icon={<IoAddSharp/>} onClick={() => setFormOpen(true)}></Button>
+                        <Button className="addButton" 
+                        type="primary" 
+                        shape="circle" 
+                        icon={<IoAddSharp/>}
+                        onClick={() => setFormOpen(true)}></Button>
                     )}
-
                 </div>
 
                 {alertMessage !== null && alertMessage.message !== "" && (

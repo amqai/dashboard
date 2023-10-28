@@ -19,7 +19,6 @@ function ManageUsers() {
                 localStorage.setItem('admin.manage_users_page.activeTabKey', newActiveKey);
             }}
             >
-            
                 <TabPane 
                     tab="Users"
                     key="1"
@@ -33,7 +32,6 @@ function ManageUsers() {
                 >
                     <WhiteListUsersTable />
                 </TabPane>
-
             </Tabs>
         </div>
     );

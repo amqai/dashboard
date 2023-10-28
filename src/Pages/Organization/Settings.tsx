@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Form, Input, Select, Spin, Space, Modal, Checkbox, Slider, Tabs} from "antd";
+import { Alert, Button, Card, Form, Input, Select, Spin, Space, Modal, Checkbox, Slider, Tabs } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -148,6 +148,7 @@ function Settings() {
           <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
         </div>
       )}
+
       <Tabs
           defaultActiveKey="1"
           activeKey={activeKey}
@@ -161,7 +162,7 @@ function Settings() {
         >
           
         <TabPane tab="Settings" key="1">
-          <Card title={organization?.name + " settings"} bodyStyle={{padding: "5%", overflowX: "auto"}}>
+          <Card title={organization?.name + " settings"} bodyStyle={{overflowX: "auto"}}>
             <Form
                 form={form}
                 onFinish={saveSettings}

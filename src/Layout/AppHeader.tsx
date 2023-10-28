@@ -136,7 +136,7 @@ function AppHeader() {
         const items = settingsItems
         return(
             <Dropdown menu={{items}}>
-                <a onClick={(e) => e.preventDefault()}>Settings</a>
+                <a onClick={(e) => e.preventDefault()}>User</a>
             </Dropdown>
         )
     }

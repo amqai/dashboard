@@ -1,4 +1,4 @@
-import { Form, Button, Input, Alert, Typography, Card} from "antd";
+import { Form, Button, Input, Alert, Typography, Card, Divider} from "antd";
 import { useState } from "react";
 import { AlertType, Alert as AlertModel } from "../../models/Alert";
 
@@ -47,9 +47,11 @@ function ProfilePage() {
             <Typography.Title level={3}>Profile</Typography.Title>
             <Card>
                 <h1>Password Reset</h1>
-                <Form className="passwordResetForrm"
+                <Divider/>
+                <Form
                     onFinish={resetPassword}
-                    labelCol={{span: 2}}
+                    labelCol={{style: {minWidth: "150px"}}}
+                    labelAlign="left"
                 >
                 <Form.Item
                     name={"currentPassword"}
@@ -63,7 +65,6 @@ function ProfilePage() {
                 >                  
                     <Input.Password 
                         placeholder="Please enter your current password"
-                        size="large"
                     />
                 </Form.Item>
 
@@ -79,13 +80,11 @@ function ProfilePage() {
                 >                  
                     <Input.Password 
                         placeholder="Please enter your new password"
-                        size="large"
                     />
                 </Form.Item>
 
                 <Button type="primary"
                     htmlType="submit"
-                    size="large"
                 >Update Password</Button>
                 </Form>
             </Card>

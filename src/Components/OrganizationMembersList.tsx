@@ -174,7 +174,7 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({ organ
 
     return (
         <>
-            <Card title="Members" bodyStyle={{padding: "5%", overflowX: "auto"}}>
+            <Card title="Members" bodyStyle={{overflowX: "auto"}}>
                 <div className="settings-form-buttons">
                 <Button type="primary" onClick={() => setIsMemberModal(true)}>+ Add</Button>
                 </div>

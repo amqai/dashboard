@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Card, Button, Alert, Modal } from "antd";
+import { Table, Card, Alert, Modal } from "antd";
 import { Alert as AlertModel } from "../../models/Alert";
 import "../../styles/common.css";
 import { Member, OrganizationApiDto } from "../../models/Organization";
@@ -93,17 +93,16 @@ function Organizations() {
             key: 'id',
             render: (_: any, record: { id: any; }) => (
                 <>
-                    <a 
-                        onClick={() => goToSettings(record.id)}
-                    >Settings</a>
-                    <Button
-                        style={{marginLeft:"1rem"}}
-                        onClick={() => handleFeaturesClick(record.id)}
-                    >Features</Button>
-                    <Button
-                        disabled
-                        style={{marginLeft:"1rem"}}
-                    >Delete</Button>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column"
+                }}>
+                    <a onClick={() => goToSettings(record.id)}> Settings </a>
+                    <a onClick={() => handleFeaturesClick(record.id)}> Features </a>
+                    <a> Delete </a>
+
+                </div>
+
                 </>
             )
         },
@@ -115,7 +114,7 @@ function Organizations() {
 
     return (
         <div className="center-wrapper">
-            <Card title={"Manage Organizations"} bodyStyle={{padding: "5%", overflowX: "auto"}}>
+            <Card title={"Manage Organizations"} bodyStyle={{overflowX: "auto"}}>
                 {alertMessage !== null && alertMessage.message !== "" && (
                   <div style={{margin: "24px"}}>
                     <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />

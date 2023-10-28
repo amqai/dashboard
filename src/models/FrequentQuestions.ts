@@ -5,4 +5,9 @@ export interface FrequentlyAskedQuestionsResponse {
 export interface FrequentlyAskedQuestionResponse {
     question: string;
     count: number;
+    relatedQuestions: FrequentlyAskedQuestionContest;
+}
+
+export interface FrequentlyAskedQuestionContest {
+    relatedQuestions: string[];
 }

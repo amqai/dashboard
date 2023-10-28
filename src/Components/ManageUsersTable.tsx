@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Drawer, Table } from "antd";
+import { Alert, Button, Card, Drawer, Table, Typography } from "antd";
 import { GetAllPersonApiResponse, GetAllPersonOrganizationApiResponse } from '../models/Person';
 import { Alert as AlertModel } from "../models/Alert";
 
@@ -127,16 +127,23 @@ const ManageUsersTable: React.FC = () => {
 
     return (
         <>
-        <div className="center-wrapper">
-            <Card title={"Manage Users"} bodyStyle={{padding: "5%", overflowX: "scroll"}}>
-                {alertMessage !== null && alertMessage.message !== "" && (
-                    <div style={{margin: "24px"}}>
-                    <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
-                    </div>
-                )}
-                <Table dataSource={users} columns={userColumns} />
-            </Card>
-        </div>
+          <div className="page-headers" style={{marginBottom: "10px"}}>
+              <div>
+                  <Typography.Title level={2}>Manage Users</Typography.Title>
+                  <Typography.Text>Set the status of a user</Typography.Text>
+              </div>
+
+          </div>
+
+          <Card bodyStyle={{overflowX: "scroll"}}>
+              {alertMessage !== null && alertMessage.message !== "" && (
+                  <div style={{margin: "24px"}}>
+                  <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
+                  </div>
+              )}
+              <Table dataSource={users} columns={userColumns} />
+          </Card>
+       
         <Drawer 
             title={`${personsOrganizations?.email}'s Organizations`}
             placement="right"

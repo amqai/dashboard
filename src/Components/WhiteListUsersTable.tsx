@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Table, Card, Button, Modal, Input, Checkbox, Alert} from "antd";
+import { Table, Card, Button, Modal, Input, Checkbox, Alert, Typography} from "antd";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
 import "../styles/common.css";
+import { IoAddSharp } from "react-icons/io5"
 
 interface User {
     key: string,
@@ -137,16 +138,27 @@ function AllowedUsers() {
   };
 
     return (
-        <div className="center-wrapper">
-          <Card title={"Allowed Users"} bodyStyle={{padding: "5%", overflowX: "auto"}}>
+        <>
+            <div className="page-headers" style={{marginBottom: "10px"}}>
+              <div>
+                  <Typography.Title level={2}>Allowed Users</Typography.Title>
+                  <Typography.Text>Add or remove users from your organization</Typography.Text>
+              </div>
+              {
+                  <Button className="addButton" 
+                  type="primary" 
+                  shape="circle" 
+                  icon={<IoAddSharp/>}
+                  onClick={() => setIsUserModal(true)}></Button>
+              }
+          </div>
+
+          <Card bodyStyle={{overflowX: "auto"}}>
               {alertMessage !== null && alertMessage.message !== "" && (
                 <div style={{margin: "24px"}}>
                   <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
                 </div>
               )}
-              <div className="settings-form-buttons">
-                <Button type="primary" onClick={() => setIsUserModal(true)} > + Add User</Button>
-              </div>
               <Table dataSource={allowedUsers} columns={allowedUserColumns} />
           </Card>
 
@@ -165,7 +177,7 @@ function AllowedUsers() {
               <Input placeholder="Enter user email" value={addUser?.email} onChange={(e) => setAddUser((addUser) => ({ ...addUser, email: e.target.value}))}/>
               <Checkbox style={{marginTop: "10px"}} checked={addUser?.admin} onChange={(e) => setAddUser((addUser) => ({ ...addUser, admin: e.target.checked}))}>Check for admin privileges</Checkbox>
           </Modal>
-      </div>
+        </>
     );
 }
 

@@ -6,6 +6,7 @@ import { useNavigate} from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 import { CurrentPerson } from "../../models/Person";
+import { IoAddSharp } from "react-icons/io5"
 
 function HomePage() {
     const navigate = useNavigate();
@@ -176,24 +177,18 @@ information as you have available in the context provided.
     return (
         <>
             <div className="center-wrapper">
-                <div className="page-headers"
-                    style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                    }}>
-                        <div>
-                            <Typography.Title level={2}>Organizations</Typography.Title>
-                            <Typography.Text>Select an existing organization, or create a new one</Typography.Text>
-                        </div>
-
-                    <div
-                    >
-                        {currentPerson?.admin && (
-                        <Button type="primary"
-                        shape="circle"
-                        style={{fontSize: "10"}}
-                        onClick={() => openForm()}>+</Button>)}
+                <div className="page-headers">
+                    <div>
+                        <Typography.Title level={2}>Organizations</Typography.Title>
+                        <Typography.Text>Select an existing organization, or create a new one</Typography.Text>
                     </div>
+
+                    {currentPerson?.admin && (
+                    <Button className="addButton"
+                    type="primary"
+                    shape="circle"
+                    icon={<IoAddSharp/>}
+                    onClick={() => openForm()}></Button>)}
                 </div>
 
                 {alertMessage !== null && alertMessage.message !== "" && (
@@ -212,7 +207,7 @@ information as you have available in the context provided.
                             labelCol={{style: {minWidth: "150px"}}}
                             labelAlign="left"
                         >
-                            <Typography.Title level={3} style={{ marginBottom: '24px' }}>Create new organization</Typography.Title>
+                            <Typography.Title level={3} style={{ marginBottom: '24px' }}>Create anew organization</Typography.Title>
 
                             <Form.Item
                             name={"name"}
@@ -348,7 +343,6 @@ information as you have available in the context provided.
                                         max={200}
                                     />
                             </Form.Item>
-
                             <Button type="primary" onClick={() => setToggleSettings(!toggleSettings)} style={{marginBottom: '24px'}}>{settingsVerb} Advanced Settings</Button>
                             <Button type="primary" htmlType="submit" style={{marginLeft: "10px"}}>Save</Button>
                             <Button style={{marginLeft: "10px"}} danger onClick={() => setFormOpen(false)}>Cancel</Button>
