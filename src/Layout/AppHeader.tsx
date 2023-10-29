@@ -73,11 +73,17 @@ function AppHeader() {
         setAlertMessage(null);
     };
 
+    const handleGoToDashboard = (organizationId: string) => {
+        localStorage.setItem('organization.id', organizationId)
+        localStorage.setItem('organization.permissions', JSON.stringify(currentPerson?.organizationPermissions[organizationId]));
+        window.location.href = `/organization/${organizationId}/`;
+    }
+
     const organizationItems = organizations !== null ? organizations.map((organization, index) => (
         {
             key: index.toString(),
             label: (
-                <a onClick={() => navigate('/organization/' + organization.id)} style={{textDecoration: "none"}}>
+                <a onClick={() => handleGoToDashboard(organization.id)} style={{textDecoration: "none"}}>
                 {organization.name}
                 </a>
             )
