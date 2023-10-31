@@ -1,4 +1,17 @@
-import { Alert, Button, Card, Form, Input, Select, Spin, Space, Modal, Checkbox, Slider, Tabs } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Form,
+  Input,
+  Select,
+  Spin,
+  Space,
+  Modal,
+  Checkbox,
+  Slider,
+  Tabs,
+} from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/common.css";
@@ -13,51 +26,75 @@ import WordpressIntegrationForm from "../../Components/WordpressIntegrationForm"
 function Settings() {
   const [form] = Form.useForm();
   const { organizationId } = useParams();
-  const [organization, setOrganization] = useState<OrganizationApiDto | null>(null);
+  const [organization, setOrganization] = useState<OrganizationApiDto | null>(
+    null
+  );
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
   const [loading, setLoading] = useState(false);
   const [defaultApiKey, setDefaultApiKey] = useState(false);
   const [defaultApiKeyWarning, setDefaultApiKeyWarningModal] = useState(false);
-  const [activeKey, setActiveKey] = useState(localStorage.getItem('organization.settings_page.activeTabKey') || "1");
+  const [activeKey, setActiveKey] = useState(
+    localStorage.getItem("organization.settings_page.activeTabKey") || "1"
+  );
 
+  const saveSettings = async (values: {
+    openAiApiKey: any;
+    model: any;
+    prompt: any;
+    defaultKey: any;
+    temperature: any;
+    searchSize: any;
+    searchThreshold: any;
+  }) => {
+    setLoading(true);
+    const {
+      openAiApiKey,
+      model,
+      prompt,
+      defaultKey,
+      temperature,
+      searchSize,
+      searchThreshold,
+    } = values;
+    if (organizationId) {
+      const jwt = localStorage.getItem("jwt");
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/organization/settings?organizationId=${organizationId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwt}`,
+          },
+          body: JSON.stringify({
+            openAiApiKey,
+            model,
+            prompt,
+            defaultKey,
+            temperature,
+            searchSize,
+            searchThreshold,
+          }),
+        }
+      );
 
-  const saveSettings = async (values: { openAiApiKey: any; model: any; prompt: any; defaultKey: any; temperature: any, searchSize: any, searchThreshold: any }) => {
-    setLoading(true)
-    const { openAiApiKey, model, prompt, defaultKey, temperature, searchSize, searchThreshold } = values;
-    if(organizationId) {
-      const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`,
-        },
-        body: JSON.stringify({
-          openAiApiKey,
-          model,
-          prompt,
-          defaultKey,
-          temperature,
-          searchSize,
-          searchThreshold,
-        })
-      });
-      
       if (response.ok) {
         setAlertMessage({
-          message: 'Your organization settings were successfully updated',
+          message: "Your organization settings were successfully updated",
           type: AlertType.Success,
-        })
+        });
       } else {
         setAlertMessage({
-          message: 'There was an error updating your organization settings',
+          message: "There was an error updating your organization settings",
           type: AlertType.Error,
-        })
+        });
       }
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const dismissAlert = () => {
     setAlertMessage(null);
@@ -75,45 +112,51 @@ function Settings() {
 
   // Get organization
   useEffect(() => {
-    (
-      async () => {
-        if (organizationId) {
-          const jwt = localStorage.getItem('jwt');
-          const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}`, {
+    (async () => {
+      if (organizationId) {
+        const jwt = localStorage.getItem("jwt");
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/organization?organizationId=${organizationId}`,
+          {
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwt}`
-            }
-          });
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
 
-          const content = await response.json();
-          setOrganization(content)
-        }
+        const content = await response.json();
+        setOrganization(content);
       }
-      )();
+    })();
   }, [organizationId]);
 
   // Get settings
   useEffect(() => {
-    (
-      async () => {
-        if(organizationId) {
-          await loadSettings();
-        }
+    (async () => {
+      if (organizationId) {
+        await loadSettings();
       }
-    )();
+    })();
   }, [organizationId]);
 
   const loadSettings = async () => {
-    const jwt = localStorage.getItem('jwt');
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization/settings?organizationId=${organizationId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/organization/settings?organizationId=${organizationId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
       }
-    });
+    );
 
-    const settings = await response.json()
+    const settings = await response.json();
     form.setFieldsValue({
       openAiApiKey: settings?.openAiApiKey,
       defaultKey: settings?.openAiApiKey === "" ? true : false,
@@ -127,161 +170,186 @@ function Settings() {
   };
 
   function Loading() {
-    if(loading) {
-      return <Space size="middle"> <Spin size="large" className="spinner" /> </Space>
+    if (loading) {
+      return (
+        <Space size="middle">
+          {" "}
+          <Spin size="large" className="spinner" />{" "}
+        </Space>
+      );
     }
   }
 
   function handleDefaultKeyChange() {
-    setDefaultApiKey(!defaultApiKey)
+    setDefaultApiKey(!defaultApiKey);
 
-    if(!defaultApiKey) {
-      setDefaultApiKeyWarningModal(true)
+    if (!defaultApiKey) {
+      setDefaultApiKeyWarningModal(true);
     }
   }
 
   return (
     <div className="center-wrapper">
-      <Loading/>
+      <Loading />
       {alertMessage !== null && alertMessage.message !== "" && (
-        <div style={{margin: "24px"}}>
-          <Alert message={alertMessage.message} onClose={dismissAlert} type={alertMessage.type} closable={true} />
+        <div style={{ margin: "24px" }}>
+          <Alert
+            message={alertMessage.message}
+            onClose={dismissAlert}
+            type={alertMessage.type}
+            closable={true}
+          />
         </div>
       )}
 
       <Tabs
-          defaultActiveKey="1"
-          activeKey={activeKey}
-          onChange={(newActiveKey) => {
-            setActiveKey(newActiveKey);
-            localStorage.setItem('organization.settings_page.activeTabKey', newActiveKey);
-            if (newActiveKey === '1') {
-              loadSettings();
-            }
-          }}
-        >
-          
+        defaultActiveKey="1"
+        activeKey={activeKey}
+        onChange={(newActiveKey) => {
+          setActiveKey(newActiveKey);
+          localStorage.setItem(
+            "organization.settings_page.activeTabKey",
+            newActiveKey
+          );
+          if (newActiveKey === "1") {
+            loadSettings();
+          }
+        }}
+      >
         <TabPane tab="Settings" key="1">
-          <Card title={organization?.name + " settings"} bodyStyle={{overflowX: "auto"}}>
+          <Card
+            title={organization?.name + " settings"}
+            bodyStyle={{ overflowX: "auto" }}
+          >
             <Form
-                form={form}
-                onFinish={saveSettings}
-                labelCol={{style: {minWidth: "150px"}}}
-                labelAlign="left"
+              form={form}
+              onFinish={saveSettings}
+              labelCol={{ style: { minWidth: "150px" } }}
+              labelAlign="left"
             >
               <Form.Item
-                  label="Open AI Api Key"
-                  name={"openAiApiKey"}
-                  rules={[
+                label="Open AI Api Key"
+                name={"openAiApiKey"}
+                rules={[
                   {
-                      required: !defaultApiKey,
-                      message: "Please enter OpenAI Api Key",
-                  }
-                  ]}
+                    required: !defaultApiKey,
+                    message: "Please enter OpenAI Api Key",
+                  },
+                ]}
               >
-                  <Input.Password disabled={defaultApiKey} placeholder="Enter OpenAI Api Key" />
+                <Input.Password
+                  disabled={defaultApiKey}
+                  placeholder="Enter OpenAI Api Key"
+                />
+              </Form.Item>
+
+              <Form.Item name="defaultKey" valuePropName="checked">
+                <Checkbox
+                  style={{ marginTop: "10px" }}
+                  onChange={handleDefaultKeyChange}
+                >
+                  Check to use default openAI Api key
+                </Checkbox>
               </Form.Item>
 
               <Form.Item
-                  name="defaultKey"
-                  valuePropName="checked"
-              >
-                  <Checkbox style={{marginTop: "10px"}} onChange={handleDefaultKeyChange}>Check to use default openAI Api key</Checkbox>
-              </Form.Item>
-
-
-              <Form.Item
-                  label="Model"
-
-                  name={"model"}
-                  rules={[
+                label="Model"
+                name={"model"}
+                rules={[
                   {
-                      required: true,
-                      message: "Please select model",
-                  }
-                  ]}
+                    required: true,
+                    message: "Please select model",
+                  },
+                ]}
               >
-                  <Select placeholder="Select Model">
+                <Select placeholder="Select Model">
                   <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                  <Select.Option value="gpt-3.5-turbo-16k">GPT 3.5 Turbo 16k</Select.Option>
+                  <Select.Option value="gpt-3.5-turbo-16k">
+                    GPT 3.5 Turbo 16k
+                  </Select.Option>
                   <Select.Option value="gpt-4">GPT 4</Select.Option>
-                  </Select>
+                </Select>
               </Form.Item>
 
-
               <Form.Item
-                  label="Base Prompt"
-                  name={"prompt"}
-                  rules={[
+                label="Base Prompt"
+                name={"prompt"}
+                rules={[
                   {
-                      required: true,
-                      message: "Please input system prompt",
-                  }
-                  ]}
+                    required: true,
+                    message: "Please input system prompt",
+                  },
+                ]}
               >
-                  <Input.TextArea rows={8} placeholder="You are a friendly customer service agent who's job is to..." />
+                <Input.TextArea
+                  rows={8}
+                  placeholder="You are a friendly customer service agent who's job is to..."
+                />
               </Form.Item>
 
               <Form.Item
-                  label="Max Search Size"
-                  name={"searchSize"}
-                  rules={[
-                      {
-                      required: true,
-                      message: "Please input maximum search relevancy results",
-                      }
-                  ]}
-                  >
-                      <Slider
-                          min={1}
-                          max={20}
-                      />
+                label="Max Search Size"
+                name={"searchSize"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input maximum search relevancy results",
+                  },
+                ]}
+              >
+                <Slider min={1} max={20} />
               </Form.Item>
               <Form.Item
-                  label="Search Threshold %"
-                  name={"searchThreshold"}
-                  rules={[
-                      {
-                      required: true,
-                      message: "Please input minimum threshold percentage for search hits",
-                      }
-                  ]}
-                  >
-                    <Slider
-                      min={1}
-                      max={100}
-                    />
+                label="Search Threshold %"
+                name={"searchThreshold"}
+                rules={[
+                  {
+                    required: true,
+                    message:
+                      "Please input minimum threshold percentage for search hits",
+                  },
+                ]}
+              >
+                <Slider min={1} max={100} />
               </Form.Item>
 
               <Form.Item
-                  label="Creativity"
-                  name={"temperature"}
-                  rules={[
-                      {
-                      required: true,
-                      message: "Please input a temperature setting",
-                      }
-                  ]}
-                  >
-                    <Slider
-                      min={1}
-                      max={200}
-                    />
+                label="Creativity"
+                name={"temperature"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input a temperature setting",
+                  },
+                ]}
+              >
+                <Slider min={1} max={200} />
               </Form.Item>
               <div className="settings-form-buttons">
-              <Button type="primary" disabled={loading} htmlType="submit">Save</Button>
+                <Button type="primary" disabled={loading} htmlType="submit">
+                  Save
+                </Button>
               </div>
             </Form>
           </Card>
         </TabPane>
         <TabPane tab="Members" key="2">
-          <OrganizationMembersList organizationId={organizationId} setAlertMessage={setAlertMessage} />
+          <OrganizationMembersList
+            organizationId={organizationId}
+            setAlertMessage={setAlertMessage}
+          />
         </TabPane>
         <TabPane tab="Overrides" key="3">
-          <QuestionOverrideForm organizationId={organizationId} setAlertMessage={setAlertMessage} />
+          <QuestionOverrideForm
+            organizationId={organizationId}
+            setAlertMessage={setAlertMessage}
+          />
         </TabPane>
         <TabPane tab="WordPress Integration" key="4">
-          <WordpressIntegrationForm organizationId={organizationId} setAlertMessage={setAlertMessage} />
+          <WordpressIntegrationForm
+            organizationId={organizationId}
+            setAlertMessage={setAlertMessage}
+          />
         </TabPane>
       </Tabs>
 
@@ -290,11 +358,14 @@ function Settings() {
         title="Warning"
         okText="Ok"
         onOk={() => {
-          setDefaultApiKeyWarningModal(false)
-          setDefaultApiKey(true)
+          setDefaultApiKeyWarningModal(false);
+          setDefaultApiKey(true);
         }}
       >
-        <p>Selecting this option will overwrite the Open AI Api Key with the default AMQAI key.</p>
+        <p>
+          Selecting this option will overwrite the Open AI Api Key with the
+          default AMQAI key.
+        </p>
       </Modal>
     </div>
   );

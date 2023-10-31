@@ -1,58 +1,58 @@
 .logowrapper {
-    display: flex;
-    width: 800px;
-    height: 400px;
+  display: flex;
+  width: 800px;
+  height: 400px;
 }
 
 .loginform {
-    background-color: #182125;
-    backdrop-filter: blur(3px);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    width: 300px;
-    padding: 20px;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-    z-index: 100;
+  background-color: #182125;
+  backdrop-filter: blur(3px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  width: 300px;
+  padding: 20px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  z-index: 100;
 }
 
 .logocontainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: url('../assets/headerLogo.png') no-repeat center center;
-    background-size: 90%;
-    background-color: #182125;
-    background-size: contain;
-    width: 60%;
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-    z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("../assets/headerLogo.png") no-repeat center center;
+  background-size: 90%;
+  background-color: #182125;
+  background-size: contain;
+  width: 60%;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  z-index: 100;
 }
 
 @media (max-width: 768px) {
-    .logocontainer {
-        display: none;
-    }
-    .loginform {
-        border-top-left-radius: 15px;
-        border-bottom-left-radius: 15px;
-    }
+  .logocontainer {
+    display: none;
+  }
+  .loginform {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
 }
 
 .erroralert {
-    padding-bottom: 15px;
+  padding-bottom: 15px;
 }
 
 a {
-    color: #AF82F5;
-    text-decoration: underline;
+  color: #af82f5;
+  text-decoration: underline;
 }
 
 .ant-form-item {
-    width: 100%;
+  width: 100%;
 }

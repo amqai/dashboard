@@ -1,32 +1,32 @@
 export interface OrganizationApiDto {
-    id: string,
-    name: string,
-    members: Member[],
-    ownerId: string,
+  id: string;
+  name: string;
+  members: Member[];
+  ownerId: string;
 }
 
 export interface OrganizationsApiDto {
-    organizations: OrganizationApiDto[],
+  organizations: OrganizationApiDto[];
 }
 
 export interface Member {
-    key: string
-    email: string
-    personId: string
+  key: string;
+  email: string;
+  personId: string;
 }
 
 export interface OrganizationSettingsApiDto {
-    openAiApiKey: string,
-    model: string,
-    prompt: string,
-    temperature: number,
-    searchSize: number,
-    searchThreshold: number,
-    members: OrganizationMemberApiDto[],
+  openAiApiKey: string;
+  model: string;
+  prompt: string;
+  temperature: number;
+  searchSize: number;
+  searchThreshold: number;
+  members: OrganizationMemberApiDto[];
 }
 
 interface OrganizationMemberApiDto {
-    personId: string,
-    email: string,
-    permissions: string[],
+  personId: string;
+  email: string;
+  permissions: string[];
 }

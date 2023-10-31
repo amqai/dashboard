@@ -1,18 +1,18 @@
 .chat-container {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
 }
 
 .chat-section {
-    border-right: 1px solid #e0e0e0; /* adjust color as needed */
-    overflow-y: auto;
-    padding: 16px;
+  border-right: 1px solid #e0e0e0; /* adjust color as needed */
+  overflow-y: auto;
+  padding: 16px;
 }
 
 .prompt-section {
-    width:85%;
-    overflow-y: auto;
-    margin: 5%;
-    margin-top: 2%;
+  width: 85%;
+  overflow-y: auto;
+  margin: 5%;
+  margin-top: 2%;
 }

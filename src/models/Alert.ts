@@ -1,11 +1,11 @@
 export interface Alert {
-    message: string;
-    type: AlertType;
+  message: string;
+  type: AlertType;
 }
 
 export enum AlertType {
-    Error = "error",
-    Success = "success",
-    Warning = "warning",
-    Info = "info",
+  Error = "error",
+  Success = "success",
+  Warning = "warning",
+  Info = "info",
 }

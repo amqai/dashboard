@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import { Form, Input, Modal } from "antd";
-import { CreateConversationApiRequest } from '../models/Conversation';
-import { useNavigate } from 'react-router-dom';
+import { CreateConversationApiRequest } from "../models/Conversation";
+import { useNavigate } from "react-router-dom";
 
 interface NewChatFormProps {
-  visible: boolean; 
+  visible: boolean;
   organizationId: string;
   handleCancel: () => void;
   reloadChats: () => void;
@@ -24,21 +24,25 @@ const NewChatForm: React.FC<NewChatFormProps> = ({
   }, [form]);
 
   const handleSave = async (values: CreateConversationApiRequest) => {
-    const jwt = localStorage.getItem('jwt');
-    const url = `${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation?organizationId=${organizationId}`;
+    const jwt = localStorage.getItem("jwt");
+    const url = `${
+      import.meta.env.VITE_APP_API_URL
+    }/api/prompt/conversation?organizationId=${organizationId}`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
       },
-      body: JSON.stringify(values)
+      body: JSON.stringify(values),
     });
 
     if (response.ok) {
       reloadChats();
       const chat = await response.json();
-      navigate(`/organization/${organizationId}/chat/${chat.conversation.conversationId}`);
+      navigate(
+        `/organization/${organizationId}/chat/${chat.conversation.conversationId}`
+      );
       handleCancel();
     } else {
       // handle error

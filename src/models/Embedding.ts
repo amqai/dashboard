@@ -1,4 +1,4 @@
 export interface Embedding {
-    identifier: string,
-    rawData: string,
+  identifier: string;
+  rawData: string;
 }

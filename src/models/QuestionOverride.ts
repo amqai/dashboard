@@ -1,8 +1,8 @@
 export interface QuestionsOverrideResponse {
-    questions: QuestionOverrideResponse[];
+  questions: QuestionOverrideResponse[];
 }
 
 export interface QuestionOverrideResponse {
-    question: string;
-    answer: string;
+  question: string;
+  answer: string;
 }
