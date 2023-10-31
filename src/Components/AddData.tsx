@@ -53,8 +53,8 @@ const AddData: React.FC<AddDataProps> = ({
           onChange={(value) => setTopicId(value)}
         >
           {topics && topics.map((project: Topic) => (
-            <Select.Option value={project.projectId} label={project.projectName} key={project.projectId}>
-              {project.projectName}
+            <Select.Option value={project.topicId} label={project.topicName} key={project.topicId}>
+              {project.topicName}
             </Select.Option>
           ))}
         </Select>

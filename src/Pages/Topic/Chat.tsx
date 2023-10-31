@@ -221,13 +221,13 @@ function Chat() {
               type: AlertType.Error,
             })
       } else {
-          setProjects(content.data.projects);
+          setProjects(content.data.topics);
       }
     }
 
     useEffect(() => {
       promptForm.setFieldsValue({
-        projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
+        projectIds: projects ? projects.map((project: Topic) => project.topicId) : [],
         model: 'gpt-3.5-turbo',
         externalSearch: false,
         googleSearch: false,
@@ -282,7 +282,7 @@ function Chat() {
         setExternalSearchWarningModal(true)
       } else {
         promptForm.setFieldsValue({
-          projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
+          projectIds: projects ? projects.map((project: Topic) => project.topicId) : [],
           externalSearch: false,
           googleSearch: false,
         })
@@ -298,7 +298,7 @@ function Chat() {
         setGoogleSearchWarningModal(true)
       } else {
         promptForm.setFieldsValue({
-          projectIds: projects ? projects.map((project: Topic) => project.projectId) : [],
+          projectIds: projects ? projects.map((project: Topic) => project.topicId) : [],
           externalSearch: false,
           googleSearch: false,
         })
@@ -413,8 +413,8 @@ function Chat() {
                     disabled={externalSearch || googleSearch}
                   >
                     {projects && projects.map((project: Topic) => (
-                      <Select.Option style={{marginBottom: "5px"}} value={project.projectId} label={project.projectName} key={project.projectId}>
-                        {project.projectName}
+                      <Select.Option style={{marginBottom: "5px"}} value={project.topicId} label={project.topicName} key={project.topicId}>
+                        {project.topicName}
                       </Select.Option>
                     ))}
                   </Select>

@@ -116,7 +116,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                 conversationLength: 3,
                 maximumIpConversations: 3,
                 terminationResponse: "Thank you, please contact our customer service department for more information",
-                topicIds: topics?.map(topic => topic.projectId)
+                topicIds: topics?.map(topic => topic.topicId)
             });
         } else {
             setConfigurationExists(true);
@@ -242,8 +242,8 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                             optionLabelProp="label"
                         >
                         {topics && topics.map((topic: Topic) => (
-                            <Select.Option value={topic.projectId} label={topic.projectName} key={topic.projectId}>
-                                {topic.projectName}
+                            <Select.Option value={topic.topicId} label={topic.topicName} key={topic.topicId}>
+                                {topic.topicName}
                             </Select.Option>
                         ))}
                         </Select>
