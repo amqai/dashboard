@@ -250,7 +250,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                     </Form.Item>
                     <Form.Item
                         label={
-                            <span>Max Length <BiSolidHelpCircle title="The maximum responses a single conversation can make." /></span>
+                            <span>Max Conversation Responses <BiSolidHelpCircle title="The maximum responses a single conversation can make." /></span>
                         }
                         name={"conversationLength"}
                         style={toggleSettings != true ? { display: 'none' } : { }}
@@ -262,7 +262,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
                     </Form.Item>
                     <Form.Item
                         label={
-                            <span>Max IP Conversations <BiSolidHelpCircle title="The maximum number of converations that a specific IP address can initiate." /></span>
+                            <span>Max Responses by IP <BiSolidHelpCircle title="The maximum number of converations that a specific IP address can initiate." /></span>
                         }
                         name={"maximumIpConversations"}
                         style={toggleSettings != true ? { display: 'none' } : { }}
