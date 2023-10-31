@@ -25,7 +25,7 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
 
   const handleSave = async (values: Embedding) => {
     const jwt = localStorage.getItem('jwt');
-    let url = new URL(`${import.meta.env.VITE_APP_API_URL}/api/projects/data${isEditing ? '/' + editingEmbedding!.identifier : ''}`);
+    let url = new URL(`${import.meta.env.VITE_APP_API_URL}/api/data${isEditing ? '/' + editingEmbedding!.identifier : ''}`);
 
     // Add query parameters
     url.searchParams.append("projectId", topicId);

@@ -28,8 +28,8 @@ export async function fetchOrganizations(jwt: string, superUser: boolean) {
 }
 
 
-export async function fetchProjects(jwt: string, organizationId: string) {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/organizations?organizationId=${organizationId}`, {
+export async function fetchTopics(jwt: string, organizationId: string) {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/organization:topics?organizationId=${organizationId}`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwt}`

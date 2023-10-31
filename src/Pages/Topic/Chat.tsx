@@ -6,7 +6,7 @@ import { ConversationApiDto, GetProjectConversationsApiResponse, PromptApiRespon
 import { useNavigate, useParams } from "react-router-dom";
 import NewChatForm from "../../Components/NewChatForm";
 import { BsGear } from "react-icons/bs";
-import { fetchProjects } from "../../Services/ApiService";
+import { fetchTopics } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { Topic } from "../../models/Topic";
 import AddData from "../../Components/AddData";
@@ -214,7 +214,7 @@ function Chat() {
 
     const loadTopics = async () => {
       const jwt = localStorage.getItem('jwt');
-      const content = await fetchProjects(jwt!, organizationId);
+      const content = await fetchTopics(jwt!, organizationId);
       if (content.status === 403 || content.data.errorCode) {
           setAlertMessage({
               message: 'There was an error loading your topics',

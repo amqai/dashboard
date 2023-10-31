@@ -41,7 +41,7 @@ function Data() {
 
   const loadProject = async () => {
     const jwt = localStorage.getItem('jwt');
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?projectId=${topicId}&organizationId=${organizationId}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/topics?topicId=${topicId}&organizationId=${organizationId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jwt}`
@@ -68,7 +68,7 @@ function Data() {
   const loadEmbeddings = async (organizationId: string, topicId: string) => {
     setLoading(true);
     const jwt = localStorage.getItem('jwt');
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/data?organizationId=${organizationId}&projectId=${topicId}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/data?organizationId=${organizationId}&topicId=${topicId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jwt}`
@@ -91,7 +91,7 @@ function Data() {
   const search = async (organizationId: string, topicId: string, search: string) => {
     setLoading(true);
     const jwt = localStorage.getItem('jwt');
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/data/search?organizationId=${organizationId}&projectId=${topicId}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/data/search?organizationId=${organizationId}&topicId=${topicId}`, {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ function Data() {
       title: "Are you sure you want to delete this data point?",
       onOk: async () => {
         const jwt = localStorage.getItem('jwt');      
-        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/data/${record.identifier}?projectId=${topicId}&organizationId=${organizationId}`, {
+        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/data/${record.identifier}?topicId=${topicId}&organizationId=${organizationId}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ function Data() {
           })
         } else {
           const jwt = localStorage.getItem('jwt');
-          await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/person?organizationId=${organizationId}&projectId=${topicId}&personId=${personId}`, {
+          await fetch(`${import.meta.env.VITE_APP_API_URL}/api/topics/person?organizationId=${organizationId}&topicId=${topicId}&personId=${personId}`, {
             method: "DELETE",
             headers: {
               'Content-Type': 'application/json',
@@ -226,7 +226,7 @@ function Data() {
     {
       if(topicId) {
         const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/person?organizationId=${organizationId}&projectId=${topicId}&email=${memberEmail}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/topics/person?organizationId=${organizationId}&topicId=${topicId}&email=${memberEmail}`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ function Data() {
       title: "Are you sure you change the visibility settings of this topic?",
       onOk: async () => {
         const jwt = localStorage.getItem('jwt');
-        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?projectId=${topicId}`, {
+        await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?topicId=${topicId}`, {
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',

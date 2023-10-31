@@ -78,7 +78,7 @@ const PdfTable: React.FC<PdfTableProps> = ({
 
     const loadTableData = async() => {
         const jwt = localStorage.getItem('jwt');
-        const url = `${import.meta.env.VITE_APP_API_URL}/api/projects/pdf?organizationId=${organizationId}&projectId=${topicId}`;
+        const url = `${import.meta.env.VITE_APP_API_URL}/api/pdf?organizationId=${organizationId}&topicId=${topicId}`;
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -105,7 +105,7 @@ const PdfTable: React.FC<PdfTableProps> = ({
   
       try {
         const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/pdf?organizationId=${organizationId}&projectId=${topicId}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/pdf?organizationId=${organizationId}&topicId=${topicId}`, {
           method: 'POST',
           body: formData,
           headers: {
@@ -135,7 +135,7 @@ const PdfTable: React.FC<PdfTableProps> = ({
       let finishedJobResponse = null;
 
       while (status === "ACTIVE_INGESTING") {
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/pdf/${pdfId}?organizationId=${organizationId}&projectId=${topicId}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/pdf/${pdfId}?organizationId=${organizationId}&topicId=${topicId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${jwt}`
@@ -173,7 +173,7 @@ const PdfTable: React.FC<PdfTableProps> = ({
       const jwt = localStorage.getItem('jwt');
       setLoadingMessage("File is being processed, please wait")
       setLoading(true);
-      await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects/pdf/${activeFile?.jobId}/embed?organizationId=${organizationId}&projectId=${topicId}`, {
+      await fetch(`${import.meta.env.VITE_APP_API_URL}/api/pdf/${activeFile?.jobId}/embed?organizationId=${organizationId}&topicId=${topicId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,28 +1,23 @@
 import { Alert, Button, Card, Col, Divider, Form, Input, Modal, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { fetchProjects } from "../../Services/ApiService";
+import { fetchTopics } from "../../Services/ApiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { hasPermission } from "../../Services/PermissionService";
 import { IoAddSharp } from "react-icons/io5"
 import { DeleteOutlined } from "@ant-design/icons";
-
-interface Project {
-    projectName: string,
-    projectDescription: string,
-    projectId: string,
-  }
+import { Topic } from "../../models/Topic";
 
 function HomePage() {
     const navigate = useNavigate();
     const { organizationId } = useParams();
-    const [projects, setProjects] = useState<Project[] | null>(null);
+    const [topics, setTopics] = useState<Topic[] | null>(null);
     const [formOpen, setFormOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
 
     const loadProjects = async (organizationId: string) => {
         const jwt = localStorage.getItem('jwt');
-        const content = await fetchProjects(jwt!, organizationId);
+        const content = await fetchTopics(jwt!, organizationId);
         if (content.status === 403) {
             navigate("/login");
         } else if (content.data.errorCode) {
@@ -31,7 +26,7 @@ function HomePage() {
                 type: AlertType.Error,
               })
         } else {
-            setProjects(content.data.projects);
+            setTopics(content.data.topics);
         }
     }
 
@@ -46,7 +41,7 @@ function HomePage() {
     const submit = async (values: { projectName: string; projectDescription: string; }) => {
       const { projectName, projectDescription} = values;
       const jwt = localStorage.getItem('jwt');
-      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?organizationId=${organizationId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/topics?organizationId=${organizationId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -88,7 +83,7 @@ function HomePage() {
 
     const deleteTopic = async (topicId: string) => {
         const jwt = localStorage.getItem('jwt');
-        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/projects?projectId=${topicId}&organizationId=${organizationId}`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/topics?topicId=${topicId}&organizationId=${organizationId}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
@@ -115,16 +110,16 @@ function HomePage() {
         setAlertMessage(null);
     };
 
-    const handleGoToDashboard = (project: Project) => navigate(`/organization/${organizationId}/topics/${project.projectId}/data`);
+    const handleGoToDashboard = (topic: Topic) => navigate(`/organization/${organizationId}/topics/${topic.topicId}/data`);
 
-    const CardTitle = ({ projectName, projectId }: { projectName: string, projectId: string }) => (
+    const CardTitle = ({ topicName, topicId }: { topicName: string, topicId: string }) => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{projectName}</span>
+            <span>{topicName}</span>
             {hasPermission("CREATE_TOPICS") && (
                 <DeleteOutlined
                     onClick={(e) => {
                         e.stopPropagation(); // Prevent onClick of Card
-                        showDeleteConfirm(projectId, projectName);
+                        showDeleteConfirm(topicId, topicName);
                     }}
                     style={{ color: "red", cursor: "pointer" }}
                 />
@@ -162,7 +157,7 @@ function HomePage() {
                         <Form onFinish={submit}>
                             <Typography.Title level={3}>Create new topic</Typography.Title>
                             <Form.Item
-                            name={"projectName"}
+                            name={"topicName"}
                             label="Topic name"
                             labelCol={{ style: { display: 'none' } }}
                             rules={[
@@ -175,7 +170,7 @@ function HomePage() {
                                 <Input placeholder="Topic Name" />
                             </Form.Item>
                             <Form.Item
-                            name={"projectDescription"}
+                            name={"topicDescription"}
                             label="Topic Description"
                             labelCol={{ style: { display: 'none' } }}
                             rules={[
@@ -194,15 +189,15 @@ function HomePage() {
                 )}
                 <Divider></Divider>
                 <Row gutter={[16, 16]}>
-                    {projects != null && projects.map((project) => (
-                        <Col xs={24} sm={12} md={8} lg={6} key={project.projectId} >
+                    {topics != null && topics.map((topic: Topic) => (
+                        <Col xs={24} sm={12} md={8} lg={6} key={topic.topicId} >
                             <Card 
                                 className="projectCard"
                                 style={{height: "150px"}}
-                                title={<CardTitle projectName={project.projectName} projectId={project.projectId} />}
-                                onClick={() => handleGoToDashboard(project)}
+                                title={<CardTitle topicName={topic.topicName} topicId={topic.topicId} />}
+                                onClick={() => handleGoToDashboard(topic)}
                             >
-                                {project.projectDescription}
+                                {topic.topicDescription}
                             </Card>
                         </Col>
                     ))}

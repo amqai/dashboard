@@ -1,5 +1,5 @@
 export interface Topic {
-    projectName: string,
-    projectDescription: string,
-    projectId: string,
+    topicName: string,
+    topicDescription: string,
+    topicId: string,
 }

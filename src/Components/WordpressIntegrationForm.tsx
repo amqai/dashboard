@@ -4,7 +4,7 @@ import { BiSolidHelpCircle } from "react-icons/bi";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
 import { GetWordpressSettingsResponse } from '../models/Wordpress';
 import { Topic } from '../models/Topic';
-import { fetchFeatureToggles, fetchProjects } from '../Services/ApiService';
+import { fetchFeatureToggles, fetchTopics } from '../Services/ApiService';
 
 interface WordpressIntegrationFormProps {
     organizationId: string | undefined;
@@ -70,7 +70,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({ org
 
     const loadTopics = async (organizationId: string) => {
         const jwt = localStorage.getItem('jwt');
-        const content = await fetchProjects(jwt!, organizationId);
+        const content = await fetchTopics(jwt!, organizationId);
         if (content.status === 403 || content.data.errorCode) {
             setAlertMessage({
                 message: 'There was an error loading your topics',
