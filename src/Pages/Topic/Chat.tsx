@@ -181,7 +181,7 @@ function Chat() {
           body: JSON.stringify({
               prompt,
               conversationId,
-              projectIds,
+              topicIds: projectIds,
               model,
               googleSearch,
           })
