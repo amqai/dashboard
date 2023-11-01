@@ -4,10 +4,13 @@ import {
   Card,
   Col,
   Divider,
+  Drawer,
   Form,
   Input,
   Modal,
   Row,
+  Select,
+  Switch,
   Typography,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -18,6 +21,7 @@ import { hasPermission } from "../../Services/PermissionService";
 import { IoAddSharp } from "react-icons/io5";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Topic } from "../../models/Topic";
+import { Member, OrganizationApiDto } from "../../models/Organization";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -25,8 +29,15 @@ function HomePage() {
   const [topics, setTopics] = useState<Topic[] | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState<AlertModel | null>(null);
+  const [organization, setOrganization] = useState<OrganizationApiDto | null>(
+    null
+  );
+  const [organizationVisibility, setOrganizationVisibility] = useState<
+    "PUBLIC" | "SELECTED_MEMBERS"
+  >("SELECTED_MEMBERS");
+  const [form] = Form.useForm();
 
-  const loadProjects = async (organizationId: string) => {
+  const loadTopics = async (organizationId: string) => {
     const jwt = localStorage.getItem("jwt");
     const content = await fetchTopics(jwt!, organizationId);
     if (content.status === 403) {
@@ -43,15 +54,39 @@ function HomePage() {
 
   useEffect(() => {
     (async () => {
-      loadProjects(organizationId!!);
+      if (organizationId) {
+        loadTopics(organizationId);
+        loadOrganization(organizationId);
+      }
     })();
   }, [organizationId]);
 
+  // Get organization
+  const loadOrganization = async (organizationId: string) => {
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/api/organization?organizationId=${organizationId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    const content = await response.json();
+    setOrganization(content);
+    form.setFieldsValue({
+      personIds: content.members.map((member: Member) => member.personId),
+    })
+  };
+
   const submit = async (values: {
-    projectName: string;
-    projectDescription: string;
+    topicName: string;
+    topicDescription: string;
+    personIds: string[];
   }) => {
-    const { projectName, projectDescription } = values;
+    const { topicName, topicDescription, personIds } = values;
     const jwt = localStorage.getItem("jwt");
     const response = await fetch(
       `${
@@ -64,8 +99,10 @@ function HomePage() {
           Authorization: `Bearer ${jwt}`,
         },
         body: JSON.stringify({
-          name: projectName,
-          description: projectDescription,
+          name: topicName,
+          description: topicDescription,
+          topicOrganizationVisibility: organizationVisibility,
+          personIds,
         }),
       }
     );
@@ -76,13 +113,19 @@ function HomePage() {
         type: AlertType.Success,
       });
       setFormOpen(false);
-      loadProjects(organizationId!!);
+      loadTopics(organizationId!!);
     } else {
       setAlertMessage({
         message: "There was an error creating your topic",
         type: AlertType.Error,
       });
     }
+  };
+
+  const changeOrganizationVisibility = async () => {
+    const newVisibility =
+      organizationVisibility === "PUBLIC" ? "SELECTED_MEMBERS" : "PUBLIC";
+    setOrganizationVisibility(newVisibility);
   };
 
   const showDeleteConfirm = (projectId: string, projectName: string) => {
@@ -119,7 +162,7 @@ function HomePage() {
         type: AlertType.Success,
       });
       setFormOpen(false);
-      loadProjects(organizationId!!);
+      loadTopics(organizationId!!);
     } else {
       setAlertMessage({
         message: "There was an error deleted your topic",
@@ -194,51 +237,6 @@ function HomePage() {
             />
           </div>
         )}
-
-        {formOpen && (
-          <>
-            <Divider></Divider>
-            <Form onFinish={submit}>
-              <Typography.Title level={3}>Create new topic</Typography.Title>
-              <Form.Item
-                name={"topicName"}
-                label="Topic name"
-                labelCol={{ style: { display: "none" } }}
-                rules={[
-                  {
-                    required: true,
-                    max: 50,
-                  },
-                ]}
-              >
-                <Input placeholder="Topic Name" />
-              </Form.Item>
-              <Form.Item
-                name={"topicDescription"}
-                label="Topic Description"
-                labelCol={{ style: { display: "none" } }}
-                rules={[
-                  {
-                    required: true,
-                    max: 255,
-                  },
-                ]}
-              >
-                <Input.TextArea rows={5} placeholder="Topic Description" />
-              </Form.Item>
-              <Button type="primary" htmlType="submit">
-                Save
-              </Button>
-              <Button
-                style={{ marginLeft: "10px" }}
-                danger
-                onClick={() => setFormOpen(false)}
-              >
-                Cancel
-              </Button>
-            </Form>
-          </>
-        )}
         <Divider></Divider>
         <Row gutter={[16, 16]}>
           {topics != null &&
@@ -261,6 +259,74 @@ function HomePage() {
             ))}
         </Row>
       </div>
+      <Drawer open={formOpen} size="large" onClose={() => setFormOpen(false)}>
+          <Form onFinish={submit} form={form}>
+            <Typography.Title level={3}>Create new topic</Typography.Title>
+            <Form.Item
+              name={"topicName"}
+              rules={[
+                {
+                  required: true,
+                  max: 50,
+                },
+              ]}
+            >
+              <Input placeholder="Topic Name" />
+            </Form.Item>
+            <Form.Item
+              name={"topicDescription"}
+              rules={[
+                {
+                  required: true,
+                  max: 255,
+                },
+              ]}
+            >
+              <Input.TextArea rows={5} placeholder="Topic Description" />
+            </Form.Item>
+            <Form.Item
+              name={"topicOrganizationVisibility"}
+            >
+              <strong>ALL MEMBERS </strong>
+              <Switch
+                checked={organizationVisibility === "SELECTED_MEMBERS"}
+                onChange={changeOrganizationVisibility}
+              />
+              <strong> SPECIFIC MEMBERS</strong>
+            </Form.Item>
+            <Form.Item
+              name={"personIds"}
+              style={organizationVisibility === "PUBLIC" ? { display: "none" } : {}}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select Members"
+                optionLabelProp="label"
+              >
+                {organization &&
+                  organization.members.map((member: Member) => (
+                    <Select.Option
+                      value={member.personId}
+                      label={member.email}
+                      key={member.personId}
+                    >
+                      {member.email}
+                    </Select.Option>
+                  ))}
+              </Select>
+            </Form.Item>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
+            <Button
+              style={{ marginLeft: "10px" }}
+              danger
+              onClick={() => setFormOpen(false)}
+            >
+              Cancel
+            </Button>
+          </Form>
+        </Drawer>
     </>
   );
 }
