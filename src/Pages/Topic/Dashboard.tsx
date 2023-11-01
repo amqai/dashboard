@@ -34,7 +34,7 @@ function HomePage() {
   );
   const [organizationVisibility, setOrganizationVisibility] = useState<
     "PUBLIC" | "SELECTED_MEMBERS"
-  >("SELECTED_MEMBERS");
+  >("PUBLIC");
   const [form] = Form.useForm();
 
   const loadTopics = async (organizationId: string) => {
