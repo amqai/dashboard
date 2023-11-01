@@ -130,7 +130,10 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({
         type: AlertType.Error,
       });
     } else {
-      setTopics(content.data.projects);
+      setTopics(content.data.topics);
+      form.setFieldsValue({
+        topicIds: topics?.map((topic) => topic.topicId),
+      });
     }
   };
 
@@ -152,7 +155,6 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({
 
   const refreshWordpressSettings = async (organizationId: string) => {
     setLoading(true);
-    loadTopics(organizationId);
 
     const jwt = localStorage.getItem("jwt");
     const response = await fetch(
@@ -180,7 +182,6 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({
         maximumIpConversations: 3,
         terminationResponse:
           "Thank you, please contact our customer service department for more information",
-        topicIds: topics?.map((topic) => topic.topicId),
       });
     } else {
       setConfigurationExists(true);
