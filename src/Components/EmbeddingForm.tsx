@@ -32,7 +32,7 @@ const EmbeddingForm: React.FC<EmbeddingFormProps> = ({
     );
 
     // Add query parameters
-    url.searchParams.append("projectId", topicId);
+    url.searchParams.append("topicId", topicId);
     url.searchParams.append("organizationId", organizationId);
     const method = isEditing ? "PUT" : "POST";
     const body =
