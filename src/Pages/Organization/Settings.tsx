@@ -22,6 +22,7 @@ import OrganizationMembersList from "../../Components/OrganizationMembersList";
 import TabPane from "antd/es/tabs/TabPane";
 import QuestionOverrideForm from "../../Components/QuestionOverrideForm";
 import WordpressIntegrationForm from "../../Components/WordpressIntegrationForm";
+import { BiSolidHelpCircle } from "react-icons/bi";
 
 function Settings() {
   const [form] = Form.useForm();
@@ -46,6 +47,7 @@ function Settings() {
     temperature: any;
     searchSize: any;
     searchThreshold: any;
+    responseSpeedMs: any;
   }) => {
     setLoading(true);
     const {
@@ -56,6 +58,7 @@ function Settings() {
       temperature,
       searchSize,
       searchThreshold,
+      responseSpeedMs,
     } = values;
     if (organizationId) {
       const jwt = localStorage.getItem("jwt");
@@ -77,6 +80,7 @@ function Settings() {
             temperature,
             searchSize,
             searchThreshold,
+            responseSpeedMs,
           }),
         }
       );
@@ -165,6 +169,7 @@ function Settings() {
       temperature: settings?.temperature,
       searchSize: settings?.searchSize,
       searchThreshold: settings?.searchThreshold,
+      responseSpeedMs: settings?.responseSpeedMs,
     });
     setDefaultApiKey(settings?.openAiApiKey === "" ? true : false);
   };
@@ -320,6 +325,23 @@ function Settings() {
                   {
                     required: true,
                     message: "Please input a temperature setting",
+                  },
+                ]}
+              >
+                <Slider min={1} max={200} />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <span>
+                    Response Speed{" "}
+                    <BiSolidHelpCircle title="Lower is more robotic, higher is more human" />
+                  </span>
+                }
+                name={"responseSpeedMs"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input a response speed setting",
                   },
                 ]}
               >
