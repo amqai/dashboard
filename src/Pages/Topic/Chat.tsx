@@ -37,6 +37,12 @@ import AddData from "../../Components/AddData";
 const { Text, Title } = Typography;
 const { useToken } = theme;
 
+interface MessageChunk {
+  id: string;
+  role: string;
+  content: string;
+}
+
 const ConversationItem = ({
   organizationId,
   currentConversationId,
@@ -165,6 +171,7 @@ function Chat() {
   const [googleSearch, setGoogleSearch] = useState(false);
   const [googleSearchWarning, setGoogleSearchWarningModal] = useState(false);
   const { token } = useToken();
+  const [messageChunks, setMessageChunks] = useState<MessageChunk[]>([]);
 
   const contextColumns = [
     {
@@ -214,13 +221,101 @@ function Chat() {
     setMessages([]);
   };
 
-  const submit = async (values: {
+  const send = async (values: {
     prompt: string;
     projectIds: string[];
     model: string;
     googleSearch: boolean;
   }) => {
     const { prompt, projectIds, model, googleSearch } = values;
+    if (googleSearch) {
+      console.log("submit")
+      await submit(prompt, model)
+    } else {
+      console.log("sendMessage")
+      await sendMessage(prompt, projectIds, model);
+    }
+  }
+
+  // Function to send messages to the API and receive streamed responses
+  const sendMessage = async (
+    prompt: string,
+    projectIds: string[],
+    model: string,
+  ) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { response: prompt, user: "user", contextList: [], externalSearch: true },
+      { 
+        response: "",
+        user: "ai",
+        contextList: [],
+        externalSearch: false,
+        loading: true,
+      },
+    ]);
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/stream/${params.conversationId}?organizationId=${params.organizationId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      },
+      body: JSON.stringify({ 
+        prompt,
+        topicIds: projectIds,
+        model,
+        googleSearch
+      })
+    });
+
+    const reader = response.body?.getReader();
+
+    // Process the stream
+    while (true && reader) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = new TextDecoder().decode(value);
+      const parts = chunk.split('\n\n');
+      for (const part of parts) {
+        if (part.startsWith('event:completedWithId')) {
+          const completedId = part.replace('event:completedWithId\ndata:', '').trim();
+          setMessageChunks([]);
+          console.log("completedId " + completedId);
+          if (conversationId) {
+            loadConversation(conversationId);
+          }
+          break;
+        } else if (part.startsWith('data:')) {
+          try {
+            const json = JSON.parse(part.replace('data:', ''));
+            const message: MessageChunk = {
+              id: new Date().toISOString(),
+              role: json.role,
+              content: json.choices[0].message.content
+            }
+            setMessageChunks(prevMessages => [...prevMessages, message]);
+          } catch (e) { }
+        } else {
+          try {
+            const json = JSON.parse(part);
+            const message: MessageChunk = {
+              id: new Date().toISOString(),
+              role: json.role,
+              content: json.choices[0].message.content
+            }
+            setMessageChunks(prevMessages => [...prevMessages, message]);
+          } catch (e) { }
+        }
+      }
+    }
+    setMessageChunks([]);
+  };
+
+  const submit = async (
+    prompt: string,
+    model: string,
+  ) => {
     setMessages((prevMessages) => [
       ...prevMessages,
       { response: prompt, user: "user", contextList: [], externalSearch: true },
@@ -237,10 +332,7 @@ function Chat() {
     ]);
 
     const jwt = localStorage.getItem("jwt");
-    const response = await fetch(
-      `${
-        import.meta.env.VITE_APP_API_URL
-      }/api/prompt/conversation/${conversationId}?organizationId=${organizationId}`,
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${params.conversationId}?organizationId=${params.organizationId}`,
       {
         method: "POST",
         headers: {
@@ -249,10 +341,9 @@ function Chat() {
         },
         body: JSON.stringify({
           prompt,
-          conversationId,
-          topicIds: projectIds,
+          topicIds: [],
           model,
-          googleSearch,
+          googleSearch: true,
         }),
       }
     );
@@ -462,7 +553,7 @@ function Chat() {
                 {currentConversation.title}
               </Typography.Title>
             )}
-            <Form onFinish={submit} form={promptForm}>
+            <Form onFinish={send} form={promptForm}>
               <Row align="middle" style={{ marginBottom: "1rem" }}>
                 <Col flex="auto">
                   <Form.Item style={{ marginBottom: 0 }} name={"prompt"}>
@@ -615,27 +706,31 @@ function Chat() {
                         )}
                       </div>
                       <div style={{ textAlign: "justify", flex: "1" }}>
-                        {message.loading ? (
-                          <Spin size="default" />
+                        {message.user === "user" ? (
+                          message.response
                         ) : (
-                          <>
-                            {message.user === "user" ? (
-                              message.response
-                            ) : (
-                              <pre
-                                style={{
-                                  overflowY: "auto",
-                                  whiteSpace: "pre-wrap",
-                                  wordWrap: "break-word",
-                                  width: "100%",
-                                  margin: "10px",
-                                  padding: "10px",
-                                }}
-                              >
-                                {message.response}
-                              </pre>
+                          <pre
+                            style={{
+                              overflowY: "auto",
+                              whiteSpace: "pre-wrap",
+                              wordWrap: "break-word",
+                              width: "100%",
+                              margin: "10px",
+                              padding: "10px",
+                            }}
+                          >
+                            {message.loading && messageChunks.length > 0 ? messageChunks.map((m) => (
+                                m.content
+                            )) : (
+                                <>
+                                  {message.loading ? (
+                                    <Spin size="default" />
+                                  ) : (
+                                    message.response
+                                  )}
+                                </>
                             )}
-                          </>
+                          </pre>
                         )}
                       </div>
                     </div>

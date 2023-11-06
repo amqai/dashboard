@@ -22,6 +22,7 @@ import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 import { CurrentPerson } from "../../models/Person";
 import { IoAddSharp } from "react-icons/io5";
+import { BiSolidHelpCircle } from "react-icons/bi";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ function HomePage() {
     searchSize: number;
     defaultKey: boolean;
     searchThreshold: number;
+    responseSpeedMs: number;
   }) => {
     const {
       name,
@@ -97,6 +99,7 @@ function HomePage() {
       searchSize,
       defaultKey,
       searchThreshold,
+      responseSpeedMs,
     } = values;
     const jwt = localStorage.getItem("jwt");
     const response = await fetch(
@@ -117,6 +120,7 @@ function HomePage() {
             temperature,
             searchSize,
             searchThreshold,
+            responseSpeedMs,
           },
         }),
       }
@@ -189,6 +193,7 @@ information as you have available in the context provided.
       temperature: 50,
       searchSize: 5,
       searchThreshold: 80,
+      responseSpeedMs: 20,
     });
   };
 
@@ -400,6 +405,24 @@ information as you have available in the context provided.
                   {
                     required: true,
                     message: "Please input a creativity percentage",
+                  },
+                ]}
+                style={toggleSettings != true ? { display: "none" } : {}}
+              >
+                <Slider min={1} max={200} />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <span>
+                    Response Speed{" "}
+                    <BiSolidHelpCircle title="Lower is more robotic, higher is more human" />
+                  </span>
+                }
+                name={"responseSpeedMs"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input a response speed setting",
                   },
                 ]}
                 style={toggleSettings != true ? { display: "none" } : {}}

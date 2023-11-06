@@ -22,6 +22,7 @@ export interface OrganizationSettingsApiDto {
   temperature: number;
   searchSize: number;
   searchThreshold: number;
+  responseSpeedMs: number;
   members: OrganizationMemberApiDto[];
 }
 
