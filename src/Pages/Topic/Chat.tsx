@@ -221,14 +221,28 @@ function Chat() {
     setMessages([]);
   };
 
-  // Function to send messages to the API and receive streamed responses
-  const sendMessage = async (values: {
+  const send = async (values: {
     prompt: string;
     projectIds: string[];
     model: string;
     googleSearch: boolean;
   }) => {
     const { prompt, projectIds, model, googleSearch } = values;
+    if (googleSearch) {
+      console.log("submit")
+      await submit(prompt, model)
+    } else {
+      console.log("sendMessage")
+      await sendMessage(prompt, projectIds, model);
+    }
+  }
+
+  // Function to send messages to the API and receive streamed responses
+  const sendMessage = async (
+    prompt: string,
+    projectIds: string[],
+    model: string,
+  ) => {
     setMessages((prevMessages) => [
       ...prevMessages,
       { response: prompt, user: "user", contextList: [], externalSearch: true },
@@ -241,7 +255,7 @@ function Chat() {
       },
     ]);
     const jwt = localStorage.getItem("jwt");
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/stream/${params.conversationId || "b456813b-d41f-4eea-bf78-94d42f7dcdfd"}?organizationId=${params.organizationId}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/stream/${params.conversationId}?organizationId=${params.organizationId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -266,8 +280,8 @@ function Chat() {
       for (const part of parts) {
         if (part.startsWith('event:completedWithId')) {
           const completedId = part.replace('event:completedWithId\ndata:', '').trim();
-          console.log(`Stream completed with ID: ${completedId}`);
           setMessageChunks([]);
+          console.log("completedId " + completedId);
           if (conversationId) {
             loadConversation(conversationId);
           }
@@ -296,6 +310,58 @@ function Chat() {
       }
     }
     setMessageChunks([]);
+  };
+
+  const submit = async (
+    prompt: string,
+    model: string,
+  ) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { response: prompt, user: "user", contextList: [], externalSearch: true },
+    ]);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        response: "",
+        user: "ai",
+        contextList: [],
+        externalSearch: false,
+        loading: true,
+      },
+    ]);
+
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${params.conversationId}?organizationId=${params.organizationId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        body: JSON.stringify({
+          prompt,
+          topicIds: [],
+          model,
+          googleSearch: true,
+        }),
+      }
+    );
+
+    const content = await response.json();
+    // Make sure to update the last message and set its loading property to false
+    setMessages((prevMessages) => {
+      const newMessages = [...prevMessages];
+      const lastMessageIndex = newMessages.length - 1;
+      newMessages[lastMessageIndex] = {
+        response: content.response,
+        user: "ai",
+        contextList: content.contextList,
+        externalSearch: content.externalSearch,
+        loading: false,
+      };
+      return newMessages;
+    });
   };
 
   const loadChats = async () => {
@@ -487,7 +553,7 @@ function Chat() {
                 {currentConversation.title}
               </Typography.Title>
             )}
-            <Form onFinish={sendMessage} form={promptForm}>
+            <Form onFinish={send} form={promptForm}>
               <Row align="middle" style={{ marginBottom: "1rem" }}>
                 <Col flex="auto">
                   <Form.Item style={{ marginBottom: 0 }} name={"prompt"}>
@@ -656,7 +722,13 @@ function Chat() {
                             {message.loading && messageChunks.length > 0 ? messageChunks.map((m) => (
                                 m.content
                             )) : (
-                                message.response
+                                <>
+                                  {message.loading ? (
+                                    <Spin size="default" />
+                                  ) : (
+                                    message.response
+                                  )}
+                                </>
                             )}
                           </pre>
                         )}
