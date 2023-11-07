@@ -41,6 +41,7 @@ function Settings() {
 
   const saveSettings = async (values: {
     openAiApiKey: any;
+    name: string;
     model: any;
     prompt: any;
     defaultKey: any;
@@ -52,6 +53,7 @@ function Settings() {
     setLoading(true);
     const {
       openAiApiKey,
+      name,
       model,
       prompt,
       defaultKey,
@@ -74,6 +76,7 @@ function Settings() {
           },
           body: JSON.stringify({
             openAiApiKey,
+            name,
             model,
             prompt,
             defaultKey,
@@ -163,6 +166,7 @@ function Settings() {
     const settings = await response.json();
     form.setFieldsValue({
       openAiApiKey: settings?.openAiApiKey,
+      name: settings?.organizationName,
       defaultKey: settings?.openAiApiKey === "" ? true : false,
       model: settings?.model,
       prompt: settings?.prompt,
@@ -232,6 +236,18 @@ function Settings() {
               labelCol={{ style: { minWidth: "150px" } }}
               labelAlign="left"
             >
+              <Form.Item
+                name={"name"}
+                label="Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter organization name",
+                  },
+                ]}
+              >
+                <Input placeholder="Organization Name" />
+              </Form.Item>
               <Form.Item
                 label="Open AI Api Key"
                 name={"openAiApiKey"}

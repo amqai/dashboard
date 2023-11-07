@@ -17,6 +17,7 @@ export interface Member {
 
 export interface OrganizationSettingsApiDto {
   openAiApiKey: string;
+  organizationName: string;
   model: string;
   prompt: string;
   temperature: number;

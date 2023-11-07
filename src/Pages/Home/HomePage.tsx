@@ -282,7 +282,7 @@ information as you have available in the context provided.
                   },
                 ]}
               >
-                <Input placeholder="Project Name" />
+                <Input placeholder="Organization Name" />
               </Form.Item>
               <Form.Item
                 name={"openAiApiKey"}
