@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   Col,
-  Collapse,
   Divider,
   Form,
   Input,
@@ -156,7 +155,6 @@ function Chat() {
   }>();
   const organizationId = params.organizationId || "DEFAULT_VALUE";
   const conversationId = params.conversationId;
-  const { Panel } = Collapse;
   const [promptForm] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -717,6 +715,7 @@ function Chat() {
                 dataSource={[...messages].reverse()}
                 renderItem={(message, index) => (
                   <List.Item
+                    key={index}
                     style={{
                       paddingTop: "24px",
                       paddingBottom: "24px",
@@ -865,7 +864,7 @@ function Chat() {
         <Drawer
           open={promptDetailsVisible}
           onClose={handleClosePromptDetailsDrawer}
-          placement="bottom"
+          size="large"
         >
           {promptDetailsLoading ? (
             <Spin size="large" />
