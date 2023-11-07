@@ -10,6 +10,7 @@ import {
   Tabs,
   Divider,
   Switch,
+  Typography,
 } from "antd";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -41,6 +42,7 @@ function Data() {
   const [organizationVisibility, setOrganizationVisibility] = useState<
     "PUBLIC" | "SELECTED_MEMBERS"
   >("SELECTED_MEMBERS");
+  const [topicName, setTopicName] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -70,6 +72,7 @@ function Data() {
     const content = await response.json();
 
     setOrganizationVisibility(content.organizationVisibility);
+    setTopicName(content.topicName);
 
     const userData = content?.members.map(
       (member: { personId: any; email: any; role: any }) => ({
@@ -378,25 +381,12 @@ function Data() {
           />
         </div>
       )}
+      <div className="page-headers">
+        <div>
+          <Typography.Title level={2}>{topicName}</Typography.Title>
+        </div>
+      </div>
       <Loading />
-      <Modal
-        open={isMemberModal}
-        title="Add Member"
-        okText="Save"
-        onCancel={() => {
-          setIsMemberModal(false);
-        }}
-        onOk={() => {
-          handleAddMember();
-          setIsMemberModal(false);
-        }}
-      >
-        <Input
-          placeholder="Enter member email"
-          value={memberEmail}
-          onChange={(e) => setMemberEmail(e.target.value)}
-        />
-      </Modal>
       <Tabs
         defaultActiveKey="1"
         activeKey={activeKey}
@@ -495,6 +485,24 @@ function Data() {
           </TabPane>
         )}
       </Tabs>
+      <Modal
+        open={isMemberModal}
+        title="Add Member"
+        okText="Save"
+        onCancel={() => {
+          setIsMemberModal(false);
+        }}
+        onOk={() => {
+          handleAddMember();
+          setIsMemberModal(false);
+        }}
+      >
+        <Input
+          placeholder="Enter member email"
+          value={memberEmail}
+          onChange={(e) => setMemberEmail(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 }

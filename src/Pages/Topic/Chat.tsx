@@ -19,6 +19,7 @@ import {
   Drawer,
   Tabs,
   Descriptions,
+  Progress,
 } from "antd";
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -879,16 +880,20 @@ function Chat() {
                     <>Insert Links here</>
                   ) : (
                     <Descriptions>
-                      <Descriptions.Item label="Topic">
+                      <Descriptions.Item label="Score" span={4}>
+                        <Progress
+                          type="circle"
+                          percent={context.score * 100}
+                          size="small"
+                        />
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Topic" span={1}>
                         {context.topic.name}
                       </Descriptions.Item>
-                      <Descriptions.Item label="Identifier">
+                      <Descriptions.Item label="Identifier" span={2}>
                         {context.identifier}
                       </Descriptions.Item>
-                      <Descriptions.Item label="Score">
-                        {context.score}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Data">
+                      <Descriptions.Item label="Data" span={4}>
                         {context.data}
                       </Descriptions.Item>
                     </Descriptions>
