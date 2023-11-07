@@ -13,6 +13,7 @@ export interface ConversationApiDto {
 }
 
 export interface PromptApiResponse {
+  promptId: string;
   response: string;
   user: string;
   contextList: PromptContextApiResponse[];
@@ -24,8 +25,14 @@ export interface PromptContextApiResponse {
   identifier: string;
   data: string;
   score: number;
+  topic: ContextTopic;
 }
 
 export interface CreateConversationApiRequest {
   title: string;
+}
+
+export interface ContextTopic {
+  topicId: string;
+  name: String;
 }

@@ -11,13 +11,15 @@ import {
   Row,
   Space,
   Spin,
-  Table,
   Typography,
   Alert,
   Select,
   Checkbox,
   Modal,
   theme,
+  Drawer,
+  Tabs,
+  Descriptions,
 } from "antd";
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
@@ -28,11 +30,12 @@ import {
 } from "../../models/Conversation";
 import { useNavigate, useParams } from "react-router-dom";
 import NewChatForm from "../../Components/NewChatForm";
-import { BsGear } from "react-icons/bs";
+import { BsGear, BsInfoCircle } from "react-icons/bs";
 import { fetchTopics } from "../../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { Topic } from "../../models/Topic";
 import AddData from "../../Components/AddData";
+import TabPane from "antd/es/tabs/TabPane";
 
 const { Text, Title } = Typography;
 const { useToken } = theme;
@@ -172,25 +175,11 @@ function Chat() {
   const [googleSearchWarning, setGoogleSearchWarningModal] = useState(false);
   const { token } = useToken();
   const [messageChunks, setMessageChunks] = useState<MessageChunk[]>([]);
-
-  const contextColumns = [
-    {
-      title: "Score",
-      dataIndex: "score",
-      key: "score",
-      render: (score: string) => `${parseFloat(score) * 100}%`,
-    },
-    {
-      title: "Identifier",
-      dataIndex: "identifier",
-      key: "identifier",
-    },
-    {
-      title: "Data",
-      dataIndex: "data",
-      key: "data",
-    },
-  ];
+  const [promptDetailsLoading, setPromptDetailsLoading] = useState(false);
+  const [promptDetailsVisible, setPromptDetailsVisible] = useState(false);
+  const [promptDetails, setPromptDetails] = useState<PromptApiResponse | null>(
+    null
+  );
 
   useEffect(() => {
     (async () => {
@@ -229,45 +218,57 @@ function Chat() {
   }) => {
     const { prompt, projectIds, model, googleSearch } = values;
     if (googleSearch) {
-      console.log("submit")
-      await submit(prompt, model)
+      console.log("submit");
+      await submit(prompt, model);
     } else {
-      console.log("sendMessage")
+      console.log("sendMessage");
       await sendMessage(prompt, projectIds, model);
     }
-  }
+  };
 
   // Function to send messages to the API and receive streamed responses
   const sendMessage = async (
     prompt: string,
     projectIds: string[],
-    model: string,
+    model: string
   ) => {
     setMessages((prevMessages) => [
       ...prevMessages,
-      { response: prompt, user: "user", contextList: [], externalSearch: true },
-      { 
+      {
+        response: prompt,
+        user: "user",
+        contextList: [],
+        externalSearch: true,
+        promptId: "user_id",
+      },
+      {
         response: "",
         user: "ai",
         contextList: [],
         externalSearch: false,
         loading: true,
+        promptId: "loading",
       },
     ]);
     const jwt = localStorage.getItem("jwt");
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/stream/${params.conversationId}?organizationId=${params.organizationId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
-      },
-      body: JSON.stringify({ 
-        prompt,
-        topicIds: projectIds,
-        model,
-        googleSearch
-      })
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/api/prompt/stream/${
+        params.conversationId
+      }?organizationId=${params.organizationId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        body: JSON.stringify({
+          prompt,
+          topicIds: projectIds,
+          model,
+          googleSearch,
+        }),
+      }
+    );
 
     const reader = response.body?.getReader();
 
@@ -276,49 +277,61 @@ function Chat() {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = new TextDecoder().decode(value);
-      const parts = chunk.split('\n\n');
+      const parts = chunk.split("\n\n");
       for (const part of parts) {
-        if (part.startsWith('event:completedWithId')) {
-          const completedId = part.replace('event:completedWithId\ndata:', '').trim();
+        if (part.startsWith("event:completedWithId")) {
+          const completedId = part
+            .replace("event:completedWithId\ndata:", "")
+            .trim();
           setMessageChunks([]);
-          console.log("completedId " + completedId);
-          if (conversationId) {
-            loadConversation(conversationId);
+          if (completedId && messages.length > 0) {
+            const updatedMessages = [...messages];
+            const lastMessageIndex = updatedMessages.length - 1;
+            const lastMessage = updatedMessages[lastMessageIndex];
+            updatedMessages[lastMessageIndex] = {
+              ...lastMessage,
+              promptId: completedId,
+              loading: false,
+            };
+            setMessages(updatedMessages);
           }
           break;
-        } else if (part.startsWith('data:')) {
+        } else if (part.startsWith("data:")) {
           try {
-            const json = JSON.parse(part.replace('data:', ''));
+            const json = JSON.parse(part.replace("data:", ""));
             const message: MessageChunk = {
               id: new Date().toISOString(),
               role: json.role,
-              content: json.choices[0].message.content
-            }
-            setMessageChunks(prevMessages => [...prevMessages, message]);
-          } catch (e) { }
+              content: json.choices[0].message.content,
+            };
+            setMessageChunks((prevMessages) => [...prevMessages, message]);
+          } catch (e) {}
         } else {
           try {
             const json = JSON.parse(part);
             const message: MessageChunk = {
               id: new Date().toISOString(),
               role: json.role,
-              content: json.choices[0].message.content
-            }
-            setMessageChunks(prevMessages => [...prevMessages, message]);
-          } catch (e) { }
+              content: json.choices[0].message.content,
+            };
+            setMessageChunks((prevMessages) => [...prevMessages, message]);
+          } catch (e) {}
         }
       }
     }
     setMessageChunks([]);
   };
 
-  const submit = async (
-    prompt: string,
-    model: string,
-  ) => {
+  const submit = async (prompt: string, model: string) => {
     setMessages((prevMessages) => [
       ...prevMessages,
-      { response: prompt, user: "user", contextList: [], externalSearch: true },
+      {
+        response: prompt,
+        user: "user",
+        contextList: [],
+        externalSearch: true,
+        promptId: "user_id",
+      },
     ]);
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -328,11 +341,15 @@ function Chat() {
         contextList: [],
         externalSearch: false,
         loading: true,
+        promptId: "loading",
       },
     ]);
 
     const jwt = localStorage.getItem("jwt");
-    const response = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${params.conversationId}?organizationId=${params.organizationId}`,
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_URL}/api/prompt/conversation/${
+        params.conversationId
+      }?organizationId=${params.organizationId}`,
       {
         method: "POST",
         headers: {
@@ -359,6 +376,7 @@ function Chat() {
         contextList: content.contextList,
         externalSearch: content.externalSearch,
         loading: false,
+        promptId: content.promptId,
       };
       return newMessages;
     });
@@ -434,12 +452,14 @@ function Chat() {
             user: any;
             contextList: any;
             externalSearch: boolean;
+            promptId: string;
           }) => {
             return {
               response: prompt.response,
               user: prompt.user,
               contextList: prompt.contextList,
               externalSearch: prompt.externalSearch,
+              promptId: prompt.promptId,
             };
           }
         );
@@ -501,227 +521,262 @@ function Chat() {
     }
   };
 
+  const handleOpenPromptDetailsDrawer = async (promptId: string) => {
+    setPromptDetailsVisible(true);
+    setPromptDetailsLoading(true);
+    if (promptDetails !== null && promptDetails.promptId === promptId) {
+      setPromptDetailsLoading(false);
+      return;
+    }
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_APP_API_URL
+      }/api/prompt:details?organizationId=${organizationId}&promptId=${promptId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    const content = await response.json();
+    setPromptDetails(content);
+    setPromptDetailsLoading(false);
+  };
+
+  const handleClosePromptDetailsDrawer = async () => {
+    setPromptDetailsVisible(false);
+  };
+
   return (
-    <div className="chat-container">
-      <div className="chat-section">
-        <div>
-          <Title level={3}>Chats</Title>
-        </div>
-        <Button type="primary" onClick={onAddChat} style={{ width: "100%" }}>
-          + New chat
-        </Button>
-        <Divider />
-        <Input placeholder="Search chats" prefix={<SearchOutlined />} />
-        <Divider />
-        {conversations && (
-          <div className="chat-list">
-            <ConversationItem
-              organizationId={organizationId}
-              currentConversationId={conversationId}
-              conversations={conversations.conversations}
-              loadChats={loadChats}
-              setAlertMessage={setAlertMessage}
-              clearMessages={clearMessages}
-            />
-          </div>
-        )}
-      </div>
-      <div className="prompt-section">
-        {alertMessage !== null && alertMessage.message !== "" && (
+    <>
+      <div className="chat-container">
+        <div className="chat-section">
           <div>
-            <Alert
-              message={alertMessage.message}
-              onClose={dismissAlert}
-              type={alertMessage.type}
-              closable={true}
-              style={{ width: "auto" }}
-            />
-            <Divider />
+            <Title level={3}>Chats</Title>
           </div>
-        )}
-        <Loading />
-        <NewChatForm
-          visible={isAdding}
-          organizationId={organizationId}
-          handleCancel={closeAdding}
-          reloadChats={loadChats}
-        />
-        {conversationId ? (
-          <Card style={{ height: "85vh", overflowY: "scroll", padding: "3%" }}>
-            {currentConversation !== null && (
-              <Typography.Title level={4}>
-                {currentConversation.title}
-              </Typography.Title>
-            )}
-            <Form onFinish={send} form={promptForm}>
-              <Row align="middle" style={{ marginBottom: "1rem" }}>
-                <Col flex="auto">
-                  <Form.Item style={{ marginBottom: 0 }} name={"prompt"}>
-                    <Input.TextArea
-                      placeholder="Ask my anything about my data"
-                      autoSize={{ minRows: 1, maxRows: 6 }}
-                      onPressEnter={(e) => {
-                        // Prevent default behavior of Enter key in TextArea
-                        e.preventDefault();
-                        promptForm.submit();
-                      }}
-                      size="large"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col>
-                  <Button
-                    htmlType="submit"
-                    type="primary"
-                    style={{ marginLeft: "1rem" }}
-                    size="large"
-                  >
-                    Ask Question
-                  </Button>
-                  <Button
-                    style={{ marginLeft: "1rem" }}
-                    onClick={() => setIsSettingsVisible(!isSettingsVisible)}
-                    size="large"
-                  >
-                    <BsGear />
-                  </Button>
-                </Col>
-              </Row>
-              <div hidden={!isSettingsVisible} style={{ margin: "3%" }}>
-                <Typography.Text style={{ fontStyle: "italic" }}>
-                  Select topics to search on
-                </Typography.Text>
-                <Row
-                  align="middle"
-                  style={{ marginBottom: "1rem", marginTop: ".5rem" }}
-                >
+          <Button type="primary" onClick={onAddChat} style={{ width: "100%" }}>
+            + New chat
+          </Button>
+          <Divider />
+          <Input placeholder="Search chats" prefix={<SearchOutlined />} />
+          <Divider />
+          {conversations && (
+            <div className="chat-list">
+              <ConversationItem
+                organizationId={organizationId}
+                currentConversationId={conversationId}
+                conversations={conversations.conversations}
+                loadChats={loadChats}
+                setAlertMessage={setAlertMessage}
+                clearMessages={clearMessages}
+              />
+            </div>
+          )}
+        </div>
+        <div className="prompt-section">
+          {alertMessage !== null && alertMessage.message !== "" && (
+            <div>
+              <Alert
+                message={alertMessage.message}
+                onClose={dismissAlert}
+                type={alertMessage.type}
+                closable={true}
+                style={{ width: "auto" }}
+              />
+              <Divider />
+            </div>
+          )}
+          <Loading />
+          <NewChatForm
+            visible={isAdding}
+            organizationId={organizationId}
+            handleCancel={closeAdding}
+            reloadChats={loadChats}
+          />
+          {conversationId ? (
+            <Card
+              style={{ height: "85vh", overflowY: "scroll", padding: "3%" }}
+            >
+              {currentConversation !== null && (
+                <Typography.Title level={4}>
+                  {currentConversation.title}
+                </Typography.Title>
+              )}
+              <Form onFinish={send} form={promptForm}>
+                <Row align="middle" style={{ marginBottom: "1rem" }}>
                   <Col flex="auto">
-                    <Form.Item name={"projectIds"}>
-                      <Select
-                        mode="multiple"
-                        placeholder="Select Topics"
-                        optionLabelProp="label"
-                        disabled={externalSearch || googleSearch}
-                      >
-                        {projects &&
-                          projects.map((project: Topic) => (
-                            <Select.Option
-                              style={{ marginBottom: "5px" }}
-                              value={project.topicId}
-                              label={project.topicName}
-                              key={project.topicId}
-                            >
-                              {project.topicName}
-                            </Select.Option>
-                          ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item name={"externalSearch"} valuePropName="checked">
-                      <Checkbox
-                        style={{ marginTop: "5px" }}
-                        onChange={handleDefaultKeyChange}
-                        disabled={googleSearch}
-                      >
-                        Query base model knowledge only
-                      </Checkbox>
-                    </Form.Item>
-                    <Form.Item name={"googleSearch"} valuePropName="checked">
-                      <Checkbox
-                        style={{ marginTop: "5px" }}
-                        onChange={handleGoogleKeyChange}
-                        disabled={externalSearch}
-                      >
-                        Query Google only
-                      </Checkbox>
-                    </Form.Item>
-                    <Form.Item
-                      name={"model"}
-                      style={{ marginBottom: 0 }}
-                      rules={[
-                        {
-                          message: "Please select model",
-                        },
-                      ]}
-                    >
-                      <Select placeholder="Select Model">
-                        <Select.Option value="gpt-3.5-turbo">
-                          GPT 3.5
-                        </Select.Option>
-                        <Select.Option value="gpt-3.5-turbo-16k">
-                          GPT 3.5 Turbo 16k
-                        </Select.Option>
-                        <Select.Option value="gpt-4">GPT 4</Select.Option>
-                      </Select>
+                    <Form.Item style={{ marginBottom: 0 }} name={"prompt"}>
+                      <Input.TextArea
+                        placeholder="Ask my anything about my data"
+                        autoSize={{ minRows: 1, maxRows: 6 }}
+                        onPressEnter={(e) => {
+                          // Prevent default behavior of Enter key in TextArea
+                          e.preventDefault();
+                          promptForm.submit();
+                        }}
+                        size="large"
+                      />
                     </Form.Item>
                   </Col>
-                </Row>
-              </div>
-            </Form>
-            <Divider />
-            <List
-              dataSource={[...messages].reverse()}
-              renderItem={(message, index) => (
-                <List.Item
-                  style={{
-                    paddingTop: "24px",
-                    paddingBottom: "24px",
-                    borderRadius: "10px",
-                    backgroundColor:
-                      message.user === "ai"
-                        ? token.colorBgElevated
-                        : token.colorFillSecondary,
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        marginLeft: "10px",
-                        marginRight: "10px",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                  <Col>
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      style={{ marginLeft: "1rem" }}
+                      size="large"
                     >
+                      Ask Question
+                    </Button>
+                    <Button
+                      style={{ marginLeft: "1rem" }}
+                      onClick={() => setIsSettingsVisible(!isSettingsVisible)}
+                      size="large"
+                    >
+                      <BsGear />
+                    </Button>
+                  </Col>
+                </Row>
+                <div hidden={!isSettingsVisible} style={{ margin: "3%" }}>
+                  <Typography.Text style={{ fontStyle: "italic" }}>
+                    Select topics to search on
+                  </Typography.Text>
+                  <Row
+                    align="middle"
+                    style={{ marginBottom: "1rem", marginTop: ".5rem" }}
+                  >
+                    <Col flex="auto">
+                      <Form.Item name={"projectIds"}>
+                        <Select
+                          mode="multiple"
+                          placeholder="Select Topics"
+                          optionLabelProp="label"
+                          disabled={externalSearch || googleSearch}
+                        >
+                          {projects &&
+                            projects.map((project: Topic) => (
+                              <Select.Option
+                                style={{ marginBottom: "5px" }}
+                                value={project.topicId}
+                                label={project.topicName}
+                                key={project.topicId}
+                              >
+                                {project.topicName}
+                              </Select.Option>
+                            ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item
+                        name={"externalSearch"}
+                        valuePropName="checked"
+                      >
+                        <Checkbox
+                          style={{ marginTop: "5px" }}
+                          onChange={handleDefaultKeyChange}
+                          disabled={googleSearch}
+                        >
+                          Query base model knowledge only
+                        </Checkbox>
+                      </Form.Item>
+                      <Form.Item name={"googleSearch"} valuePropName="checked">
+                        <Checkbox
+                          style={{ marginTop: "5px" }}
+                          onChange={handleGoogleKeyChange}
+                          disabled={externalSearch}
+                        >
+                          Query Google only
+                        </Checkbox>
+                      </Form.Item>
+                      <Form.Item
+                        name={"model"}
+                        style={{ marginBottom: 0 }}
+                        rules={[
+                          {
+                            message: "Please select model",
+                          },
+                        ]}
+                      >
+                        <Select placeholder="Select Model">
+                          <Select.Option value="gpt-3.5-turbo">
+                            GPT 3.5
+                          </Select.Option>
+                          <Select.Option value="gpt-3.5-turbo-16k">
+                            GPT 3.5 Turbo 16k
+                          </Select.Option>
+                          <Select.Option value="gpt-4">GPT 4</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
+              </Form>
+              <Divider />
+              <List
+                dataSource={[...messages].reverse()}
+                renderItem={(message, index) => (
+                  <List.Item
+                    style={{
+                      paddingTop: "24px",
+                      paddingBottom: "24px",
+                      borderRadius: "10px",
+                      backgroundColor:
+                        message.user === "ai"
+                          ? token.colorBgElevated
+                          : token.colorFillSecondary,
+                      marginTop: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <div>
                       <div
                         style={{
-                          height: "50px",
-                          width: "50px",
-                          margin: "10px",
-                          backgroundColor: "#AF82F5",
-                          borderRadius: "50%",
                           display: "flex",
+                          marginLeft: "10px",
+                          marginRight: "10px",
                           justifyContent: "center",
                           alignItems: "center",
                         }}
                       >
-                        {message.user === "ai" && (
-                          <div>A</div>
-                          // <Tag icon={<GiBrain/>}/>
-                        )}
-                        {message.user === "user" && (
-                          // <Tag icon={<BsFillPersonFill/>} />
-                          <div>Q</div>
-                        )}
-                      </div>
-                      <div style={{ textAlign: "justify", flex: "1" }}>
-                        {message.user === "user" ? (
-                          message.response
-                        ) : (
-                          <pre
-                            style={{
-                              overflowY: "auto",
-                              whiteSpace: "pre-wrap",
-                              wordWrap: "break-word",
-                              width: "100%",
-                              margin: "10px",
-                              padding: "10px",
-                            }}
-                          >
-                            {message.loading && messageChunks.length > 0 ? messageChunks.map((m) => (
-                                m.content
-                            )) : (
+                        <div
+                          style={{
+                            height: "50px",
+                            width: "50px",
+                            margin: "10px",
+                            backgroundColor: "#AF82F5",
+                            borderRadius: "50%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          {message.user === "ai" && (
+                            <div>A</div>
+                            // <Tag icon={<GiBrain/>}/>
+                          )}
+                          {message.user === "user" && (
+                            // <Tag icon={<BsFillPersonFill/>} />
+                            <div>Q</div>
+                          )}
+                        </div>
+                        <div style={{ textAlign: "justify", flex: "1" }}>
+                          {message.user === "user" ? (
+                            message.response
+                          ) : (
+                            <pre
+                              style={{
+                                overflowY: "auto",
+                                whiteSpace: "pre-wrap",
+                                wordWrap: "break-word",
+                                width: "100%",
+                                margin: "10px",
+                                padding: "10px",
+                              }}
+                            >
+                              {message.loading && messageChunks.length > 0 ? (
+                                messageChunks.map((m) => m.content)
+                              ) : (
                                 <>
                                   {message.loading ? (
                                     <Spin size="default" />
@@ -729,84 +784,123 @@ function Chat() {
                                     message.response
                                   )}
                                 </>
-                            )}
-                          </pre>
-                        )}
+                              )}
+                            </pre>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {message.user === "ai" &&
-                      !message.externalSearch &&
-                      message.contextList &&
-                      !message.loading && (
-                        <Collapse style={{ margin: "16px 24px 0 24px" }}>
-                          <Panel header="Show context list" key={index}>
-                            <Table
-                              style={{ width: "100%" }}
-                              size="large"
-                              tableLayout="auto"
-                              pagination={false}
-                              columns={contextColumns}
-                              dataSource={message.contextList}
-                            />
-                          </Panel>
-                        </Collapse>
-                      )}
-                    {message.user === "ai" &&
-                      message.externalSearch &&
-                      message.response &&
-                      !message.response.includes(
-                        "I am unable to answer your question"
-                      ) && (
-                        <AddData
-                          organizationId={organizationId}
-                          topics={projects}
-                          data={message.response}
-                        />
-                      )}
-                  </div>
-                </List.Item>
-              )}
-            ></List>
-            <Modal
-              open={externalSearchWarning}
-              title="Warning"
-              okText="Ok"
-              onCancel={() => {
-                handleDefaultKeyChange();
-              }}
-              onOk={() => {
-                setExternalSearchWarningModal(false);
-                setExternalSearch(true);
-              }}
-            >
-              <p>Selecting this option can have unpredictable answers.</p>
-            </Modal>
-            <Modal
-              open={googleSearchWarning}
-              title="Warning"
-              okText="Ok"
-              onCancel={() => {
-                handleGoogleKeyChange();
-              }}
-              onOk={() => {
-                setGoogleSearchWarningModal(false);
-                setGoogleSearch(true);
-              }}
-            >
-              <p>
-                Selecting this option can have unpredictable answers and can
-                incur high costs.
-              </p>
-            </Modal>
-          </Card>
-        ) : (
-          <div>
-            <p>Load most recent chat here</p>
-          </div>
-        )}
+                      {message.user === "ai" &&
+                        message.promptId !== "loading" &&
+                        !message.response.includes(
+                          "I am unable to answer your question"
+                        ) && (
+                          <div style={{ margin: "16px 24px 0 24px" }}>
+                            <BsInfoCircle style={{ margin: "0 16px 0 0" }} />
+                            <a
+                              onClick={() =>
+                                handleOpenPromptDetailsDrawer(message.promptId)
+                              }
+                            >
+                              How did we get this answer?
+                            </a>
+                          </div>
+                        )}
+                      {message.user === "ai" &&
+                        message.externalSearch &&
+                        message.response &&
+                        !message.response.includes(
+                          "I am unable to answer your question"
+                        ) && (
+                          <AddData
+                            organizationId={organizationId}
+                            topics={projects}
+                            data={message.response}
+                          />
+                        )}
+                    </div>
+                  </List.Item>
+                )}
+              ></List>
+              <Modal
+                open={externalSearchWarning}
+                title="Warning"
+                okText="Ok"
+                onCancel={() => {
+                  handleDefaultKeyChange();
+                }}
+                onOk={() => {
+                  setExternalSearchWarningModal(false);
+                  setExternalSearch(true);
+                }}
+              >
+                <p>Selecting this option can have unpredictable answers.</p>
+              </Modal>
+              <Modal
+                open={googleSearchWarning}
+                title="Warning"
+                okText="Ok"
+                onCancel={() => {
+                  handleGoogleKeyChange();
+                }}
+                onOk={() => {
+                  setGoogleSearchWarningModal(false);
+                  setGoogleSearch(true);
+                }}
+              >
+                <p>
+                  Selecting this option can have unpredictable answers and can
+                  incur high costs.
+                </p>
+              </Modal>
+            </Card>
+          ) : (
+            <div>
+              <p>Load most recent chat here</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+      {promptDetails && (
+        <Drawer
+          open={promptDetailsVisible}
+          onClose={handleClosePromptDetailsDrawer}
+          placement="bottom"
+        >
+          {promptDetailsLoading ? (
+            <Spin size="large" />
+          ) : (
+            <Tabs>
+              {promptDetails.contextList.map((context, index) => (
+                <TabPane
+                  tab={index + 1 + "/" + promptDetails.contextList.length}
+                  key={index}
+                >
+                  {promptDetails.externalSearch ? (
+                    <>Insert Links here</>
+                  ) : (
+                    <Descriptions>
+                      <Descriptions.Item label="Topic">
+                        {context.topic.name}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Identifier">
+                        {context.identifier}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Score">
+                        {context.score}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Data">
+                        {context.data}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  )}
+                </TabPane>
+              ))}
+            </Tabs>
+          )}
+        </Drawer>
+      )}
+    </>
   );
 }
 
