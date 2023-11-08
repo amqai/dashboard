@@ -113,6 +113,7 @@ function HomePage() {
         body: JSON.stringify({
           name,
           settings: {
+            name,
             openAiApiKey: openAiApiKey === undefined ? "" : openAiApiKey,
             defaultKey,
             model,
