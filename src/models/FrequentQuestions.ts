@@ -5,9 +5,14 @@ export interface FrequentlyAskedQuestionsResponse {
 export interface FrequentlyAskedQuestionResponse {
   question: string;
   count: number;
-  relatedQuestions: FrequentlyAskedQuestionContest;
+  mfaqId: string;
 }
 
-export interface FrequentlyAskedQuestionContest {
-  relatedQuestions: string[];
+export interface FrequentlyAskedQuestionPromptsResponse {
+  prompts: FrequentlyAskedQuestionPrompt[]
+}
+
+export interface FrequentlyAskedQuestionPrompt {
+  question: String,
+  score: number
 }
