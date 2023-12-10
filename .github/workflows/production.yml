@@ -24,11 +24,8 @@ jobs:
 
     - name: Discord Action
       run: |
-        echo "Result=\"[Frontend released to PROD]\""
+        echo "Result=\"[Frontend released to PROD]\"" >> $GITHUB_ENV
       shell: bash
-      env:
-        COMMIT_AUTHOR: ${{ github.event.commits[0].author.name }}
-        COMMIT_MSG: ${{ github.event.commits[0].message }}
 
     - name: Discord Notification
       uses: Ilshidur/action-discord@0.3.2

@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Discord Action
         run: |
-          echo "Result=\"[Dashboard Frontend] [Dev] - [${COMMIT_AUTHOR}] has pushed the commit [${COMMIT_MSG}].\""
+          echo "Result=\"[Dashboard Frontend] [Dev] - [${COMMIT_AUTHOR}] has pushed the commit [${COMMIT_MSG}].\"" >> $GITHUB_ENV
         shell: bash
         env:
           COMMIT_AUTHOR: ${{ github.event.commits[0].author.name }}
