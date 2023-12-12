@@ -1,0 +1,35 @@
+name: Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_TOKEN }}
+
+    - name: Merge Branch into Main
+      run: |
+        git fetch origin dev:temp_branch
+        git checkout main
+        git merge temp_branch
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    - name: Discord Action
+      run: |
+        echo "Result=\"[Frontend released to PROD]\"" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Discord Notification
+      uses: Ilshidur/action-discord@0.3.2
+      with:
+        args: ${{ env.Result }}
+      env:
+        DISCORD_WEBHOOK: https://discord.com/api/webhooks/1128921696687104092/VZiM0hi7oX6QRTETa7sa78lPSNKkHvLPi1MqgOF7Au-JO9auq3328JBOYm3_z2uAwZXY
