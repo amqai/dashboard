@@ -186,6 +186,17 @@ function Chat() {
             if (conversationId) {
               loadConversation(conversationId);
             }
+
+            // const updatedMessages = [...messages];
+            // const lastMessageIndex = updatedMessages.length - 1;
+            // const lastMessage = updatedMessages[lastMessageIndex];
+            // updatedMessages[lastMessageIndex] = {
+            //   ...lastMessage,
+            //   promptId: completedId,
+            //   loading: false,
+            // };
+            // setMessages(updatedMessages);
+
           }
           break;
         } else if (part.startsWith("data:")) {
@@ -352,7 +363,7 @@ function Chat() {
           }
         );
 
-        setMessages((prevMessages) => [...prevMessages, ...newMessages]);
+        setMessages([...newMessages])
       }
     }
     setLoading(false);
