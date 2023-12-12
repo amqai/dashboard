@@ -5,14 +5,36 @@
 }
 
 .chat-section {
-  border-right: 1px solid #e0e0e0; /* adjust color as needed */
+  border-right: 1px solid #5b5d5f; /* adjust color as needed */
   overflow-y: auto;
   padding: 16px;
 }
 
 .prompt-section {
+  display: flex;
+  justify-content: center;
   width: 85%;
   overflow-y: auto;
   margin: 5%;
   margin-top: 2%;
+}
+
+.chat-bubble {
+  display: flex;
+  transition: ease .3s;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 5px;
+}
+
+.chat-bubble:hover {
+  background-color: #182125;
+}
+
+a {
+  font-style: italic;
+}
+
+a:hover {
+  color: white;
 }

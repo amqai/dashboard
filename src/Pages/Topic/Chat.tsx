@@ -15,7 +15,7 @@ import {
   Select,
   Checkbox,
   Modal,
-  theme,
+  // theme,
   Drawer,
   Tabs,
   Descriptions,
@@ -39,7 +39,7 @@ import TabPane from "antd/es/tabs/TabPane";
 import ConversationItem from "../../Components/ConversationItem";
 
 const { Title } = Typography;
-const { useToken } = theme;
+// const { useToken } = theme;
 
 interface MessageChunk {
   id: string;
@@ -70,7 +70,7 @@ function Chat() {
     useState(false);
   const [googleSearch, setGoogleSearch] = useState(false);
   const [googleSearchWarning, setGoogleSearchWarningModal] = useState(false);
-  const { token } = useToken();
+  // const { token } = useToken();
   const [messageChunks, setMessageChunks] = useState<MessageChunk[]>([]);
   const [promptDetailsLoading, setPromptDetailsLoading] = useState(false);
   const [promptDetailsVisible, setPromptDetailsVisible] = useState(false);
@@ -182,15 +182,10 @@ function Chat() {
             .trim();
           setMessageChunks([]);
           if (completedId && messages.length > 0) {
-            const updatedMessages = [...messages];
-            const lastMessageIndex = updatedMessages.length - 1;
-            const lastMessage = updatedMessages[lastMessageIndex];
-            updatedMessages[lastMessageIndex] = {
-              ...lastMessage,
-              promptId: completedId,
-              loading: false,
-            };
-            setMessages(updatedMessages);
+            // TODO: Determine if we can append to existing messages to prevent re-rendering the page
+            if (conversationId) {
+              loadConversation(conversationId);
+            }
           }
           break;
         } else if (part.startsWith("data:")) {
@@ -216,7 +211,6 @@ function Chat() {
         }
       }
     }
-    setMessageChunks([]);
   };
 
   const submit = async (prompt: string, model: string) => {
@@ -229,9 +223,6 @@ function Chat() {
         externalSearch: true,
         promptId: "user_id",
       },
-    ]);
-    setMessages((prevMessages) => [
-      ...prevMessages,
       {
         response: "",
         user: "ai",
@@ -375,8 +366,7 @@ function Chat() {
     if (loading) {
       return (
         <Space size="middle">
-          {" "}
-          <Spin size="large" className="spinner" />{" "}
+          {/* <Spin size="large" className="spinner" /> */}
         </Space>
       );
     }
@@ -486,7 +476,7 @@ function Chat() {
               <Divider />
             </div>
           )}
-          <Loading />
+
           <NewChatForm
             visible={isAdding}
             organizationId={organizationId}
@@ -495,7 +485,14 @@ function Chat() {
           />
           {conversationId ? (
             <Card
-              style={{ height: "85vh", overflowY: "scroll", padding: "3%" }}
+              style={{ 
+                height: "85vh",
+                overflowY: "scroll",
+                padding: "3%",
+                width: "1200px",
+                maxWidth: "1200px",
+                minWidth: "600px",
+               }}
             >
               {currentConversation !== null && (
                 <Typography.Title level={4}>
@@ -507,7 +504,7 @@ function Chat() {
                   <Col flex="auto">
                     <Form.Item style={{ marginBottom: 0 }} name={"prompt"}>
                       <Input.TextArea
-                        placeholder="Ask my anything about my data"
+                        placeholder="Chat with your data..."
                         autoSize={{ minRows: 1, maxRows: 6 }}
                         onPressEnter={(e) => {
                           // Prevent default behavior of Enter key in TextArea
@@ -610,116 +607,126 @@ function Chat() {
                 </div>
               </Form>
               <Divider />
+              <Loading />
               <List
                 dataSource={[...messages].reverse()}
                 renderItem={(message, index) => (
-                  <List.Item
-                    key={index}
-                    style={{
-                      paddingTop: "24px",
-                      paddingBottom: "24px",
-                      borderRadius: "10px",
-                      backgroundColor:
-                        message.user === "ai"
-                          ? token.colorBgElevated
-                          : token.colorFillSecondary,
-                      marginTop: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <div>
-                      <div
-                        style={{
-                          display: "flex",
-                          marginLeft: "10px",
-                          marginRight: "10px",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
+                <div className="chat-bubble">
+                  <div>
+                    {message.user === "ai" && (
+                      <div style={{display: "flex", alignItems: "center"}}>
                         <div
                           style={{
-                            height: "50px",
-                            width: "50px",
-                            margin: "10px",
+                            marginTop: "20px",
+                            marginRight: "5px",
+                            height: "18px",
+                            width: "18px",
+                            borderRadius: "3px",
                             backgroundColor: "#AF82F5",
-                            borderRadius: "50%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          {message.user === "ai" && (
-                            <div>A</div>
-                            // <Tag icon={<GiBrain/>}/>
-                          )}
-                          {message.user === "user" && (
-                            // <Tag icon={<BsFillPersonFill/>} />
-                            <div>Q</div>
-                          )}
-                        </div>
-                        <div style={{ textAlign: "justify", flex: "1" }}>
-                          {message.user === "user" ? (
-                            message.response
-                          ) : (
-                            <pre
-                              style={{
-                                overflowY: "auto",
-                                whiteSpace: "pre-wrap",
-                                wordWrap: "break-word",
-                                width: "100%",
-                                margin: "10px",
-                                padding: "10px",
-                              }}
-                            >
-                              {message.loading && messageChunks.length > 0 ? (
-                                messageChunks.map((m) => m.content)
-                              ) : (
-                                <>
-                                  {message.loading ? (
-                                    <Spin size="default" />
-                                  ) : (
-                                    message.response
-                                  )}
-                                </>
-                              )}
-                            </pre>
-                          )}
+                          }}>
                         </div>
                       </div>
+                    )}
 
-                      {message.user === "ai" &&
-                        message.promptId !== "loading" &&
-                        !message.response.includes(
-                          "I am unable to answer your question"
-                        ) && (
-                          <div style={{ margin: "16px 24px 0 24px" }}>
-                            <BsInfoCircle style={{ margin: "0 16px 0 0" }} />
-                            <a
-                              onClick={() =>
-                                handleOpenPromptDetailsDrawer(message.promptId)
-                              }
-                            >
-                              How did we get this answer?
-                            </a>
-                          </div>
-                        )}
-                      {message.user === "ai" &&
-                        message.externalSearch &&
-                        message.response &&
-                        !message.response.includes(
-                          "I am unable to answer your question"
-                        ) && (
-                          <AddData
-                            organizationId={organizationId}
-                            topics={projects}
-                            data={message.response}
-                          />
-                        )}
-                    </div>
-                  </List.Item>
-                )}
+                    {message.user === "user" && (
+                      <div style={{display: "flex", alignItems: "center"}}>
+                        <div
+                          style={{
+                            marginTop: "20px",
+                            marginRight: "5px",
+                            height: "18px",
+                            width: "18px",
+                            borderRadius: "3px",
+                            backgroundColor: "#3C896D",
+                          }}>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                    
+                    <List.Item
+                      key={index}
+                      style={{
+                        padding: "10px",
+                        borderRadius: "10px",
+                        // backgroundColor:
+                        //   message.user === "ai"
+                        //     ? token.colorBgElevated
+                        //     : token.colorFillSecondary,
+                        marginBottom: "10px",
+                        width: "100%"
+                      }}
+                    >
+                      <div>
+                        <div>
+                          {message.user === "user" ? (
+                            <>
+                              <h2 style={{ fontWeight: "bold", margin: "0" }}>You</h2>
+                              {message.response}
+                            </>
+                          ) : (
+                            <div>
+                              <pre
+                                style={{
+                                  overflowY: "auto",
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                  width: "100%",
+                                  minHeight: "60px",
+                                }}
+                              >
+                                {message.loading && messageChunks.length > 0 ? (
+                                  <>
+                                    <h2 style={{ fontWeight: "bold", margin: "0"}}>AmqAi</h2>
+                                    {messageChunks.map((m) => m.content)}
+                                  </>
+                                ) : (
+                                  <>
+                                    <h2 style={{ fontWeight: "bold", margin: "0"}}>AmqAi</h2>
+                                    {message.loading ? 
+                                    (<div style={{position: "absolute", left: "50%"}}><Spin size="default"/></div>) : (message.response)}
+                                  </>
+                                )}
+                              </pre>
+                            </div>
+                          )}
+                        </div>
+
+                        {message.user === "ai" &&
+                          message.promptId !== "loading" &&
+                          !message.response.includes(
+                            "I am unable to answer your question"
+                          ) && (
+                            <div style={{ display: "flex", alignItems: "center", height: "50px"}}>
+                              <BsInfoCircle style={{ margin: "0 8px 0 0" }} />
+                              <a style={{ textDecorationLine: "none"}}
+                                  onClick={() => handleOpenPromptDetailsDrawer(message.promptId)}
+                              >
+                                How did we get this answer?
+                              </a>
+                            </div>
+                          )
+                        }
+
+                        {message.user === "ai" &&
+                          message.externalSearch &&
+                          message.response &&
+                          !message.response.includes(
+                            "I am unable to answer your question"
+                          ) && (
+                            <AddData
+                              organizationId={organizationId}
+                              topics={projects}
+                              data={message.response}
+                            />
+                          )
+                        }
+                        
+                      </div>
+                    </List.Item>
+              </div>)}
               ></List>
+
               <Modal
                 open={externalSearchWarning}
                 title="Warning"
