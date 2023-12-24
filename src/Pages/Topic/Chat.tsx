@@ -129,6 +129,7 @@ function Chat() {
     projectIds: string[],
     model: string
   ) => {
+    setMessageChunks([]);
     setMessages((prevMessages) => [
       ...prevMessages,
       {
@@ -169,6 +170,7 @@ function Chat() {
 
     const reader = response.body?.getReader();
 
+    var aggregatedMessage = '';
     // Process the stream
     while (true && reader) {
       const { done, value } = await reader.read();
@@ -180,23 +182,21 @@ function Chat() {
           const completedId = part
             .replace("event:completedWithId\ndata:", "")
             .trim();
-          setMessageChunks([]);
           if (completedId && messages.length > 0) {
-            // TODO: Determine if we can append to existing messages to prevent re-rendering the page
-            if (conversationId) {
-              loadConversation(conversationId);
-            }
-
-            // const updatedMessages = [...messages];
-            // const lastMessageIndex = updatedMessages.length - 1;
-            // const lastMessage = updatedMessages[lastMessageIndex];
-            // updatedMessages[lastMessageIndex] = {
-            //   ...lastMessage,
-            //   promptId: completedId,
-            //   loading: false,
-            // };
-            // setMessages(updatedMessages);
-
+            setMessages((prevMessages) => {
+              const newMessages = [...prevMessages];
+              const lastMessageIndex = newMessages.length - 1;
+              console.log("messagePortion " + aggregatedMessage);
+              newMessages[lastMessageIndex] = {
+                response: aggregatedMessage,
+                user: "ai",
+                contextList: [],
+                externalSearch: false,
+                loading: false,
+                promptId: completedId,
+              };
+              return newMessages;
+            });
           }
           break;
         } else if (part.startsWith("data:")) {
@@ -208,6 +208,8 @@ function Chat() {
               content: json.choices[0].message.content,
             };
             setMessageChunks((prevMessages) => [...prevMessages, message]);
+            aggregatedMessage = aggregatedMessage + message.content;
+            console.log("messagePortion 1 " + aggregatedMessage);
           } catch (e) {}
         } else {
           try {
@@ -218,6 +220,8 @@ function Chat() {
               content: json.choices[0].message.content,
             };
             setMessageChunks((prevMessages) => [...prevMessages, message]);
+            aggregatedMessage = aggregatedMessage + message.content;
+            console.log("messagePortion 2 " + aggregatedMessage);
           } catch (e) {}
         }
       }
@@ -279,6 +283,7 @@ function Chat() {
       };
       return newMessages;
     });
+    setMessagePortion("");
   };
 
   const loadChats = async () => {
@@ -710,7 +715,7 @@ function Chat() {
                           ) && (
                             <div style={{ display: "flex", alignItems: "center", height: "50px"}}>
                               <BsInfoCircle style={{ margin: "0 8px 0 0" }} />
-                              <a style={{ textDecorationLine: "none"}}
+                              <a style={{ textDecorationLine: "none", fontStyle: "italic"}}
                                   onClick={() => handleOpenPromptDetailsDrawer(message.promptId)}
                               >
                                 How did we get this answer?
