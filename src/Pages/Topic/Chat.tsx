@@ -186,7 +186,6 @@ function Chat() {
             setMessages((prevMessages) => {
               const newMessages = [...prevMessages];
               const lastMessageIndex = newMessages.length - 1;
-              console.log("messagePortion " + aggregatedMessage);
               newMessages[lastMessageIndex] = {
                 response: aggregatedMessage,
                 user: "ai",
@@ -209,7 +208,6 @@ function Chat() {
             };
             setMessageChunks((prevMessages) => [...prevMessages, message]);
             aggregatedMessage = aggregatedMessage + message.content;
-            console.log("messagePortion 1 " + aggregatedMessage);
           } catch (e) {}
         } else {
           try {
@@ -221,7 +219,6 @@ function Chat() {
             };
             setMessageChunks((prevMessages) => [...prevMessages, message]);
             aggregatedMessage = aggregatedMessage + message.content;
-            console.log("messagePortion 2 " + aggregatedMessage);
           } catch (e) {}
         }
       }
@@ -283,7 +280,6 @@ function Chat() {
       };
       return newMessages;
     });
-    setMessagePortion("");
   };
 
   const loadChats = async () => {
