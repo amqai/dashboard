@@ -4,6 +4,7 @@ import {
   DeleteOutlined,
   UploadOutlined,
   CheckOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 
 interface PdfTableProps {
@@ -43,12 +44,9 @@ const PdfTable: React.FC<PdfTableProps> = ({ organizationId, topicId }) => {
       render: (pdfJob: PdfJob) => {
         return (
           <>
-            {pdfJob.status === "ACTIVE_EMBEDDING" && <Spin>Loading</Spin>}
-            {pdfJob.status === "FINISH_EMBEDDING" && (
-              <>
-                <CheckOutlined /> Uploaded
-              </>
-            )}
+            {pdfJob.status === "ACTIVE_EMBEDDING" && <Spin> Loading (please refresh)</Spin>}
+            {pdfJob.status === "ERROR" && <><WarningOutlined /> Error</>}
+            {pdfJob.status === "FINISH_EMBEDDING" && <><CheckOutlined /> Uploaded</>}
           </>
         );
       },

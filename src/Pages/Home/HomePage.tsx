@@ -80,6 +80,7 @@ function HomePage() {
 
   const submit = async (values: {
     name: string;
+    billingEmail: string;
     projectDescription: string;
     openAiApiKey: string;
     model: string;
@@ -92,6 +93,7 @@ function HomePage() {
   }) => {
     const {
       name,
+      billingEmail,
       openAiApiKey,
       model,
       prompt,
@@ -112,6 +114,7 @@ function HomePage() {
         },
         body: JSON.stringify({
           name,
+          billingEmail,
           settings: {
             name,
             openAiApiKey: openAiApiKey === undefined ? "" : openAiApiKey,
@@ -286,6 +289,19 @@ information as you have available in the context provided.
                 <Input placeholder="Organization Name" />
               </Form.Item>
               <Form.Item
+                name={"billingEmail"}
+                label="Billing Email"
+                rules={[
+                  {
+                    required: true,
+                    type: "email",
+                    message: "Please enter a billing email for the organization",
+                  },
+                ]}
+              >
+                <Input placeholder="Billing Email" />
+              </Form.Item>
+              <Form.Item
                 name={"openAiApiKey"}
                 label="OpenAI API Key"
                 rules={[
@@ -327,11 +343,9 @@ information as you have available in the context provided.
                 style={toggleSettings != true ? { display: "none" } : {}}
               >
                 <Select placeholder="Select Model">
-                  <Select.Option value="gpt-3.5-turbo">GPT 3.5</Select.Option>
-                  <Select.Option value="gpt-3.5-turbo-16k">
-                    GPT 3.5 Turbo 16k
-                  </Select.Option>
+                  <Select.Option value="gpt-3.5-turbo-1106">GPT 3.5</Select.Option>
                   <Select.Option value="gpt-4">GPT 4</Select.Option>
+                  <Select.Option value="gpt-4-32k">GPT 4 32k</Select.Option>
                 </Select>
               </Form.Item>
 

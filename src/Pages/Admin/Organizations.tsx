@@ -33,6 +33,10 @@ function Organizations() {
     navigate(`/organization/${organizationId}/settings`);
   };
 
+  const goToSubscriptions = (organizationId: string) => {
+    navigate(`/admin/organizations/${organizationId}/subscriptions`);
+  };
+
   const goToOrganizationDashboard = (organizationId: string) => {
     localStorage.setItem("organization.id", organizationId);
     localStorage.setItem(
@@ -118,6 +122,7 @@ function Organizations() {
             }}
           >
             <a onClick={() => goToSettings(record.id)}> Settings </a>
+            <a onClick={() => goToSubscriptions(record.id)}> Subscriptions </a>
             <a onClick={() => handleFeaturesClick(record.id)}> Features </a>
             <a> Delete </a>
           </div>

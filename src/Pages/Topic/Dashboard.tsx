@@ -115,8 +115,9 @@ function HomePage() {
       setFormOpen(false);
       loadTopics(organizationId!!);
     } else {
+      const content = await response.json();
       setAlertMessage({
-        message: "There was an error creating your topic",
+        message: content.errorMessage,
         type: AlertType.Error,
       });
     }
