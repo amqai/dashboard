@@ -177,7 +177,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({
       setApiKey("Will generate after you save");
       form.setFieldsValue({
         enabled: false,
-        model: "gpt-3.5-turbo",
+        model: "gpt-3.5-turbo-1106",
         conversationLength: 3,
         maximumIpConversations: 3,
         terminationResponse:

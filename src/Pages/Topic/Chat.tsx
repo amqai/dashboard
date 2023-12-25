@@ -320,7 +320,7 @@ function Chat() {
       projectIds: projects
         ? projects.map((project: Topic) => project.topicId)
         : [],
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo-1106",
       externalSearch: false,
       googleSearch: false,
     });

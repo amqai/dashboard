@@ -187,7 +187,7 @@ function HomePage() {
     form.setFieldsValue({
       openAiApiKey: "",
       defaultKey: true,
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo-1106",
       prompt: `You are a professional customer service agent who's purpose is to help and provide information based on the
 context given. You will obey the following rules to the best of your ability.
 1) Please answer the question at the very bottom only using the following context with as much relevant
