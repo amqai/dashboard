@@ -42,11 +42,11 @@ function Subscriptions() {
   }
 
   const subscriptionColumns = [
-    {
-      title: "Id",
-      dataIndex: "id",
-      key: "id",
-    },
+    // {
+    //   title: "Id",
+    //   dataIndex: "id",
+    //   key: "id",
+    // },
     {
       title: "Stripe Id",
       key: "stripeSubscriptionId",
@@ -69,6 +69,21 @@ function Subscriptions() {
       title: "Embedding Limit",
       dataIndex: "embeddingLimit",
       key: "embeddingLimit"
+    },
+    {
+      title: "Seat Limit",
+      dataIndex: "seatLimit",
+      key: "seatLimit"
+    },
+    {
+      title: "Topic Limit",
+      dataIndex: "topicLimit",
+      key: "topicLimit"
+    },
+    {
+      title: "Model",
+      dataIndex: "subscriptionModel",
+      key: "subscriptionModel"
     },
     {
       title: "Status",
