@@ -80,6 +80,7 @@ function HomePage() {
 
   const submit = async (values: {
     name: string;
+    billingEmail: string;
     projectDescription: string;
     openAiApiKey: string;
     model: string;
@@ -92,6 +93,7 @@ function HomePage() {
   }) => {
     const {
       name,
+      billingEmail,
       openAiApiKey,
       model,
       prompt,
@@ -112,6 +114,7 @@ function HomePage() {
         },
         body: JSON.stringify({
           name,
+          billingEmail,
           settings: {
             name,
             openAiApiKey: openAiApiKey === undefined ? "" : openAiApiKey,
@@ -284,6 +287,19 @@ information as you have available in the context provided.
                 ]}
               >
                 <Input placeholder="Organization Name" />
+              </Form.Item>
+              <Form.Item
+                name={"billingEmail"}
+                label="Billing Email"
+                rules={[
+                  {
+                    required: true,
+                    type: "email",
+                    message: "Please enter a billing email for the organization",
+                  },
+                ]}
+              >
+                <Input placeholder="Billing Email" />
               </Form.Item>
               <Form.Item
                 name={"openAiApiKey"}

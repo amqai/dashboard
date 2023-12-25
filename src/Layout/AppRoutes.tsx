@@ -14,6 +14,7 @@ import Settings from "../Pages/Organization/Settings";
 import Organizations from "../Pages/Admin/Organizations";
 import ProfilePage from "../Pages/Profile/ProfilePage";
 import ManageUsers from "../Pages/Admin/ManageUsers";
+import Subscriptions from "../Pages/Admin/Subscriptions";
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -52,6 +53,10 @@ function AppRoutes() {
                   <Route
                     path="/admin/organizations"
                     element={<Organizations />}
+                  />
+                  <Route
+                    path="/admin/organizations/:organizationId/subscriptions"
+                    element={<Subscriptions />}
                   />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route
