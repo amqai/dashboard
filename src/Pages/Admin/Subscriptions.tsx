@@ -62,23 +62,31 @@ function Subscriptions() {
     },
     {
       title: "Prompt Limit",
-      dataIndex: "promptLimit",
       key: "promptLimit",
+      render: (_: any, record: SubscriptionDto) => (
+        <>{record.currentPromptCount}/{record.promptLimit}</>
+      )
     },
     {
       title: "Embedding Limit",
-      dataIndex: "embeddingLimit",
-      key: "embeddingLimit"
+      key: "embeddingLimit",
+      render: (_: any, record: SubscriptionDto) => (
+        <>{record.currentEmbeddingCount}/{record.embeddingLimit}</>
+      )
     },
     {
       title: "Seat Limit",
-      dataIndex: "seatLimit",
-      key: "seatLimit"
+      key: "seatLimit",
+      render: (_: any, record: SubscriptionDto) => (
+        <>{record.currentSeatCount}/{record.seatLimit}</>
+      )
     },
     {
       title: "Topic Limit",
-      dataIndex: "topicLimit",
-      key: "topicLimit"
+      key: "topicLimit",
+      render: (_: any, record: SubscriptionDto) => (
+        <>{record.currentTopicCount}/{record.topicLimit}</>
+      )
     },
     {
       title: "Model",
