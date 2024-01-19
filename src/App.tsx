@@ -8,7 +8,7 @@ function App() {
 
   const primary = "#203846"; // lightblue
   const secondary = "#09203e"; // dark blue
-  const accent = "#E94F37"; // orange
+  const accent = "#ED6D5A"; // orange
 
   //"#AF82F5"; // purple
   //"#182125"; // grey
