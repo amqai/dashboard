@@ -76,7 +76,7 @@ function HomePage() {
       const content = await response.json();
       setCurrentPerson(content);
     })();
-  }, []);
+  }, [organizations]);
 
   const submit = async (values: {
     name: string;

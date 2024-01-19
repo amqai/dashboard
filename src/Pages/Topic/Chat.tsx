@@ -769,7 +769,7 @@ function Chat() {
             </Card>
           ) : (
             <div>
-              <p>Load most recent chat here</p>
+              
             </div>
           )}
         </div>
