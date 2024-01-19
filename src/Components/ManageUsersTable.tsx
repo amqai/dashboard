@@ -110,7 +110,7 @@ const ManageUsersTable: React.FC = () => {
       key: "organizations",
       render: (_: any, record: GetAllPersonApiResponse) => (
         <>
-          <a onClick={() => showDrawer(record)}>
+          <a onClick={() => showDrawer(record)} style={{ textDecoration: "none" }}>
             {record.organizations.length}
           </a>
         </>

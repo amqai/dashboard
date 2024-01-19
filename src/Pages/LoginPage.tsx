@@ -65,7 +65,9 @@ function LoginPage() {
       navigate("/register");
     }
 
-    return <a onClick={handleRegister}>Get started</a>;
+    return <a onClick={handleRegister}
+
+    >Get started</a>;
   }
 
   function ForgotPassword() {
@@ -127,7 +129,7 @@ function LoginPage() {
           </Form.Item>
           <ForgotPassword />
           <Button type="primary" htmlType="submit" block size="large">
-            Login
+            <h4>Login</h4>
           </Button>
         </Form>
       </div>

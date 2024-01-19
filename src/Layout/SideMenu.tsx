@@ -89,6 +89,7 @@ function SideMenu() {
 
   return (
     <Sider
+      className="slider"
       theme="light"
       collapsible
       collapsed={isMobile ? true : collapsed}
@@ -105,6 +106,10 @@ function SideMenu() {
           height: "100vh",
           border: "none",
           padding: "10px",
+          fontWeight: "400",
+          fontSize: "16px",
+          letterSpacing: ".02em",
+          paddingTop: "40px"
         }}
       />
     </Sider>

@@ -212,6 +212,7 @@ function Settings() {
       )}
 
       <Tabs
+        className="heavy-font-tabs"
         defaultActiveKey="1"
         activeKey={activeKey}
         onChange={(newActiveKey) => {
@@ -363,7 +364,7 @@ function Settings() {
               </Form.Item>
               <div className="settings-form-buttons">
                 <Button type="primary" disabled={loading} htmlType="submit">
-                  Save
+                  <h4>Save</h4>
                 </Button>
               </div>
             </Form>

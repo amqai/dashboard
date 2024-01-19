@@ -5,7 +5,7 @@
 }
 
 .loginform {
-  background-color: #182125;
+  background-color: #09203e;
   backdrop-filter: blur(3px);
   padding: 16px;
   display: flex;
@@ -26,7 +26,7 @@
   align-items: center;
   background: url("../assets/headerLogo.png") no-repeat center center;
   background-size: 90%;
-  background-color: #182125;
+  background-color: #09203e;
   background-size: contain;
   width: 60%;
   border-top-left-radius: 15px;
@@ -49,8 +49,8 @@
 }
 
 a {
-  color: #af82f5;
-  text-decoration: underline;
+  color: #E94F37;
+  text-decoration: none;
 }
 
 .ant-form-item {

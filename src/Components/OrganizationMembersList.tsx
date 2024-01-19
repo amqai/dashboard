@@ -207,7 +207,7 @@ const OrganizationMembersList: React.FC<OrganizationMembersListProps> = ({
       <Card title="Members" bodyStyle={{ overflowX: "auto" }}>
         <div className="settings-form-buttons">
           <Button type="primary" onClick={() => setIsMemberModal(true)}>
-            + Add
+            <h4>Add Member</h4>
           </Button>
         </div>
         <Table dataSource={memberData} columns={memberColumns} />

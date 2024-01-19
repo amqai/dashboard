@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { OrganizationApiDto } from "../../models/Organization";
 import { CurrentPerson } from "../../models/Person";
-import { IoAddSharp } from "react-icons/io5";
+import { IoIosAdd } from "react-icons/io";
 import { BiSolidHelpCircle } from "react-icons/bi";
 
 function HomePage() {
@@ -245,7 +245,7 @@ information as you have available in the context provided.
               className="addButton"
               type="primary"
               shape="circle"
-              icon={<IoAddSharp />}
+              icon={<IoIosAdd size={50 * 0.8}/>}
               onClick={() => openForm()}
             ></Button>
           )}
@@ -273,7 +273,7 @@ information as you have available in the context provided.
               labelAlign="left"
             >
               <Typography.Title level={3} style={{ marginBottom: "24px" }}>
-                Create anew organization
+                Create a new organization
               </Typography.Title>
 
               <Form.Item
@@ -456,7 +456,7 @@ information as you have available in the context provided.
                 htmlType="submit"
                 style={{ marginLeft: "10px" }}
               >
-                Save
+                <h4>Save</h4>
               </Button>
               <Button
                 style={{ marginLeft: "10px" }}

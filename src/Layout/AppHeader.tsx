@@ -5,6 +5,7 @@ import { OrganizationApiDto } from "../models/Organization";
 import { fetchOrganizations } from "../Services/ApiService";
 import { Alert as AlertModel, AlertType } from "../models/Alert";
 import { CurrentPerson } from "../models/Person";
+import { FaAngleDown } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
 function AppHeader() {
@@ -103,7 +104,7 @@ function AppHeader() {
     const items = organizationItems;
     return (
       <Dropdown menu={{ items }}>
-        <a onClick={(e) => e.preventDefault()}>Organizations</a>
+        <a onClick={(e) => e.preventDefault()}>Organizations {<FaAngleDown style={{marginBottom: "-3px"}}/>}</a>
       </Dropdown>
     );
   };
@@ -116,7 +117,7 @@ function AppHeader() {
           onClick={() => navigate("/admin/organizations")}
           style={{ textDecoration: "none" }}
         >
-          Organizations
+          Organizations 
         </a>
       ),
     },
@@ -137,7 +138,7 @@ function AppHeader() {
     const items = adminItems;
     return (
       <Dropdown menu={{ items }}>
-        <a onClick={(e) => e.preventDefault()}>Admin</a>
+        <a onClick={(e) => e.preventDefault()}>Admin {<FaAngleDown style={{marginBottom: "-3px"}}/>}</a>
       </Dropdown>
     );
   };
@@ -168,7 +169,7 @@ function AppHeader() {
     const items = settingsItems;
     return (
       <Dropdown menu={{ items }}>
-        <a onClick={(e) => e.preventDefault()}>User</a>
+        <a onClick={(e) => e.preventDefault()}>User {<FaAngleDown style={{marginBottom: "-3px"}}/>}</a>
       </Dropdown>
     );
   };

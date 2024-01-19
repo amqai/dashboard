@@ -1,15 +1,15 @@
 .header {
   --background-color: white;
-  background: linear-gradient(
-    90deg,
-    rgba(39, 0, 102, 1) 0%,
-    rgba(137, 33, 181, 1) 49%,
-    rgba(231, 0, 255, 1) 100%
-  );
+  background-color: #203846;
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.384); */
   color: white;
   display: flex;
   justify-content: space-between;
   padding-left: 24px;
+  clip-path: ellipse(130% 100% at 50% 0%);
+  background: #09203e;
+  height: 75px;
+  z-index: 1;
 }
 
 .headerNav {
@@ -26,7 +26,7 @@
 }
 
 .headerNav a:hover {
-  color: black;
+  color: #E94F37;
 }
 
 .brand {
@@ -36,4 +36,9 @@
   width: 150px;
   background: url("../assets/headerLogo.png") no-repeat center center;
   background-size: contain;
+  transition: ease .3s;
+}
+
+.brand:hover {
+  transform: scale(1.08);
 }

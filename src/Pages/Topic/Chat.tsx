@@ -114,12 +114,14 @@ function Chat() {
     googleSearch: boolean;
   }) => {
     const { prompt, projectIds, model, googleSearch } = values;
-    if (googleSearch) {
-      console.log("submit");
-      await submit(prompt, model);
-    } else {
-      console.log("sendMessage");
-      await sendMessage(prompt, projectIds, model);
+    if(prompt != undefined){
+      if (googleSearch) {
+        console.log("submit");
+        await submit(prompt, model);
+      } else {
+        console.log("sendMessage");
+        await sendMessage(prompt, projectIds, model);
+      }
     }
   };
 
@@ -457,7 +459,7 @@ function Chat() {
             <Title level={3}>Chats</Title>
           </div>
           <Button type="primary" onClick={onAddChat} style={{ width: "100%" }}>
-            + New chat
+            <h4>Create</h4>
           </Button>
           <Divider />
           <Input placeholder="Search chats" prefix={<SearchOutlined />} />
@@ -534,7 +536,7 @@ function Chat() {
                       style={{ marginLeft: "1rem" }}
                       size="large"
                     >
-                      Ask Question
+                      <h4>Ask Question</h4>
                     </Button>
                     <Button
                       style={{ marginLeft: "1rem" }}
@@ -630,7 +632,7 @@ function Chat() {
                             height: "18px",
                             width: "18px",
                             borderRadius: "3px",
-                            backgroundColor: "#AF82F5",
+                            backgroundColor: "#203846",
                           }}>
                         </div>
                       </div>
@@ -645,7 +647,7 @@ function Chat() {
                             height: "18px",
                             width: "18px",
                             borderRadius: "3px",
-                            backgroundColor: "#3C896D",
+                            backgroundColor: "#09203e",
                           }}>
                         </div>
                       </div>

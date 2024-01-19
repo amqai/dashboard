@@ -242,7 +242,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({
   }, [wordpressSettings, form]);
 
   return (
-    <Card
+    <Card style={{}}
       title={
         <span>
           WordPress Integration{" "}
@@ -391,7 +391,7 @@ const WordpressIntegrationForm: React.FC<WordpressIntegrationFormProps> = ({
             disabled={!hasWordpressFeatureToggle}
             style={hasWordpressFeatureToggle != true ? { display: "none" } : {}}
           >
-            Save
+            <h4>Save</h4>
           </Button>
         </Form>
       )}

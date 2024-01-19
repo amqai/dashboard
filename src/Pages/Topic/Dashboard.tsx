@@ -18,7 +18,7 @@ import { fetchTopics } from "../../Services/ApiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert as AlertModel, AlertType } from "../../models/Alert";
 import { hasPermission } from "../../Services/PermissionService";
-import { IoAddSharp } from "react-icons/io5";
+import { IoIosAdd } from "react-icons/io";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Topic } from "../../models/Topic";
 import { Member, OrganizationApiDto } from "../../models/Organization";
@@ -222,7 +222,7 @@ function HomePage() {
               className="addButton"
               type="primary"
               shape="circle"
-              icon={<IoAddSharp />}
+              icon={<IoIosAdd size={50 * 0.8}/>}
               onClick={() => setFormOpen(true)}
             ></Button>
           )}
@@ -317,7 +317,7 @@ function HomePage() {
               </Select>
             </Form.Item>
             <Button type="primary" htmlType="submit">
-              Save
+              <h4>Save</h4>
             </Button>
             <Button
               style={{ marginLeft: "10px" }}

@@ -24,7 +24,7 @@ const AmqParticles: React.FC = () => {
       options={{
         background: {
           color: {
-            value: "#AF82F5",
+            value: "#203846",
           },
         },
         fpsLimit: 120,

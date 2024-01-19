@@ -83,7 +83,9 @@ const FrequentlyAskedQuestions: React.FC<OrganizationDetails> = ({ organizationI
           render: (mfaqId: string) => {
             return (
             <>
-              <a onClick={() => handleOpenPromptDetailsDrawer(mfaqId)}>View Related Questions</a>
+              <a onClick={() => handleOpenPromptDetailsDrawer(mfaqId)}
+              style={{ textDecoration: "none" }}
+              >View Related Questions</a>
             </>
             );
           },

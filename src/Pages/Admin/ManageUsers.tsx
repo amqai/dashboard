@@ -13,6 +13,7 @@ function ManageUsers() {
   return (
     <div className="center-wrapper">
       <Tabs
+        className="heavy-font-tabs"
         defaultActiveKey="1"
         activeKey={activeKey}
         onChange={(newActiveKey) => {

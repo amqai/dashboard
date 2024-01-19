@@ -196,8 +196,8 @@ const QuestionOverrideForm: React.FC<QuestionOverrideFormProps> = ({
           <Input placeholder="Enter the expected answer" />
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" block>
-          Add
+        <Button type="primary" htmlType="submit" block style={{ width: "100px"}}>
+          <h4>Add</h4>
         </Button>
       </Form>
 

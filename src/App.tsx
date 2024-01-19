@@ -5,34 +5,43 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./Layout/AppRoutes"; // update with your actual path to AppRoutes
 
 function App() {
-  const primary = "#AF82F5"; // purple
-  const secondary = "#182125"; // grey
-  const accent1 = "#3C896D"; // teal
-  // const accent2 = '#D13610' // red
+
+  const primary = "#203846"; // lightblue
+  const secondary = "#09203e"; // dark blue
+  const accent = "#E94F37"; // orange
+
+  //"#AF82F5"; // purple
+  //"#182125"; // grey
+  //"#3C896D"; // teal
 
   return (
     <>
       <ConfigProvider
         theme={{
           token: {
-            colorBgBase: secondary,
-            // colorBgBase: '#2a0a2e',
-            colorPrimary: primary,
-            colorSuccessBg: accent1,
+            colorBgBase: primary,
+            colorPrimary: secondary,
+            colorSuccessBg: secondary,
           },
 
           algorithm: theme.darkAlgorithm,
           components: {
-            Layout: {
-              colorBgHeader: "black",
-            },
             Button: {
-              colorPrimary: accent1,
-              colorPrimaryHover: accent1,
+              colorPrimary: accent,
+              colorPrimaryHover: accent,
             },
             Menu: {
-              itemSelectedColor: primary,
-              // itemSelectedBg: secondary,
+              itemSelectedColor: accent,
+              // itemBg: primary,
+              itemSelectedBg: secondary
+            },
+            Tabs: {
+              itemSelectedColor: accent,
+              itemHoverColor: accent,
+              inkBarColor: accent,
+            },
+            Modal: {
+              colorBgContainer: primary,
             },
             Card: {},
           },
